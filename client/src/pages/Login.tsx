@@ -11,14 +11,10 @@ import {
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import axios from 'axios'; // Import Axios
 import styles from '../assets/style/loginStyle';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-
-const VALID_CREDENTIALS = {
-    email: 'test@gmail.com',
-    password: '123123'
-};
 
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -27,21 +23,44 @@ const LoginScreen: React.FC = () => {
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         const trimmedEmail = email.trim().toLowerCase();
         const trimmedPassword = password.trim();
 
-        if (trimmedEmail === VALID_CREDENTIALS.email && trimmedPassword === VALID_CREDENTIALS.password) {
-            setError('');
-            navigation.navigate('Tabs');
-        } else {
-            setError('Invalid email or password');
+        if (!trimmedEmail || !trimmedPassword) {
+            setError('Please enter both email and password.');
+            return;
+        }
+
+        try {
+            const response = await axios.post('https://produkto-elyukal.onrender.com/login', {
+                email: trimmedEmail,
+                password: trimmedPassword
+            });
+
+            // Assuming the response contains the access token
+            const { access_token } = response.data;
+
+            if (access_token) {
+                setError('');
+                // Store the token if needed, e.g., AsyncStorage or context
+                // Navigate to the next screen (e.g., Home screen)
+                navigation.navigate('Tabs');
+            }
+        } catch (error: any) {
+            // Handle errors, e.g., invalid login
+            if (error.response && error.response.data) {
+                setError(error.response.data.detail || 'Invalid email or password');
+            } else {
+                setError('An error occurred. Please try again later.');
+            }
         }
     };
 
     const handleSignup = () => {
         navigation.navigate('Signup');
     };
+
     const handleForgotPassword = () => {
         navigation.navigate('ForgotPassword');
     };
