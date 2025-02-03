@@ -1,114 +1,95 @@
-from fastapi import FastAPI, Depends, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from dotenv import load_dotenv
 from pydantic import BaseModel
-import firebase_admin
-from firebase_admin import credentials, auth
-import asyncpg
+import supabase
 import os
-import logging
+import bcrypt
+import jwt
+from datetime import datetime,timedelta
 
-# Set up logging for detailed error handling
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Get the path of Firebase credentials
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FIREBASE_CREDENTIALS = os.path.join(BASE_DIR, "firebase_credentials.json")
-
-# Initialize the Firebase Admin SDK
-cred = credentials.Certificate(FIREBASE_CREDENTIALS)
-firebase_admin.initialize_app(cred)
+load_dotenv()
 
 app = FastAPI()
 
-# CORS Middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://a748-119-92-140-8.ngrok-free.app"],  # Change this to your frontend's URL
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+SUPABASE_URL=os.getenv("SUPABASE_URL")
+SUPABASE_KEY=os.getenv("SUPABASE_KEY")
+SECRET_KEY=os.getenv("JWT_SECRET_KEY")
+ALGORITHM = "HS256"
 
-# Connect to PostgreSQL with connection pooling
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:123@localhost/produkto_elyukal")
-db_pool = None  # Define pool variable globally
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-async def init_db():
-    global db_pool
+supabase_client =  supabase.create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# pydantic models
+class userRegister(BaseModel):
+    email:str
+    password:str
+    first_name:str
+    last_name:str
+
+class userLogin(BaseModel):
+    email:str
+    password:str
+
+#creating access tokens
+def create_access_token(data:dict):
+    to_encode =data.copy
+    expire = datetime.utcnow() + timedata(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp":expire})
+    encoded_jwt = jwt.encode(to_encode,SECRET_KEY,algorithm=ALGORITHM)
+    return encoded_jwt
+
+#verify tokens
+def verify_token(token: str = Depends(oauth2_scheme)):
     try:
-        db_pool = await asyncpg.create_pool(DATABASE_URL)
-        logger.info("PostgreSQL database connection established successfully.")
-    except Exception as e:
-        logger.error(f"Database connection failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Database connection failed: {str(e)}")
+        payload = jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
+        return payload
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token", headers={"WWW-Aunthenticate":"Bearer"},)
 
-@app.on_event("startup")
-async def startup():
-    await init_db()
+# Hashing
+def hash_password(password:str):
+    return bcrypt.hashpw(password.encode(),bcrypt.gensalt()).decode()
 
-@app.on_event("shutdown")
-async def shutdown():
-    if db_pool:
-        await db_pool.close()
-        logger.info("Database connection pool closed.")
+@app.post("/register")
+def register_user(user: userRegister):
+    hashed_password = hash_password(user.password)
 
-# Dependency to get a database connection
-async def get_db():
-    async with db_pool.acquire() as conn:
-        yield conn
+    print(f"Registering user: {user.email}")  # Debugging line
+    print(f"Hashed password: {hashed_password}")  # Debugging line
 
+    response = supabase_client.table("users").insert({
+        "email":user.email,
+        "password_hash":hashed_password,
+        "first_name":user.first_name,
+        "last_name":user.last_name
+    }).execute()
 
-class User(BaseModel):
-    firebase_uid: str
-    email: str
-    first_name: str
-    last_name: str
-
-
-@app.post("/register/")
-async def register_user(user: User, db: asyncpg.Connection = Depends(get_db)):
-    try:
-        # Check if user exists
-        logger.info(f"Checking if user with firebase_uid {user.firebase_uid} exists...")
-        existing_user = await db.fetchrow("SELECT * FROM users WHERE firebase_uid = $1", user.firebase_uid)
-        if existing_user:
-            logger.warning(f"User with firebase_uid {user.firebase_uid} already exists.")
-            raise HTTPException(status_code=400, detail="User already exists")
-
-        # Insert new user
-        logger.info(f"Inserting new user with firebase_uid {user.firebase_uid}...")
-        await db.execute(
-            "INSERT INTO users (firebase_uid, email, first_name, last_name) VALUES ($1, $2, $3, $4)",
-            user.firebase_uid, user.email, user.first_name, user.last_name
-        )
-        logger.info(f"User with firebase_uid {user.firebase_uid} registered successfully.")
-        return {"message": "User registered successfully!"}
-
-    except asyncpg.exceptions.UniqueViolationError as e:
-        logger.error(f"Unique constraint violation: {str(e)}")
-        raise HTTPException(status_code=400, detail="User already exists")
-    except asyncpg.exceptions.PostgresError as e:
-        logger.error(f"Database error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Database Error: {str(e)}")
-    except Exception as e:
-        logger.error(f"Unexpected error during user registration: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+    if response.data is None or len(response.data) == 0:
+        raise HTTPException(status_code=400, detail="User Already exists.")
+    return{"message":"User Registered Successfully"}
 
 
-@app.post("/verify/")
-async def verify_token(token: str):
-    try:
-        # Verify Firebase token
-        logger.info("Verifying Firebase token...")
-        decoded_token = auth.verify_id_token(token)
-        firebase_uid = decoded_token['uid']
-        logger.info(f"Token is valid. Firebase UID: {firebase_uid}")
-        return {"uid": firebase_uid, "message": "Token is valid"}
+@app.post("/login")
+def login_user(user:userLogin):
+    response = supabase_client.table("users").select("*").eq("email", user.email).execute()
 
-    except auth.InvalidIdTokenError as e:
-        logger.error(f"Invalid Firebase token: {str(e)}")
-        raise HTTPException(status_code=400, detail="Invalid Token")
-    except Exception as e:
-        logger.error(f"Unexpected error during token verification: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+    if not response[0]:
+        raise HTTPException(status_code=400,detail="User not found")
+
+    db_user = response[0][0]
+    if not bcrypt.checkpw(user.password.encode(), db_user["password_hash"].encode()):
+        raise HTTPException(status_code=400, detail="Wrong password")
+    
+    access_token = create_access_token(data={"sub":user.email})
+    return{"message": "Login Successful", "access_token":access_token}
+
+@app.post("/profile")
+def get_user_profile(payload:dict=Depends(verify_token)):
+    user_email = payload.get("sub")
+    response = supabase_client.table("users").select("*").eq("email", user_email).execute()
+
+    if not response.data:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"profile": response.data[0]}
