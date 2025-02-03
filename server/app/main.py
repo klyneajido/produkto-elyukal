@@ -94,7 +94,31 @@ async def register_user(user: UserRegister):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/login")
+@app.post("/login")
 async def login_user(user: UserLogin):
+    try:
+        # Remove this line - it might be causing the 500 error
+        print(user)  
+
+        response = supabase_client.table("users").select("*").eq("email", user.email).execute()
+        
+        if not response.data or len(response.data) == 0:
+            raise HTTPException(status_code=400, detail="User not found")
+
+        db_user = response.data[0]
+        if not bcrypt.checkpw(user.password.encode(), db_user["password_hash"].encode()):
+            raise HTTPException(status_code=400, detail="Incorrect password")
+        
+        access_token = create_access_token(
+            data={"sub": user.email},
+            expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        )
+        return {"access_token": access_token, "token_type": "bearer"}
+    except Exception as e:
+        # Add more detailed logging
+        print(f"Login error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+    print(user)
     try:
         response = supabase_client.table("users").select("*").eq("email", user.email).execute()
         

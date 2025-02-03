@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import axios from 'axios'; // Import Axios
+import axios from 'axios'; 
 import styles from '../assets/style/loginStyle';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -33,11 +33,12 @@ const LoginScreen: React.FC = () => {
         }
 
         try {
+            console.log('Login attempt:', { email: trimmedEmail }); // Log login attempt
             const response = await axios.post('https://produkto-elyukal.onrender.com/login', {
                 email: trimmedEmail,
                 password: trimmedPassword
             });
-
+            console.log('Login response:', response.data); // Log full response
             // Assuming the response contains the access token
             const { access_token } = response.data;
 
@@ -49,6 +50,7 @@ const LoginScreen: React.FC = () => {
             }
         } catch (error: any) {
             // Handle errors, e.g., invalid login
+            console.error('Full error:', error.response ? error.response.data : error);
             if (error.response && error.response.data) {
                 setError(error.response.data.detail || 'Invalid email or password');
             } else {
