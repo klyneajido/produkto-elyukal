@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from pydantic import BaseModel, EmailStr
-import supabase
+from supabase import create_client, Client
 import os
 import bcrypt
 import jwt
@@ -13,7 +13,9 @@ from typing import Optional
 load_dotenv()
 
 app = FastAPI()
-
+@app.get("/")
+def read_root():
+    return {"message": "Hello, FastAPI is running!"}
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -30,9 +32,8 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-supabase_client = supabase.create_client(SUPABASE_URL, SUPABASE_KEY)
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+supabase_client: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 class UserRegister(BaseModel):
     email: EmailStr
     password: str

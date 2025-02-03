@@ -111,7 +111,7 @@ import {COLORS, FONTS, FONT_SIZE} from '../assets/constants/constant'
             maxLength={maxLength}
             autoCapitalize={autoCapitalize}
           />
-          {placeholder?.toLowerCase() === "password" && isFocused && (
+          {(placeholder?.toLowerCase() === "password" || placeholder?.toLowerCase() === "repassword") && isFocused && (
             <TouchableOpacity style={styles.iconContainer} onPress={handleTogglePasswordVisibility}>
   <FontAwesomeIcon icon={isPasswordVisible ? faEye  : faEyeSlash} size={20} color="#666" />
             </TouchableOpacity>

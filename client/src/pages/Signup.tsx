@@ -20,59 +20,57 @@ const SignupScreen: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(false);
 
+    const apiURL = "https://produkto-elyukal.onrender.com/register"
+
     const handleSignup = async () => {
         if (password !== confirmPassword) {
             Alert.alert("Passwords do not match!");
             return;
         }
-
-        setIsLoading(true); // Set loading state to true during signup
-
+        setIsLoading(true); 
         try {
-            // Create user in Firebase Authentication
-            const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-            const user = userCredential.user;
-
-            // Get Firebase ID token
-            const idToken = await user.getIdToken();
-
-            // Send token + user data to FastAPI
-            const response = await axios.post('http://192.168.1.24:8000/register', {
+          console.log('Sending request to: ', apiURL);
+          console.log("Request Payload: ",{
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            password: password, 
+          });
+            const response =await axios.post(apiURL,{
                 first_name: firstName,
-                last_name: lastName,
-                email: email,
-                firebase_uid: user.uid,
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${idToken}`, // Attach Firebase token
-                    'Content-Type': 'application/json'
+                last_name:lastName,
+                email:email,
+                password:password,
+            },{
+                headers:{
+                    'Content-Type':'application/json',
                 }
             });
-
-            if (response.status === 200) {
-                Alert.alert('Success', 'Registration successful!');
-                navigation.navigate('Login'); // Redirect to login screen
-            } else {
+            
+            if(response.status === 200){
+                Alert.alert('Success', "Registration Successful!");
+                navigation.navigate('Login');
+            }
+            else{
+                Alert.alert('Unsuccess', "Registration Unsuccessful!");
                 throw new Error(response.data?.detail || 'Unexpected error during registration.');
             }
-
+    
         } catch (error: any) {
             console.error('Signup Error:', error);
 
-            // Improved error handling with specific messages based on error type
-            if (error.code === 'auth/email-already-in-use') {
-                Alert.alert('Error', 'This email address is already in use.');
-            } else if (error.response) {
-                // Handle errors from the FastAPI backend
-                const errorMessage = error.response?.data?.detail || 'Error during registration';
-                Alert.alert('Error', errorMessage);
-            } else if (error.request) {
-                // Network or connection issues
-                Alert.alert('Error', 'Network Error. Please check your internet connection.');
-            } else {
-                // Unexpected errors
-                Alert.alert('Error', `Unexpected error: ${error.message}`);
-            }
+              // Improved error handling with specific messages based on error type
+        if (error.response) {
+            // Handle errors from the FastAPI backend
+            const errorMessage = error.response?.data?.detail || 'Error during registration';
+            Alert.alert('Error', errorMessage);
+        } else if (error.request) {
+            // Network or connection issues
+            Alert.alert('Error', 'Network Error. Please check your internet connection.');
+        } else {
+            // Unexpected errors
+            Alert.alert('Error', `Unexpected error: ${error.message}`);
+        }
         } finally {
             setIsLoading(false); // Set loading state to false after the process completes
         }
@@ -143,7 +141,7 @@ const SignupScreen: React.FC = () => {
                         />
 
                         <InputText
-                            labelName="Re-enter Password"
+                            labelName="RePassword"
                             placeholder="Re-enter password"
                             placeholderTextColor={COLORS.gray}
                             value={confirmPassword}
