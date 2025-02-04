@@ -20,6 +20,7 @@ const loginSignupStyles = StyleSheet.create({
     height: 200,
     width: screenWidth,
     padding: 15,
+
   },
   text: {
     fontFamily: FONTS.bold,
