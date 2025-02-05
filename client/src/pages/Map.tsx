@@ -19,7 +19,7 @@ MapboxGL.setTelemetryEnabled(false);
 const storeLocations = [
     {
         id: '1',
-        coordinate: [120.3209, 16.6159],
+        coordinate: [120.33591510283381, 16.668377634915878],
         name: "Sukang Iloco Store",
         type: "Traditional",
         rating: 4.5,

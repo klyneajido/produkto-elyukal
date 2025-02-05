@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, ImageBackground, TouchableOpacity, SafeAreaView, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { View, Text, ImageBackground, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { useNavigation, ParamListBase } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import auth from '@react-native-firebase/auth';
 import axios from 'axios';
 import styles from '../assets/style/signupStyle';
 import { COLORS } from '../assets/constants/constant'
 import InputText from "../components/TextInput";
-import { faArrowAltCircleLeft, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import {faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 const SignupScreen: React.FC = () => {

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import {
     View,
     Text,
-    Image,
+    ImageBackground,
     Animated,
     StyleSheet,
     Dimensions,
@@ -13,7 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS } from '../assets/constants/constant';
 
 const { width } = Dimensions.get('window');
-
+const { height } = Dimensions.get('window')
 const Welcome = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
@@ -68,7 +68,10 @@ const Welcome = () => {
     }, [fadeAnim, translateY, logoScale, floatingAnim, navigation]);
 
     return (
-        <View style={styles.container}>
+        <ImageBackground
+         source={require('../assets/img/splash_bg.png')}
+               resizeMode='cover'
+        style={styles.container}>
             <Animated.View
                 style={[
                     styles.contentContainer,
@@ -78,8 +81,8 @@ const Welcome = () => {
                     },
                 ]}
             >
-                <Animated.Image
-                    source={require('../assets/img/logo.png')}
+              <Animated.Image
+                    source={require('../assets/img/logo_plain.png')}
                     style={[
                         styles.logo,
                         {
@@ -116,10 +119,9 @@ const Welcome = () => {
                     />
                 </View>
             </Animated.View>
-        </View>
+        </ImageBackground>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -131,24 +133,30 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    bgImg:{
+        width: width,
+        height: height,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     logo: {
         width: 120,
         height: 120,
         borderRadius: 60,
         marginBottom: 20,
-        backgroundColor: '#fff', 
+
     },
     appTitle: {
         fontFamily: 'OpenSans-Bold',
         fontSize: 28,
-        color: '#333',
         marginBottom: 10,
         textAlign: 'center',
+        color:COLORS.white,
     },
     welcomeText: {
         fontFamily: 'OpenSans-Regular',
         fontSize: 18,
-        color: '#666',
+        color:COLORS.white,
         marginTop: 10,
         textAlign: 'center',
     },

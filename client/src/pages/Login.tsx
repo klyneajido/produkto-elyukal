@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
     View,
     Text,
-    TextInput,
+    ImageBackground,
     TouchableOpacity,
     SafeAreaView,
     Image,
@@ -11,16 +11,18 @@ import {
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import axios from 'axios'; 
+import axios from 'axios';
 import styles from '../assets/style/loginStyle';
+import InputText from '../components/TextInput.tsx'
+import { COLORS } from '../assets/constants/constant';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faUser, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [error, setError] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async () => {
@@ -28,7 +30,7 @@ const LoginScreen: React.FC = () => {
         const trimmedPassword = password.trim();
 
         if (!trimmedEmail || !trimmedPassword) {
-            setError('Please enter both email and password.');
+            setError(true);
             return;
         }
 
@@ -43,7 +45,7 @@ const LoginScreen: React.FC = () => {
             const { access_token } = response.data;
 
             if (access_token) {
-                setError('');
+                setError(false);
                 // Store the token if needed, e.g., AsyncStorage or context
                 // Navigate to the next screen (e.g., Home screen)
                 navigation.navigate('Tabs');
@@ -54,7 +56,7 @@ const LoginScreen: React.FC = () => {
             if (error.response && error.response.data) {
                 setError(error.response.data.detail || 'Invalid email or password');
             } else {
-                setError('An error occurred. Please try again later.');
+                setError(true);
             }
         }
     };
@@ -74,43 +76,46 @@ const LoginScreen: React.FC = () => {
                 style={styles.container}
             >
                 <View style={styles.logoContainer}>
-                    <Image source={require('../assets/img/logo.png')} style={styles.logo} />
-                    <Text style={styles.appTitle}>Produkto Elyukal</Text>
+                    <ImageBackground
+                        source={require('../assets/img/signup_logo.png')}
+                        resizeMode='cover'
+                        style={styles.bgImg}>
+                        <Text style={styles.text}>Back for More?
+                        </Text>
+                        <Text style={styles.subText}>
+                        Sign In & Pick Up Where You Left Off!
+                        </Text>
+                    </ImageBackground>
                 </View>
 
-                {error ? (
-                    <View style={styles.errorContainer}>
-                        <Text style={styles.errorText}>{error}</Text>
-                    </View>
-                ) : null}
 
                 <View style={styles.formContainer}>
                     <View style={styles.inputContainer}>
-                        <FontAwesomeIcon icon={faUser} size={20} color="#666" style={styles.inputIcon} />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Email Address"
-                            placeholderTextColor="#666"
+                        {/* <FontAwesomeIcon icon={faUser} size={20} color="#666" style={styles.inputIcon} /> */}
+                        <InputText
+                            labelName="Email"
+                            placeholder="Enter email..."
+                            placeholderTextColor={COLORS.gray}
                             value={email}
                             onChangeText={setEmail}
-                            keyboardType="email-address"
-                            autoCapitalize="none"
+                            error={error && !email}
+                            errorText="Email is required"
                         />
+
+
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <FontAwesomeIcon icon={faLock} size={20} color="#666" style={styles.inputIcon} />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Password"
-                            placeholderTextColor="#666"
+                        {/* <FontAwesomeIcon icon={faLock} size={20} color="#666" style={styles.inputIcon} /> */}
+                        <InputText
+                            labelName="Password"
+                            placeholder="Enter password name..."
+                            placeholderTextColor={COLORS.gray}
                             value={password}
                             onChangeText={setPassword}
-                            secureTextEntry={!showPassword}
+                            error={error && !password}
+                            errorText="Password is required"
                         />
-                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                            <FontAwesomeIcon icon={showPassword ? faEye  : faEyeSlash} size={20} color="#666" />
-                        </TouchableOpacity>
                     </View>
 
                     <TouchableOpacity style={styles.forgotPasswordContainer} onPress={handleForgotPassword}>

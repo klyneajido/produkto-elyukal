@@ -21,7 +21,9 @@ const loginSignupStyles = StyleSheet.create({
     backgroundColor:COLORS.primary,
     marginBottom:30,
     borderBottomLeftRadius:50,
-    overflow:'hidden'
+    overflow:'hidden',
+    borderWidth:2,
+    borderColor:'red',
   },
   bgImg:{
     height: 200,
