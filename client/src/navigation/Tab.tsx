@@ -9,22 +9,6 @@ import Map from '../pages/Map';
 import Settings from '../pages/Settings';
 import ProductDetails from '../pages/ProductDetails';
 
-// function SettingsScreen() {
-//   return (
-//     <View style={styles.screen}>
-//       <Text style={styles.text}>Settings Screen</Text>
-//     </View>
-//   );
-// }
-
-// function Map() {
-//   return (
-//     <View style={styles.screen}>
-//       <Text style={styles.text}>Map Screen</Text>
-//     </View>
-//   )
-// }
-
 const Tab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
 

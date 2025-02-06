@@ -1,3 +1,11 @@
 {
-  "extends": "@react-native/typescript-config/tsconfig.json"
+  "extends":  "@react-native/typescript-config/tsconfig.json",
+  
+    "compilerOptions": {
+      "baseUrl": "./types/env.d", // this must be specified if "paths" is specified.
+      "paths": {
+        "@env": ["node_modules/dotenv"] // this mapping is relative to "baseUrl"
+      }
+    }
+  
 }

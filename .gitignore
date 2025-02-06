@@ -1,0 +1,13 @@
+# Ignore everything outside the project
+../
+../../
+../../../
+../../../../
+
+# Ignore node_modules everywhere
+**/node_modules/
+
+# But keep these project folders
+!client/
+!server/
+!README.md

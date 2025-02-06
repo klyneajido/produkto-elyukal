@@ -19,7 +19,7 @@ const SignupScreen: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(false);
 
-    const apiURL = "https://produkto-elyukal.onrender.com/register"
+    const apiURL = "http://192.168.1.24:8000/register"
 
     const handleSignup = async () => {
         if (password !== confirmPassword) {

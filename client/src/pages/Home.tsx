@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,13 +9,42 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import styles from '../assets/style/homeStyle.js';
+import { ParamListBase, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'; // Correct FontAwesome import
 import { faCalendar, faMapMarkedAlt, faStar, faTicketAlt, faSliders } from '@fortawesome/free-solid-svg-icons';
+import { supabase } from '../../supabaseClient.ts';
+import { useAuth } from '../../contextAuth.tsx';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+const getUserInfo = async () => {
+  const { data: user, error } = await supabase.auth.getUser();
+  if (error) {
+    console.error("Error fetching user: ", error);
+    return null;
+  }
+  return user;
+};
 
 const Home: React.FC = () => {
-  const [text, onChangeText] = React.useState('');
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const { user } = useAuth();
+  console.log("Home component auth context:", user);
+  
+  const [text, onChangeText] = useState<string>(''); 
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) {
+        // Redirect to login if no token
+        navigation.navigate("Login");
+      }
+    };
+    checkAuth();
+  }, []);
+  
   const events = [
     {
       id: 1,
@@ -56,44 +85,48 @@ const Home: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.content}>
-        <View style={styles.topContainer}>
+          <View style={styles.topContainer}>
             {/* Search Bar */}
             <View style={styles.searchBarContainer}>
-            <TextInput
-              style={styles.searchBar}
-              onChangeText={onChangeText}
-              value={text}
-              placeholder="Enter Text..."
-              placeholderTextColor="#CCCCCC"
-            />
-                      <TouchableOpacity
-            style={styles.filterButton}>
-            <FontAwesomeIcon icon={faSliders} size={20} color="#CCCCCC" />
-          </TouchableOpacity>
-          </View>
-
-          {/* Horizontal Circles */}
-          <ScrollView horizontal style={styles.circleContainer}>
-            <View style={styles.circleWrapper}>
-              <TouchableOpacity style={styles.circleSubContainer}>
-                <Image style={styles.image} source={require('../assets/img/handcraft.png')} />
-                <Text style={styles.text}>Handcraft</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.circleSubContainer}>
-                <Image style={styles.image} source={require('../assets/img/furniture.jpg')} />
-                <Text style={styles.text}>Furniture</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.circleSubContainer}>
-                <Image style={styles.image} source={require('../assets/img/food.jpg')} />
-                <Text style={styles.text}>Food</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.circleSubContainer}>
-                <Image style={styles.image} source={require('../assets/img/pottery.jpg')} />
-                <Text style={styles.text}>Pottery</Text>
+              <TextInput
+                style={styles.searchBar}
+                onChangeText={onChangeText}
+                value={text}
+                placeholder="Enter Text..."
+                placeholderTextColor="#CCCCCC"
+              />
+              <TouchableOpacity style={styles.filterButton}>
+                <FontAwesomeIcon icon={faSliders} size={20} color="#CCCCCC" />
               </TouchableOpacity>
             </View>
-          </ScrollView>
-        </View>
+            <View>
+              {/* Add debug info */}
+              <Text>Auth Status: {user ? 'Logged In' : 'Not Logged In'}</Text>
+              <Text>User Email: {user?.email || 'No email'}</Text> //dedebug ko muna to wahhahaha di nagdidisplay email ni user
+            </View>
+
+            {/* Horizontal Circles */}
+            <ScrollView horizontal style={styles.circleContainer}>
+              <View style={styles.circleWrapper}>
+                <TouchableOpacity style={styles.circleSubContainer}>
+                  <Image style={styles.image} source={require('../assets/img/handcraft.png')} />
+                  <Text style={styles.text}>Handcraft</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.circleSubContainer}>
+                  <Image style={styles.image} source={require('../assets/img/furniture.jpg')} />
+                  <Text style={styles.text}>Furniture</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.circleSubContainer}>
+                  <Image style={styles.image} source={require('../assets/img/food.jpg')} />
+                  <Text style={styles.text}>Food</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.circleSubContainer}>
+                  <Image style={styles.image} source={require('../assets/img/pottery.jpg')} />
+                  <Text style={styles.text}>Pottery</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
 
           {/* Featured Section */}
           <View style={styles.featuredContainer}>
@@ -121,7 +154,7 @@ const Home: React.FC = () => {
           <View style={styles.divider}></View>
           <ScrollView horizontal style={styles.discoverContainer}>
             <View style={styles.discoverWrapper}>
-              <Text style={styles.discoverText}>Discover</Text>
+              <Text style={styles.discoverText}></Text>
               <Text style={styles.discoverText}>Agoo</Text>
               <Text style={styles.discoverText}>Aringay</Text>
               <Text style={styles.discoverText}>Caba</Text>
@@ -131,7 +164,7 @@ const Home: React.FC = () => {
               <Text style={styles.discoverText}>Bacnotan</Text>
             </View>
           </ScrollView>
-          
+
           {/* Products Section */}
           <View style={styles.productContainer}>
             <View style={styles.productGrid}>
@@ -254,43 +287,43 @@ const Home: React.FC = () => {
                   </View>
                 </View>
               </TouchableOpacity>
-       
-              <View style={styles.eventsContainer}>
-              <View style={styles.divider}></View>
-                <Text style={styles.sectionTitle}>Upcoming Events</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {events.map((event) => (
-                    <TouchableOpacity key={event.id} style={styles.eventCardLarge}>
-                      <Image source={event.image} style={styles.eventImageLarge} />
-                      <View style={styles.eventOverlay}>
-                        <Text style={styles.eventCategory}>{event.category}</Text>
-                      </View>
-                      <View style={styles.eventDetailsLarge}>
-                        <Text style={styles.eventNameLarge}>{event.name}</Text>
-                        <Text style={styles.eventDescriptionLarge}>{event.description}</Text>
-                        
-                        <View style={styles.eventInfoRowLarge}>
-                          <View style={styles.eventInfoItemLarge}>
-                            <FontAwesomeIcon icon={faCalendar} size={14} color="#ffd700" />
-                            <Text style={styles.eventInfoTextLarge}>{event.date}</Text>
-                          </View>
-                          <View style={styles.eventInfoItemLarge}>
-                            <FontAwesomeIcon icon={faMapMarkedAlt} size={14} color="#ffd700" />
-                            <Text style={styles.eventInfoTextLarge}>{event.location}</Text>
-                          </View>
-                        </View>
-
-                        <View style={styles.eventBottomRowLarge}>
-                          <TouchableOpacity style={styles.eventButtonLarge}>
-                            <Text style={styles.eventButtonTextLarge}>View Details</Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
             </View>
+          </View>
+
+          {/* Events Section */}
+          <View style={styles.eventsContainer}>
+            <View style={styles.divider}></View>
+            <Text style={styles.sectionTitle}>Upcoming Events</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {events.map((event) => (
+                <TouchableOpacity key={event.id} style={styles.eventCardLarge}>
+                  <Image source={event.image} style={styles.eventImageLarge} />
+                  <View style={styles.eventOverlay}>
+                    <Text style={styles.eventCategory}>{event.category}</Text>
+                  </View>
+                  <View style={styles.eventDetailsLarge}>
+                    <Text style={styles.eventNameLarge}>{event.name}</Text>
+                    <Text style={styles.eventDescriptionLarge}>{event.description}</Text>
+
+                    <View style={styles.eventInfoRowLarge}>
+                      <View style={styles.eventInfoItemLarge}>
+                        <FontAwesomeIcon icon={faCalendar} size={14} color="#ffd700" />
+                        <Text style={styles.eventInfoTextLarge}>{event.date}</Text>
+                      </View>
+                      <View style={styles.eventInfoItemLarge}>
+                        <FontAwesomeIcon icon={faMapMarkedAlt} size={14} color="#ffd700" />
+                        <Text style={styles.eventInfoTextLarge}>{event.location}</Text>
+                      </View>
+                    </View>
+                    <View style={styles.eventBottomRowLarge}>
+                      <TouchableOpacity style={styles.eventButtonLarge}>
+                        <Text style={styles.eventButtonTextLarge}>View Details</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
         </View>
       </ScrollView>

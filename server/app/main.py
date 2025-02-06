@@ -12,14 +12,18 @@ from typing import Optional
 
 load_dotenv()
 
+# instance of fastAPI
 app = FastAPI()
+
+# good for debugging to see if fastapi works
 @app.get("/")
 def read_root():
     return {"message": "Hello, FastAPI is running!"}
-# Add CORS middleware
+
+# this enables the frontend to communicate with the backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=["*"],  # In production, mapapalitan to.
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,8 +36,9 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
-supabase_client: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login") # tagastore ng token generated from logging in.
+supabase_client: Client = create_client(SUPABASE_URL, SUPABASE_KEY) # para makaconnect sa supabase
+
 class UserRegister(BaseModel):
     email: EmailStr
     password: str
@@ -53,21 +58,17 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
+    
 def verify_token(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise credentials_exception
         return payload
-    except jwt.PyJWTError:
-        raise credentials_exception
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+
+
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
@@ -94,12 +95,8 @@ async def register_user(user: UserRegister):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/login")
-@app.post("/login")
 async def login_user(user: UserLogin):
     try:
-        # Remove this line - it might be causing the 500 error
-        print(user)  
-
         response = supabase_client.table("users").select("*").eq("email", user.email).execute()
         
         if not response.data or len(response.data) == 0:
@@ -118,26 +115,8 @@ async def login_user(user: UserLogin):
         # Add more detailed logging
         print(f"Login error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-    print(user)
-    try:
-        response = supabase_client.table("users").select("*").eq("email", user.email).execute()
-        
-        if not response.data or len(response.data) == 0:
-            raise HTTPException(status_code=400, detail="User not found")
 
-        db_user = response.data[0]
-        if not bcrypt.checkpw(user.password.encode(), db_user["password_hash"].encode()):
-            raise HTTPException(status_code=400, detail="Incorrect password")
-        
-        access_token = create_access_token(
-            data={"sub": user.email},
-            expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        )
-        return {"access_token": access_token, "token_type": "bearer"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/profile")  # Changed from POST to GET
+@app.get("/profile")  
 async def get_user_profile(current_user: dict = Depends(verify_token)):
     try:
         user_email = current_user.get("sub")

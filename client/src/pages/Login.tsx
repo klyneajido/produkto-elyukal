@@ -1,62 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
     ImageBackground,
     TouchableOpacity,
     SafeAreaView,
-    Image,
     KeyboardAvoidingView,
-    Platform
+    Platform,
+    Alert
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import styles from '../assets/style/loginStyle';
-import InputText from '../components/TextInput.tsx'
+import InputText from '../components/TextInput.tsx';
 import { COLORS } from '../assets/constants/constant';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from '../../contextAuth.tsx';
 
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+    const { setUser, user } = useAuth();  // Get the user context
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
 
-    const handleLogin = async () => {
-        const trimmedEmail = email.trim().toLowerCase();
-        const trimmedPassword = password.trim();
-
-        if (!trimmedEmail || !trimmedPassword) {
-            setError(true);
-            return;
-        }
-
+    // Function to log in the user
+    const loginUser = async (email: string, password: string) => {
         try {
-            console.log('Login attempt:', { email: trimmedEmail }); // Log login attempt
-            const response = await axios.post('https://produkto-elyukal.onrender.com/login', {
-                email: trimmedEmail,
-                password: trimmedPassword
-            });
-            console.log('Login response:', response.data); // Log full response
-            // Assuming the response contains the access token
-            const { access_token } = response.data;
+            console.log('Attempting to login with:', { email, password });
 
-            if (access_token) {
-                setError(false);
-                // Store the token if needed, e.g., AsyncStorage or context
-                // Navigate to the next screen (e.g., Home screen)
-                navigation.navigate('Tabs');
-            }
+            const response = await axios.post('http://192.168.1.24:8000/login', { email, password });
+
+            const { access_token } = response.data;
+            await AsyncStorage.setItem("token", access_token);
+            
+            // Debugging: Log the token that is saved
+            console.log("Token saved in AsyncStorage:", access_token);
+
+            return access_token;  // Return the access token for further use
         } catch (error: any) {
-            // Handle errors, e.g., invalid login
-            console.error('Full error:', error.response ? error.response.data : error);
-            if (error.response && error.response.data) {
-                setError(error.response.data.detail || 'Invalid email or password');
-            } else {
-                setError(true);
+            console.error("Login failed:", error.response?.data?.detail || error.message);
+            Alert.alert("Login Failed", error.response?.data?.detail || "Invalid credentials");
+            return null;
+        }
+    };
+
+    // Function to get the user's profile after login
+    const getUserProfile = async () => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+
+            if (!token) {
+                console.error('No token found in AsyncStorage!');
+                throw new Error('No token found');
+            }
+
+            console.log('Fetching user profile with token:', token);
+
+            const response = await axios.get("http://192.168.1.24:8000/profile", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            console.log("User Profile:", response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error("Failed to fetch profile:", error.response?.data?.detail || error.message);
+            return null;
+        }
+    };
+
+    // Handle login flow
+    const handleLogin = async () => {
+        const token = await loginUser(email, password);
+        if (token) {
+            // Now fetch user profile and update context
+            const profile = await getUserProfile();
+            if (profile) {
+                console.log('Updating user context with profile:', profile);
+                setUser(profile);  // This updates the user context
+                navigation.navigate("Tabs");  // Navigate to the next screen
             }
         }
     };
@@ -69,6 +92,34 @@ const LoginScreen: React.FC = () => {
         navigation.navigate('ForgotPassword');
     };
 
+    useEffect(() => {
+        const checkAuthStatus = async () => {
+            const token = await AsyncStorage.getItem("token");
+            if (token) {
+              try {
+                // Validate token via your backend
+                const response = await axios.get("http://192.168.1.24:8000/validate", {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+                if (response.data.valid) {
+                  const profile = await getUserProfile();
+                  setUser(profile);
+                  navigation.navigate("Tabs");
+                }
+              } catch (error) {
+                await AsyncStorage.removeItem("token");
+                navigation.navigate("Login");
+              }
+            } else {
+              navigation.navigate("Login");
+            }
+          };
+        if (!user) {
+            checkAuthStatus();
+        }
+    }, [setUser, navigation, user]);
+    
+
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
@@ -80,18 +131,13 @@ const LoginScreen: React.FC = () => {
                         source={require('../assets/img/signup_logo.png')}
                         resizeMode='cover'
                         style={styles.bgImg}>
-                        <Text style={styles.text}>Back for More?
-                        </Text>
-                        <Text style={styles.subText}>
-                        Sign In & Pick Up Where You Left Off!
-                        </Text>
+                        <Text style={styles.text}>Back for More?</Text>
+                        <Text style={styles.subText}>Sign In & Pick Up Where You Left Off!</Text>
                     </ImageBackground>
                 </View>
 
-
                 <View style={styles.formContainer}>
                     <View style={styles.inputContainer}>
-                        {/* <FontAwesomeIcon icon={faUser} size={20} color="#666" style={styles.inputIcon} /> */}
                         <InputText
                             labelName="Email"
                             placeholder="Enter email..."
@@ -101,15 +147,12 @@ const LoginScreen: React.FC = () => {
                             error={error && !email}
                             errorText="Email is required"
                         />
-
-
                     </View>
 
                     <View style={styles.inputContainer}>
-                        {/* <FontAwesomeIcon icon={faLock} size={20} color="#666" style={styles.inputIcon} /> */}
                         <InputText
                             labelName="Password"
-                            placeholder="Enter password name..."
+                            placeholder="Enter password..."
                             placeholderTextColor={COLORS.gray}
                             value={password}
                             onChangeText={setPassword}
