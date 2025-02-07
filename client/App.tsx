@@ -11,7 +11,6 @@ import SignupScreen from './src/pages/Signup';
 import Welcome from './src/pages/Welcome';
 import TestEnv from './TestEnv';
 import ForgotPassword from './src/pages/ForgotPassword';
-import AuthScreen from './src/pages/AuthScreen';
 import AuthProvider from './contextAuth';
 
 const Stack = createNativeStackNavigator();
@@ -35,11 +34,6 @@ const App: React.FC = () => {
             <Stack.Screen
               name="Signup"
               component={SignupScreen}
-              options={{ headerShown: false }}
-            />{/* Remove spaces */}
-            <Stack.Screen
-              name="Auth"
-              component={AuthScreen}
               options={{ headerShown: false }}
             />{/* Remove spaces */}
             <Stack.Screen

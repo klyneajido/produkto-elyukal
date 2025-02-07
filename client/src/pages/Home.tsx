@@ -13,26 +13,38 @@ import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'; // Correct FontAwesome import
 import { faCalendar, faMapMarkedAlt, faStar, faTicketAlt, faSliders } from '@fortawesome/free-solid-svg-icons';
-import { supabase } from '../../supabaseClient.ts';
 import { useAuth } from '../../contextAuth.tsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-const getUserInfo = async () => {
-  const { data: user, error } = await supabase.auth.getUser();
-  if (error) {
-    console.error("Error fetching user: ", error);
-    return null;
-  }
-  return user;
-};
-
+interface User{
+    email:string,
+    first_name:string,
+    last_name:string,
+    profile:string,
+}
 const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { user } = useAuth();
   console.log("Home component auth context:", user);
-  
+  // const [storedData, setStoredData] = useState<string |null>(null);
   const [text, onChangeText] = useState<string>(''); 
+
+  // useEffect(()=>{
+  //   const getData= async () =>{
+  //     try{
+  //       const value = await AsyncStorage.getItem('token')
+  //       if(value !== null){
+  //         setStoredData(value);
+  //         console.log("DATA: ",value);
+  //       }
+  //     }
+  //     catch (e){
+  //       console.log("Error Failed to fetch value data")
+  //     }
+  //   };
+  //   getData();
+
+  // },[]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -80,7 +92,7 @@ const Home: React.FC = () => {
       category: 'Pottery'
     }
   ];
-
+  const { email, first_name, last_name } = user?.profile;
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -101,8 +113,9 @@ const Home: React.FC = () => {
             </View>
             <View>
               {/* Add debug info */}
-              <Text>Auth Status: {user ? 'Logged In' : 'Not Logged In'}</Text>
-              <Text>User Email: {user?.email || 'No email'}</Text> //dedebug ko muna to wahhahaha di nagdidisplay email ni user
+              <Text>Welcome, {first_name} {last_name}</Text>
+              <Text>Email: {email}</Text>
+
             </View>
 
             {/* Horizontal Circles */}

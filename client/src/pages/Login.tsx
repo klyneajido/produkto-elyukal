@@ -21,8 +21,8 @@ import { useAuth } from '../../contextAuth.tsx';
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
     const { setUser, user } = useAuth();  // Get the user context
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('1@gmail.com'); //hardcoded
+    const [password, setPassword] = useState('123456'); // hardcoded
     const [error, setError] = useState(false);
 
     // Function to log in the user

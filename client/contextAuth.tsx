@@ -1,11 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { User } from "@supabase/supabase-js";  // Import User type
+import { User } from "@supabase/supabase-js"; // Import User type
 import { supabase } from "./supabaseClient"; // Import supabase client
 
 // Define the shape of your context
 interface AuthContextType {
   user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;  // Ensure setUser is included
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
