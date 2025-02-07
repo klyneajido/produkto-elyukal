@@ -1,46 +1,67 @@
+# auth.py
 from fastapi import APIRouter, Depends, HTTPException
 from app.db.database import supabase_client
 from app.core.security import hash_password, create_access_token, verify_token
 from app.schemas.user import UserRegister, UserLogin
-from datetime import timedelta
+from datetime import datetime, timedelta
+import bcrypt
+from app.core.config import settings
+from typing import Optional
 
 router = APIRouter()
 
 @router.post("/register")
 async def register_user(user: UserRegister):
-    existing_user = supabase_client.table("users").select("*").eq("email", user.email).execute()
-    if existing_user.data:
-        raise HTTPException(status_code=400, detail="User already exists")
+    try:
+        # Check if user already exists
+        existing_user = supabase_client.table("users").select("*").eq("email", user.email).execute()
+        if existing_user.data and len(existing_user.data) > 0:
+            raise HTTPException(status_code=400, detail="User already exists")
 
-    hashed_password = hash_password(user.password)
-    supabase_client.table("users").insert({
-        "email": user.email,
-        "password_hash": hashed_password,
-        "first_name": user.first_name,
-        "last_name": user.last_name
-    }).execute()
+        hashed_password = hash_password(user.password)
+        
+        response = supabase_client.table("users").insert({
+            "email": user.email,
+            "password_hash": hashed_password,
+            "first_name": user.first_name,
+            "last_name": user.last_name
+        }).execute()
 
-    return {"message": "User registered successfully"}
+        return {"message": "User registered successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/login")
 async def login_user(user: UserLogin):
-    response = supabase_client.table("users").select("*").eq("email", user.email).execute()
-    if not response.data:
-        raise HTTPException(status_code=400, detail="User not found")
+    try:
+        response = supabase_client.table("users").select("*").eq("email", user.email).execute()
+        
+        if not response.data or len(response.data) == 0:
+            raise HTTPException(status_code=400, detail="User not found")
 
-    db_user = response.data[0]
-    if not bcrypt.checkpw(user.password.encode(), db_user["password_hash"].encode()):
-        raise HTTPException(status_code=400, detail="Incorrect password")
-
-    access_token = create_access_token(data={"sub": user.email}, expires_delta=timedelta(minutes=30))
-    return {"access_token": access_token, "token_type": "bearer"}
+        db_user = response.data[0]
+        if not bcrypt.checkpw(user.password.encode(), db_user["password_hash"].encode()):
+            raise HTTPException(status_code=400, detail="Incorrect password")
+        
+        access_token = create_access_token(
+            data={"sub": user.email},
+            expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        )
+        return {"access_token": access_token, "token_type": "bearer"}
+    except Exception as e:
+        # Add more detailed logging
+        print(f"Login error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/profile")
 async def get_user_profile(current_user: dict = Depends(verify_token)):
-    user_email = current_user.get("sub")
-    response = supabase_client.table("users").select("email", "first_name", "last_name").eq("email", user_email).execute()
-
-    if not response.data:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    return {"profile": response.data[0]}
+    try:
+        user_email = current_user.get("sub")
+        response = supabase_client.table("users").select("email", "first_name", "last_name").eq("email", user_email).execute()
+        
+        if not response.data or len(response.data) == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+            
+        return {"profile": response.data[0]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

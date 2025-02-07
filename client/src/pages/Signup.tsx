@@ -29,7 +29,7 @@ const SignupScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error] = useState(false);
 
-  const apiURL = "http://192.168.1.24:8000/register";
+  const apiURL = "http://192.168.1.24:8000/auth/register";
 
   const handleSignup = async () => {
     console.log("handleSignup from Signup.tsx");

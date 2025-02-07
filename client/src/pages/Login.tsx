@@ -1,3 +1,4 @@
+// Login.tsx
 import React, { useState, useEffect } from 'react';
 import {
     View,
@@ -29,8 +30,7 @@ const LoginScreen: React.FC = () => {
     const loginUser = async (email: string, password: string) => {
         try {
             console.log('Attempting to login with:', { email, password });
-
-            const response = await axios.post('http://192.168.1.24:8000/login', { email, password });
+            const response = await axios.post('http://192.168.1.24:8000/auth/login', { email, password });
 
             const { access_token } = response.data;
             await AsyncStorage.setItem("token", access_token);
@@ -58,7 +58,7 @@ const LoginScreen: React.FC = () => {
 
             console.log('Fetching user profile with token:', token);
 
-            const response = await axios.get("http://192.168.1.24:8000/profile", {
+            const response = await axios.get("http://192.168.1.24:8000/auth/profile", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -98,7 +98,7 @@ const LoginScreen: React.FC = () => {
             if (token) {
               try {
                 // Validate token via your backend
-                const response = await axios.get("http://192.168.1.24:8000/validate", {
+                const response = await axios.get("http://192.168.1.24:8000/auth/validate", {
                   headers: { Authorization: `Bearer ${token}` },
                 });
                 if (response.data.valid) {

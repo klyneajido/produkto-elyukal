@@ -5,7 +5,7 @@ class Products(BaseModel):
     name:str
     description:str
     category:str
-    price:int
+    price:float
     location_name:str
     address:str
     latitude:str
@@ -13,3 +13,4 @@ class Products(BaseModel):
     ar_asset_url:str
     image_urls:List[str]
     in_stock:bool
+    rating:float

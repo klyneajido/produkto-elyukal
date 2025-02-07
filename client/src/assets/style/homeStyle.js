@@ -130,67 +130,21 @@ image: {
   },
   discoverText:{
     color:'black',
-    marginRight:10,
+    paddingHorizontal:5,
     fontSize:15,
     fontFamily: FONTS.semibold,
+    textAlign:'center'
+  },
+  activeDiscoverText:{
+    borderBottomWidth: 2,
+    borderBottomColor: "blue",
   },
 // Products
 productContainer: {
-  marginBottom:100,
   marginHorizontal:15
 },
-
-productGrid: {
-  flexDirection: 'row',
-  flexWrap: 'wrap', 
-  justifyContent: 'space-between', 
-},
-card: {
-  width: '48%',
-  height: 250,
-  backgroundColor: COLORS.white,
-  borderRadius: 8,
-  overflow: 'hidden',
-  marginBottom: 12,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.1,
-  shadowRadius: 4,
-  elevation: 3, // For Android shadow
-},
-productImage: {
-  width: '100%',
-  height: '70%', // Adjust image height to leave space for text
-  resizeMode: 'cover',
-},
-cardContent: {
-  padding: 8,
-  
-},
-star:{
-  color:COLORS.secondary,
-},
-starContainer:{
-  flexDirection:'row',
-  marginTop:5,
-},
-starText:{
-  color:COLORS.gray,
-  fontSize:12
-},
-cardText: {
-  fontSize: 14,
-  fontWeight: '600',
-  color: '#333',
-  fontFamily: FONTS.regular,
-  marginBottom: 4,
-},
-locationText: {
-  fontSize: 12,
-  color: '#666',
-  fontFamily: FONTS.regular,
-},
- eventsContainer: {
+eventsContainer: {
+  marginHorizontal:15,
   },
   sectionTitle: {
     fontSize: 18,
@@ -199,6 +153,7 @@ locationText: {
     fontFamily: FONTS.semibold,
     color: 'black',
     marginTop:20,
+ 
   },
   eventCardLarge: {
     width: 300,

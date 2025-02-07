@@ -16,18 +16,20 @@ import { faCalendar, faMapMarkedAlt, faStar, faTicketAlt, faSliders } from '@for
 import { useAuth } from '../../contextAuth.tsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-interface User{
-    email:string,
-    first_name:string,
-    last_name:string,
-    profile:string,
+import ProductList from '../components/ProductList.tsx';
+
+interface User {
+  email: string,
+  first_name: string,
+  last_name: string,
+  profile: string,
 }
 const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { user } = useAuth();
   console.log("Home component auth context:", user);
   // const [storedData, setStoredData] = useState<string |null>(null);
-  const [text, onChangeText] = useState<string>(''); 
+  const [text, onChangeText] = useState<string>('');
 
   // useEffect(()=>{
   //   const getData= async () =>{
@@ -46,6 +48,7 @@ const Home: React.FC = () => {
 
   // },[]);
 
+
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem("token");
@@ -56,7 +59,12 @@ const Home: React.FC = () => {
     };
     checkAuth();
   }, []);
-  
+
+  //Discover scroll component
+  const [activeIndex, setActiveIndex] = useState(0);
+  const items = ["Discover", "Rosario", "Sto. Tomas", "Agoo", "Aringay", "Caba", "Bauang", "San Fernando City", "San Juan", "Bacnotan", "Santol", "San Gabriel", "Bangar", "Sudipen"];
+
+  // random events (mock up)
   const events = [
     {
       id: 1,
@@ -92,7 +100,7 @@ const Home: React.FC = () => {
       category: 'Pottery'
     }
   ];
-  const { email, first_name, last_name } = user?.profile;
+  // const { email, first_name, last_name } = user?.profile;
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -111,15 +119,13 @@ const Home: React.FC = () => {
                 <FontAwesomeIcon icon={faSliders} size={20} color="#CCCCCC" />
               </TouchableOpacity>
             </View>
-            <View>
-              {/* Add debug info */}
+            {/* <View>
               <Text>Welcome, {first_name} {last_name}</Text>
               <Text>Email: {email}</Text>
-
-            </View>
+            </View> */}
 
             {/* Horizontal Circles */}
-            <ScrollView horizontal style={styles.circleContainer}>
+            <ScrollView showsHorizontalScrollIndicator={false} horizontal style={styles.circleContainer}>
               <View style={styles.circleWrapper}>
                 <TouchableOpacity style={styles.circleSubContainer}>
                   <Image style={styles.image} source={require('../assets/img/handcraft.png')} />
@@ -165,142 +171,27 @@ const Home: React.FC = () => {
 
           {/* Discover Section */}
           <View style={styles.divider}></View>
-          <ScrollView horizontal style={styles.discoverContainer}>
+          <ScrollView showsHorizontalScrollIndicator={false} horizontal style={styles.discoverContainer}>
             <View style={styles.discoverWrapper}>
-              <Text style={styles.discoverText}></Text>
-              <Text style={styles.discoverText}>Agoo</Text>
-              <Text style={styles.discoverText}>Aringay</Text>
-              <Text style={styles.discoverText}>Caba</Text>
-              <Text style={styles.discoverText}>Bauang</Text>
-              <Text style={styles.discoverText}>San Fernando</Text>
-              <Text style={styles.discoverText}>San Juan</Text>
-              <Text style={styles.discoverText}>Bacnotan</Text>
+              {items.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => setActiveIndex(index)}
+                  style={[styles.discoverText, activeIndex === index && styles.activeDiscoverText]}
+                >
+                  <Text style={styles.discoverText}>{item}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </ScrollView>
 
+
+
           {/* Products Section */}
           <View style={styles.productContainer}>
-            <View style={styles.productGrid}>
-              {/* Card 1 */}
-              <TouchableOpacity style={styles.card}>
-                <Image
-                  style={styles.productImage}
-                  source={require('../assets/img/handcraft.png')}
-                />
-                <View style={styles.cardContent}>
-                  <Text style={styles.cardText}>Handcrafted Item</Text>
-                  <Text style={styles.locationText}>Bacnotan</Text>
-                  <View style={styles.starContainer}>
-                    <FontAwesomeIcon
-                      icon={faStar} // FontAwesome icon
-                      size={15}
-                      style={styles.star}
-                    />
-                    <Text style={styles.starText}>4.8</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-
-              {/* Card 2 */}
-              <TouchableOpacity style={styles.card}>
-                <Image
-                  style={styles.productImage}
-                  source={require('../assets/img/handcraft.png')}
-                />
-                <View style={styles.cardContent}>
-                  <Text style={styles.cardText}>Handcrafted Item</Text>
-                  <Text style={styles.locationText}>Bacnotan</Text>
-                  <View style={styles.starContainer}>
-                    <FontAwesomeIcon
-                      icon={faStar} // FontAwesome icon
-                      size={15}
-                      style={styles.star}
-                    />
-                    <Text style={styles.starText}>4.8</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-
-              {/* Card 3 */}
-              <TouchableOpacity style={styles.card}>
-                <Image
-                  style={styles.productImage}
-                  source={require('../assets/img/handcraft.png')}
-                />
-                <View style={styles.cardContent}>
-                  <Text style={styles.cardText}>Handcrafted Item</Text>
-                  <Text style={styles.locationText}>Bacnotan</Text>
-                  <View style={styles.starContainer}>
-                    <FontAwesomeIcon
-                      icon={faStar} // FontAwesome icon
-                      size={15}
-                      style={styles.star}
-                    />
-                    <Text style={styles.starText}>4.8</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-
-              {/* Card 4 */}
-              <TouchableOpacity style={styles.card}>
-                <Image
-                  style={styles.productImage}
-                  source={require('../assets/img/handcraft.png')}
-                />
-                <View style={styles.cardContent}>
-                  <Text style={styles.cardText}>Handcrafted Item</Text>
-                  <Text style={styles.locationText}>Bacnotan</Text>
-                  <View style={styles.starContainer}>
-                    <FontAwesomeIcon
-                      icon={faStar} // FontAwesome icon
-                      size={15}
-                      style={styles.star}
-                    />
-                    <Text style={styles.starText}>4.8</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-
-              {/* Card 5 */}
-              <TouchableOpacity style={styles.card}>
-                <Image
-                  style={styles.productImage}
-                  source={require('../assets/img/handcraft.png')}
-                />
-                <View style={styles.cardContent}>
-                  <Text style={styles.cardText}>Handcrafted Item</Text>
-                  <Text style={styles.locationText}>Bacnotan</Text>
-                  <View style={styles.starContainer}>
-                    <FontAwesomeIcon
-                      icon={faStar} // FontAwesome icon
-                      size={15}
-                      style={styles.star}
-                    />
-                    <Text style={styles.starText}>4.8</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-
-              {/* Card 6 */}
-              <TouchableOpacity style={styles.card}>
-                <Image
-                  style={styles.productImage}
-                  source={require('../assets/img/handcraft.png')}
-                />
-                <View style={styles.cardContent}>
-                  <Text style={styles.cardText}>Handcrafted Item</Text>
-                  <Text style={styles.locationText}>Bacnotan</Text>
-                  <View style={styles.starContainer}>
-                    <FontAwesomeIcon
-                      icon={faStar} // FontAwesome icon
-                      size={15}
-                      style={styles.star}
-                    />
-                    <Text style={styles.starText}>4.8</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </View>
+           
+              <ProductList />
+         
           </View>
 
           {/* Events Section */}
