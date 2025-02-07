@@ -1,38 +1,81 @@
 # Produkto Elyukal
 
-Welcome to **Produkto Elyukal**! This repository contains the code for both the **client** and **server** components of the project.
+Welcome to **Produkto Elyukal**! This repository contains the code for both the **client** (React Native) and **server** (FastAPI) components of the project.
 
-CLIENT:
-Getting Started
-Note: Make sure you have completed the React Native - Environment Setup instructions. Stop before you get to the Creating a new application section; we have done that for you!
+---
 
-Step 1: Install Dependencies
-npm install
-Step 2: Start the Metro Server
-First, you will need to start Metro, the JavaScript bundler that ships with React Native.
+## 📱 Client (React Native)
 
-To start Metro, run the following command from the root of your React Native project:
+### 🛠 Prerequisites
+Before getting started, ensure you have completed the **React Native - Environment Setup**. Stop before the "Creating a new application" section, as we have already set it up for you!
 
-npm start
-Step 3: Start your Application
-Warning: Due to limitations of the Apple Simulator and the Android Emulator, you must run your project on a physical device.
+### 🚀 Getting Started
 
-Let Metro Bundler run in its own terminal. Open a new terminal from the root of your React Native project. Run the following command to start your Android or iOS app:
+1. **Install dependencies**
+   ```sh
+   npm install
+   ```
 
-# iOS
-npx react-native run-ios
-# Android
-npx react-native run-android
-If everything is set up correctly, you should see your new app running on you device.
+2. **Start Metro Bundler and run the application**
+   
+   - **Android**
+     ```sh
+     npx react-native run-android
+     ```
+   - **iOS** (Mac only)
+     ```sh
+     npx react-native run-ios
+     ```
 
-If everything is set up correctly, you should see your new app running in your Android Emulator or iOS Simulator shortly provided you have set up your emulator/simulator correctly.
+⚠️ **Note:** Due to limitations of the Apple Simulator and Android Emulator, you must run your project on a physical device.
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+3. **Run your app**
+   If everything is set up correctly, your app should be running on your Android/iOS device or emulator.
 
-Step 4: Modifying your App
-Now that you have successfully run the app, let's modify it.
+   - For **Android**, press **`R`** twice or use the Developer Menu:
+     - **Windows/Linux:** `Ctrl + M`
+     - **macOS:** `Cmd ⌘ + M`
+   - You can also run the app directly from Android Studio or Xcode.
 
-Open App.tsx in your text editor of choice and edit some lines.
-For Android: Press the R key twice or select "Reload" from the Developer Menu (Ctrl + M (on Window and Linux) or Cmd ⌘ + M (on macOS)) to see your changes!
-Next Steps
-Check out our documentation for guides, examples, and more!
+### 📖 Next Steps
+Check out our documentation for detailed guides, examples, and best practices!
+
+---
+
+## 🌐 Server (FastAPI)
+
+### 🚀 Getting Started
+
+1. **Open a new terminal**
+2. Navigate to the server directory:
+   ```sh
+   cd server
+   ```
+3. **Activate the virtual environment**
+   - macOS/Linux:
+     ```sh
+     source venv/bin/activate
+     ```
+   - Windows:
+     ```sh
+     source venv/Scripts/activate
+     ```
+4. **Run FastAPI server**
+   - Default:
+     ```sh
+     uvicorn app.main:app --reload
+     ```
+   - Custom IP address:
+     ```sh
+     uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+     ```
+
+Your FastAPI server should now be running and ready to accept requests!
+
+---
+
+## 📌 Additional Notes
+- Ensure your mobile device is connected to the same network as your development machine.
+
+Happy coding! 🎉
+
