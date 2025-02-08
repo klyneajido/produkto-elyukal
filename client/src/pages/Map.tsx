@@ -1,13 +1,26 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, SafeAreaView, Image, Dimensions } from 'react-native';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import {
+    View,
+    TouchableOpacity,
+    Text,
+    SafeAreaView,
+    Image,
+    Dimensions,
+    PermissionsAndroid,
+    Platform,
+    Modal,
+    Alert
+} from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faMap, faSatelliteDish, faMapPin } from '@fortawesome/free-solid-svg-icons';
+import { faMap, faSatelliteDish, faDirections } from '@fortawesome/free-solid-svg-icons';
 import styles from '../assets/style/mapStyle';
+import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
 
-const screenWidth = Dimensions.get("window").width;
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoia2x5bmVhamlkbyIsImEiOiJjbTYzb2J0cmsxNWR5MmxyMHFzdHJkazl1In0.zxp6GI9_XeY0s1gxpwB4lg';
+MapboxGL.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
-MapboxGL.setAccessToken('pk.eyJ1Ijoia2x5bmVhamlkbyIsImEiOiJjbTYzb2J0cmsxNWR5MmxyMHFzdHJkazl1In0.zxp6GI9_XeY0s1gxpwB4lg');
+const directionsClient = MapboxDirections({ accessToken: MAPBOX_ACCESS_TOKEN });
 
 interface Store {
     id: string;
@@ -21,7 +34,11 @@ interface Store {
 const MapView = () => {
     const [selectedStore, setSelectedStore] = useState<Store | null>(null);
     const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/streets-v11');
+    const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+    const [route, setRoute] = useState<any>(null);
+    const [showPermissionModal, setShowPermissionModal] = useState(false);
     const mapRef = useRef(null);
+    const locationRef = useRef<MapboxGL.Location | null>(null);
 
     const storeLocations: Store[] = [
         {
@@ -57,9 +74,83 @@ const MapView = () => {
         heading: 0
     };
 
+    const requestLocationPermission = async () => {
+        try {
+            if (Platform.OS === 'ios') {
+                const granted = await MapboxGL.requestAndroidPermissions();
+                return granted;
+            } else {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                    {
+                        title: "PRODUKTO-ELYUKAL Location Permission",
+                        message: "PRODUKTO-ELYUKAL needs access to your location " +
+                            "to provide navigation services and show your position on the map.",
+                        buttonNeutral: "Ask Me Later",
+                        buttonNegative: "Cancel",
+                        buttonPositive: "OK"
+                    }
+                );
+                return granted === PermissionsAndroid.RESULTS.GRANTED;
+            }
+        } catch (err) {
+            console.warn(err);
+            return false;
+        }
+    };
+
+    const fetchRoute = async (destination: [number, number]) => {
+        if (!userLocation) return;
+
+        try {
+            const response = await directionsClient.getDirections({
+                waypoints: [
+                    { coordinates: userLocation },
+                    { coordinates: destination }
+                ],
+                profile: 'driving',
+                geometries: 'geojson'
+            }).send();
+
+            if (response?.body?.routes?.[0]) {
+                setRoute(response.body.routes[0].geometry);
+            }
+        } catch (error) {
+            console.error('Route fetching error', error);
+        }
+    };
+
+    const handleLocationUpdate = (location: MapboxGL.Location) => {
+        locationRef.current = location;
+        const { coords } = location;
+        setUserLocation([coords.longitude, coords.latitude]);
+    };
+
     const handleStoreSelect = useCallback((store: Store) => {
         setSelectedStore(store);
+        setRoute(null);
     }, []);
+
+    const handleNavigatePress = () => {
+        setShowPermissionModal(true);
+    };
+
+    const handlePermissionResponse = async (granted: boolean) => {
+        setShowPermissionModal(false);
+        if (granted) {
+            const hasPermission = await requestLocationPermission();
+            if (hasPermission) {
+                if (selectedStore && userLocation) {
+                    fetchRoute(selectedStore.coordinate);
+                } else {
+                    Alert.alert(
+                        "Location Unavailable",
+                        "Please make sure your location services are enabled."
+                    );
+                }
+            }
+        }
+    };
 
     const renderAnnotations = () => (
         storeLocations.map((store) => (
@@ -85,6 +176,38 @@ const MapView = () => {
         ))
     );
 
+    const renderPermissionModal = () => (
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={showPermissionModal}
+            onRequestClose={() => setShowPermissionModal(false)}
+        >
+            <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>Location Permission Required</Text>
+                    <Text style={styles.modalText}>
+                        PRODUKTO-ELYUKAL needs access to your location to provide navigation services and show your position on the map.
+                    </Text>
+                    <View style={styles.modalButtons}>
+                        <TouchableOpacity
+                            style={[styles.modalButton, styles.modalButtonCancel]}
+                            onPress={() => handlePermissionResponse(false)}
+                        >
+                            <Text style={styles.modalButtonText}>Deny</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.modalButton, styles.modalButtonAllow]}
+                            onPress={() => handlePermissionResponse(true)}
+                        >
+                            <Text style={styles.modalButtonText}>Allow</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+    );
+
     const renderStoreOverlay = () => {
         if (!selectedStore) return null;
 
@@ -92,7 +215,10 @@ const MapView = () => {
             <View style={styles.overlay}>
                 <TouchableOpacity
                     style={styles.closeButton}
-                    onPress={() => setSelectedStore(null)}
+                    onPress={() => {
+                        setSelectedStore(null);
+                        setRoute(null);
+                    }}
                 >
                     <Text style={styles.closeButtonText}>×</Text>
                 </TouchableOpacity>
@@ -106,6 +232,13 @@ const MapView = () => {
                 <Text style={styles.overlayRating}>
                     Rating: {selectedStore.rating.toFixed(1)} ★
                 </Text>
+                <TouchableOpacity
+                    style={styles.navigateButton}
+                    onPress={handleNavigatePress}
+                >
+                    <FontAwesomeIcon icon={faDirections} size={24} color="#fff" />
+                    <Text style={styles.navigateButtonText}>Navigate</Text>
+                </TouchableOpacity>
             </View>
         );
     };
@@ -116,14 +249,41 @@ const MapView = () => {
                 ref={mapRef}
                 style={styles.map}
                 styleURL={mapStyle}
-                onPress={() => setSelectedStore(null)}
+                onPress={() => {
+                    setSelectedStore(null);
+                    setRoute(null);
+                }}
             >
-                <MapboxGL.Camera
-                    defaultSettings={initialCamera}
-                    zoomLevel={12}
-                    centerCoordinate={initialCamera.centerCoordinate}
+                <MapboxGL.UserLocation
+                    visible={true}
+                    onUpdate={handleLocationUpdate}
                 />
+
+                <MapboxGL.Camera
+                    zoomLevel={12}
+                    centerCoordinate={selectedStore?.coordinate || initialCamera.centerCoordinate}
+                />
+
                 {renderAnnotations()}
+
+                {route && (
+                    <MapboxGL.ShapeSource
+                        id="route"
+                        shape={{
+                            type: 'Feature',
+                            geometry: route
+                        }}
+                    >
+                        <MapboxGL.LineLayer
+                            id="routeLine"
+                            style={{
+                                lineColor: 'blue',
+                                lineWidth: 4,
+                                lineOpacity: 0.7
+                            }}
+                        />
+                    </MapboxGL.ShapeSource>
+                )}
             </MapboxGL.MapView>
 
             <TouchableOpacity
@@ -141,11 +301,10 @@ const MapView = () => {
                 />
             </TouchableOpacity>
 
+            {renderPermissionModal()}
             {renderStoreOverlay()}
         </SafeAreaView>
     );
 };
-
-
 
 export default MapView;
