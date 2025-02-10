@@ -24,6 +24,9 @@ import {
 import styles from '../assets/style/productDetailStyle';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { PERMISSIONS, request } from 'react-native-permissions';
+import { faLocationDot, faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
+import * as Animatable from 'react-native-animatable';
+
 
 interface ProductARSceneProps {
     product: any;
@@ -76,7 +79,7 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, scene
             <ViroAmbientLight color="#FFFFFF" intensity={1000} />
             <ViroNode position={position}>
                 <Viro3DObject
-                    source={{uri: product.ar_asset_url}}
+                    source={{ uri: product.ar_asset_url }}
                     type="GLB"
                     position={[0, -0.19, -0.2]}
                     scale={scale}
@@ -189,47 +192,71 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+<SafeAreaView style={styles.container}>
             <ScrollView>
-                <Image
-                    source={{ uri: product.image_urls[1] }}
-                    style={styles.productImage}
-                    resizeMode="cover"
-                />
+                {/* Header Section with Product Image */}
+                <Animatable.View animation="fadeIn" duration={1000} style={styles.headerContainer}>
+                    <Image
+                        source={{ uri: product.image_urls[1] }}
+                        style={styles.productImage}
+                        resizeMode="cover"
+                    />
+                    <View style={styles.productInfoOverlay}>
+                        <Text style={styles.productTitle}>{product.name}</Text>
+                        <View style={styles.productMetaContainer}>
+                            <View style={styles.ratingContainer}>
+                                <FontAwesomeIcon icon={faStar} color='#FDD700' size={16} />
+                                <Text style={styles.ratingText}>
+                                    {product.rating || 'N/A'} ({product.reviewCount || 0} reviews)
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                </Animatable.View>
 
+                {/* Product Details Section */}
                 <View style={styles.detailsContainer}>
-                    <Text style={styles.productTitle}>{product.name}</Text>
-                    {/* <Text style={styles.productPrice}>₱{product.price?.toFixed(2)}</Text> */}
+                    {/* Pricing and Stock Info */}
+                    <View style={styles.pricingContainer}>
+                        <View style={styles.priceRow}>
+                            <FontAwesomeIcon icon={faTag} color='#FDD700' size={20} />
+                            <Text style={styles.priceText}>₱{product.price?.toFixed(2)}</Text>
+                        </View>
+                        <View style={styles.stockRow}>
+                            <FontAwesomeIcon icon={faBox} color='#FDD700' size={20} />
+                            <Text style={styles.stockText}>
+                                {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                            </Text>
+                        </View>
+                    </View>
 
-                    <TouchableOpacity style={styles.arButton} onPress={() => setShowAR(true)}>
+                    {/* AR Button */}
+                    <TouchableOpacity
+                        style={styles.arButton}
+                        onPress={() => navigation.navigate('ARView', { product })}
+                    >
                         <FontAwesomeIcon icon={faCameraRetro} color='white' size={24} />
                         <Text style={styles.arButtonText}>View in AR</Text>
                     </TouchableOpacity>
 
+                    {/* Product Description */}
                     <Text style={styles.sectionTitle}>Description</Text>
                     <Text style={styles.productDescription}>{product.description}</Text>
 
+                    {/* Disclaimer */}
+                    <View style={styles.disclaimerContainer}>
+                        <Text style={styles.disclaimerText}>
+                            Note: This app is for product showcase purposes only.
+                            Products cannot be purchased through this application.
+                        </Text>
+                    </View>
+
+                    {/* Shop Location */}
                     <Text style={styles.sectionTitle}>Shop Location</Text>
                     <TouchableOpacity style={styles.locationContainer} onPress={openMaps}>
                         <FontAwesomeIcon icon={faLocation} color='#FDD700' size={24} />
                         <Text style={styles.locationText}>{product.address}</Text>
                     </TouchableOpacity>
-
-                    {/* <Text style={styles.sectionTitle}>Product Details</Text>
-                    <View style={styles.detailsGrid}>
-                        <View style={styles.detailItem}>
-                            <FontAwesomeIcon icon={faCaretDown} color='#FDD700' size={24} />
-                            <Text style={styles.detailText}>Type: {product.sku}</Text>
-                        </View>
-                        <View style={styles.detailItem}>
-                            <FontAwesomeIcon icon={faWeightScale} color='#FDD700' size={20} />
-                            <Text style={styles.detailText}>Weight: {product.color}</Text>
-                        </View>
-                        <View style={styles.detailItem}>
-                            <FontAwesomeIcon icon={faRuler} color='#FDD700' size={24} />
-                            <Text style={styles.detailText}>Dimensions: {product.dimensions}</Text>
-                        </View>
-                    </View> */}
                 </View>
             </ScrollView>
         </SafeAreaView>

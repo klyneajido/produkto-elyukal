@@ -7,101 +7,154 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFF',
-        position: 'relative', 
+        position: 'relative',
+    },
+
+    headerContainer: {
+        position: 'relative',
+        marginBottom: 20,
     },
 
     productImage: {
         width: '100%',
-        height: width * 0.75, 
-        resizeMode: 'cover', 
+        height: width * 0.75,
+        resizeMode: 'cover',
     },
 
-    detailsContainer: {
+    productInfoOverlay: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
         padding: 15,
-        paddingBottom: 80, 
     },
 
     productTitle: {
         fontSize: 24,
         fontFamily: 'OpenSans-Bold',
-        marginBottom: 10,
-        color: '#333', 
-    },
-    
-    productPrice: {
-        fontSize: 20,
-        color: '#FDD700',
-        fontFamily: 'OpenSans-Regular',
-        marginBottom: 15,
-        fontWeight: '600', // Semi-bold for emphasis
+        color: '#FFF',
+        marginBottom: 5,
     },
 
-    // Enhanced AR Button with more interactive styling
+    productMetaContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    ratingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    ratingText: {
+        marginLeft: 5,
+        fontSize: 14,
+        color: '#FFF',
+    },
+
+    detailsContainer: {
+        padding: 20,
+        paddingBottom: 80,
+    },
+
+    pricingContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+    },
+
+    priceRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    priceText: {
+        fontSize: 22,
+        fontWeight: '600',
+        color: '#FDD700',
+        marginLeft: 10,
+    },
+
+    stockRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    stockText: {
+        fontSize: 16,
+        color: '#666',
+        marginLeft: 10,
+    },
+
     arButton: {
         flexDirection: 'row',
-        marginVertical: 15,
-        padding: 12,
-        backgroundColor: '#FDD700',
-        borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000', // Added shadow for depth
+        backgroundColor: '#FDD700',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 20,
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.2,
         shadowRadius: 4,
-        elevation: 3, // For Android shadow
+        elevation: 5,
     },
 
     arButtonText: {
         color: '#FFF',
-        fontSize: 16,
+        fontSize: 18,
+        fontWeight: '600',
         marginLeft: 10,
-        fontWeight: '500', // Medium weight
-        fontFamily: 'OpenSans-Regular',
     },
 
-    // Section title with more visual hierarchy
     sectionTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontFamily: 'OpenSans-Bold',
-        marginTop: 20,
-        marginBottom: 10,
         color: '#333',
-        borderBottomWidth: 1,
-        borderBottomColor: '#E0E0E0',
+        marginBottom: 10,
+        borderBottomWidth: 2,
+        borderBottomColor: '#FDD700',
         paddingBottom: 5,
     },
 
-    // Improved description readability
     productDescription: {
         fontSize: 16,
         color: '#444',
         lineHeight: 24,
-        textAlign: 'justify', // More even text distribution
-        fontFamily: 'OpenSans-Regular',
+        textAlign: 'justify',
+        marginBottom: 20,
     },
 
-    // Location container with enhanced visual design
+    disclaimerContainer: {
+        backgroundColor: '#F8F8F8',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 20,
+    },
+
+    disclaimerText: {
+        fontSize: 14,
+        color: '#666',
+        textAlign: 'center',
+    },
+
     locationContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F0F0F0',
-        padding: 12,
-        borderRadius: 8,
-        marginVertical: 10,
-        borderLeftWidth: 4,
-        borderLeftColor: '#FDD700', // Accent border
+        backgroundColor: '#F8F8F8',
+        padding: 15,
+        borderRadius: 10,
     },
 
     locationText: {
-        marginLeft: 10,
         fontSize: 16,
-        color: '#FDD700',
-        flex: 1, // Allow text to take available space
-        fontFamily: 'OpenSans-Regular',
+        color: '#333',
+        marginLeft: 10,
+        flex: 1,
     },
 
-    // Details grid with improved layout and spacing
     detailsGrid: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -115,24 +168,23 @@ const styles = StyleSheet.create({
         backgroundColor: '#F0F0F0',
         padding: 10,
         borderRadius: 8,
-        width: '48%', // Slightly less than half to allow for spacing
+        width: '48%',
         marginBottom: 10,
-        shadowColor: '#000', // Subtle shadow for depth
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
         shadowRadius: 2,
-        elevation: 1, // For Android
+        elevation: 1,
     },
 
     detailText: {
         marginLeft: 10,
         fontSize: 14,
-        flex: 1, // Allow text to expand
+        flex: 1,
         color: '#666',
         fontFamily: 'OpenSans-Regular',
     },
 
-    // Improved close button with more modern design
     closeButton: {
         position: 'absolute',
         bottom: 20,
@@ -142,11 +194,11 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         flexDirection: 'row',
         alignItems: 'center',
-        shadowColor: '#000', // Added shadow for prominence
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
-        elevation: 5, // For Android
+        elevation: 5,
     },
 
     closeButtonText: {
@@ -156,20 +208,21 @@ const styles = StyleSheet.create({
         fontFamily: 'OpenSans-Regular',
     },
 
-    // New responsive text styles
     responsiveText: {
-        fontSize: width > 375 ? 16 : 14, // Adjust font size for smaller screens
+        fontSize: width > 375 ? 16 : 14,
     },
+
     arButtonsContainer: {
-    position: 'absolute',
-    bottom: 20,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 20,
-},
- cameraButton: {
+        position: 'absolute',
+        bottom: 20,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 20,
+    },
+
+    cameraButton: {
         width: 70,
         height: 70,
         borderRadius: 35,
@@ -180,6 +233,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20,
     },
+
     cameraButtonInner: {
         width: 60,
         height: 60,
@@ -187,6 +241,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+
     cameraButtonInnerCircle: {
         width: 56,
         height: 56,

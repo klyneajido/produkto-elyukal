@@ -46,7 +46,7 @@ const ProductList = () => {
   return (
     <View style={styles.productGrid}>
       {products.map((product) => (
-        <TouchableOpacity style={styles.card}
+        <TouchableOpacity key={product.id} style={styles.card}
         onPress={() => navigation.navigate('ProductDetails', { product })}>
           <Image
             style={styles.productImage}
