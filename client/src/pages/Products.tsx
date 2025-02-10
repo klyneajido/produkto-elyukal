@@ -23,7 +23,8 @@ import {
   faStar,
   faTimes
 } from '@fortawesome/free-solid-svg-icons';
-import {COLORS} from '../assets/constants/constant'
+import { COLORS } from '../assets/constants/constant'
+import ProductList from '../components/ProductList';
 
 interface ProductsProps {
   navigation: {
@@ -271,36 +272,7 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
         </Modal>
 
         <ScrollView style={styles.productContainer} showsVerticalScrollIndicator={false}>
-          <View style={styles.productGrid}>
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <TouchableOpacity
-                  key={product.id}
-                  style={styles.card}
-                  onPress={() => navigation.navigate('ProductDetails', { product })}
-                >
-                  <Image source={product.image} style={styles.productImage} />
-                  <View style={styles.cardTextContainer}>
-                    <Text style={styles.cardText}>{product.name}</Text>
-                    <Text style={styles.cardTextLocation}>{product.shopLocation}</Text>
-                    <View style={styles.starContainer}>
-                      <FontAwesomeIcon
-                        icon={faStar}
-                        size={15}
-                        style={styles.star}
-                      />
-                      <Text style={styles.starText}>{product.rating}</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              ))
-            ) : (
-              <View style={styles.noResultsContainer}>
-                <Text style={styles.noResultsText}>No products found</Text>
-                <Text style={styles.noResultsSubtext}>Try adjusting your search or filters</Text>
-              </View>
-            )}
-          </View>
+          <ProductList/>
         </ScrollView>
       </View>
     </SafeAreaView>

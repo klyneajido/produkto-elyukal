@@ -189,9 +189,7 @@ const Home: React.FC = () => {
 
           {/* Products Section */}
           <View style={styles.productContainer}>
-           
               <ProductList />
-         
           </View>
 
           {/* Events Section */}
