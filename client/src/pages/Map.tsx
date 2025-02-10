@@ -8,14 +8,18 @@ import {
     Dimensions,
     PermissionsAndroid,
     Platform,
+    Linking,
     Modal,
-    Alert
+    Alert,
+    TextInput,
+    ScrollView
 } from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faMap, faSatelliteDish, faDirections } from '@fortawesome/free-solid-svg-icons';
+import { faMap, faSatelliteDish, faDirections, faClock, faRoad, faLocationDot, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import styles from '../assets/style/mapStyle';
 import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
+
 
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoia2x5bmVhamlkbyIsImEiOiJjbTYzb2J0cmsxNWR5MmxyMHFzdHJkazl1In0.zxp6GI9_XeY0s1gxpwB4lg';
 MapboxGL.setAccessToken(MAPBOX_ACCESS_TOKEN);
@@ -31,14 +35,30 @@ interface Store {
     image: any;
 }
 
+interface RouteInfo {
+    geometry: any;
+    duration: number;
+    distance: number;
+}
+
 const MapView = () => {
     const [selectedStore, setSelectedStore] = useState<Store | null>(null);
     const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/streets-v11');
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-    const [route, setRoute] = useState<any>(null);
+    const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
     const [showPermissionModal, setShowPermissionModal] = useState(false);
+    const [isLocationPermissionGranted, setIsLocationPermissionGranted] = useState(false);
+    const [showLocationError, setShowLocationError] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredStores, setFilteredStores] = useState<Store[]>([]);
+    const [showSearchResults, setShowSearchResults] = useState(false);
+    const [showSearchBar, setShowSearchBar] = useState(false);
     const mapRef = useRef(null);
+    const cameraRef = useRef<MapboxGL.Camera>(null);
+    const searchInputRef = useRef<TextInput>(null);
     const locationRef = useRef<MapboxGL.Location | null>(null);
+    const pendingStoreRef = useRef<Store | null>(null);
+    const [isLocationEnabled, setIsLocationEnabled] = useState(false);
 
     const storeLocations: Store[] = [
         {
@@ -74,10 +94,48 @@ const MapView = () => {
         heading: 0
     };
 
+    
+
+    const fetchRoute = async (destination: [number, number]) => {
+        if (!userLocation || !isLocationPermissionGranted) return;
+
+        try {
+            const response = await directionsClient.getDirections({
+                waypoints: [
+                    { coordinates: userLocation },
+                    { coordinates: destination }
+                ],
+                profile: 'driving',
+                geometries: 'geojson'
+            }).send();
+
+            if (response?.body?.routes?.[0]) {
+                const route = response.body.routes[0];
+                setRouteInfo({
+                    geometry: route.geometry,
+                    duration: route.duration,
+                    distance: route.distance
+                });
+            }
+        } catch (error) {
+            console.error('Route fetching error', error);
+        }
+    };
+
+    const checkLocationServices = async () => {
+        try {
+            return userLocation !== null && isLocationPermissionGranted;
+        } catch (err) {
+            console.warn('Error checking location services:', err);
+            return false;
+        }
+    };
+
     const requestLocationPermission = async () => {
         try {
             if (Platform.OS === 'ios') {
                 const granted = await MapboxGL.requestAndroidPermissions();
+                setIsLocationPermissionGranted(granted);
                 return granted;
             } else {
                 const granted = await PermissionsAndroid.request(
@@ -91,64 +149,110 @@ const MapView = () => {
                         buttonPositive: "OK"
                     }
                 );
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
+                const isGranted = granted === PermissionsAndroid.RESULTS.GRANTED;
+                setIsLocationPermissionGranted(isGranted);
+                return isGranted;
             }
         } catch (err) {
-            console.warn(err);
+            console.warn('Error requesting location permission:', err);
+            setIsLocationPermissionGranted(false);
             return false;
         }
     };
 
-    const fetchRoute = async (destination: [number, number]) => {
-        if (!userLocation) return;
-
-        try {
-            const response = await directionsClient.getDirections({
-                waypoints: [
-                    { coordinates: userLocation },
-                    { coordinates: destination }
-                ],
-                profile: 'driving',
-                geometries: 'geojson'
-            }).send();
-
-            if (response?.body?.routes?.[0]) {
-                setRoute(response.body.routes[0].geometry);
-            }
-        } catch (error) {
-            console.error('Route fetching error', error);
-        }
-    };
-
     const handleLocationUpdate = (location: MapboxGL.Location) => {
-        locationRef.current = location;
-        const { coords } = location;
-        setUserLocation([coords.longitude, coords.latitude]);
+        if (location && location.coords) {
+            locationRef.current = location;
+            const { coords } = location;
+            setUserLocation([coords.longitude, coords.latitude]);
+            setIsLocationEnabled(true);
+            setShowLocationError(false);
+        }
     };
 
     const handleStoreSelect = useCallback((store: Store) => {
         setSelectedStore(store);
-        setRoute(null);
+        setRouteInfo(null);
+        setShowSearchResults(false);
+        setSearchQuery('');
+        
+        // Zoom in to the selected store
+        if (cameraRef.current) {
+            cameraRef.current.setCamera({
+                centerCoordinate: store.coordinate,
+                zoomLevel: 16,
+                animationDuration: 1000,
+            });
+        }
     }, []);
 
-    const handleNavigatePress = () => {
+    const handleSearch = (text: string) => {
+        setSearchQuery(text);
+        if (text.trim() === '') {
+            setFilteredStores([]);
+            setShowSearchResults(false);
+            return;
+        }
+
+        const filtered = storeLocations.filter(store => 
+            store.name.toLowerCase().includes(text.toLowerCase())
+        );
+        setFilteredStores(filtered);
+        setShowSearchResults(true);
+    };
+
+    const handleSearchButtonPress = () => {
+        setShowSearchBar(true);
+        setTimeout(() => {
+            searchInputRef.current?.focus();
+        }, 100);
+    };
+
+    const handleCloseSearch = () => {
+        setShowSearchBar(false);
+        setShowSearchResults(false);
+        setSearchQuery('');
+        setFilteredStores([]);
+    };
+
+    useEffect(() => {
+        const checkInitialPermission = async () => {
+            if (Platform.OS === 'android') {
+                try {
+                    const result = await PermissionsAndroid.check(
+                        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+                    );
+                    setIsLocationPermissionGranted(result);
+                } catch (err) {
+                    console.warn('Error checking initial permission:', err);
+                }
+            }
+        };
+        checkInitialPermission();
+    }, []);
+
+    const handleNavigatePress = async () => {
+        if (!selectedStore) return;
+
+        // Always show permission modal first when navigate is pressed
         setShowPermissionModal(true);
     };
 
     const handlePermissionResponse = async (granted: boolean) => {
         setShowPermissionModal(false);
+
         if (granted) {
             const hasPermission = await requestLocationPermission();
             if (hasPermission) {
-                if (selectedStore && userLocation) {
-                    fetchRoute(selectedStore.coordinate);
+                setIsLocationPermissionGranted(true);
+                if (userLocation && selectedStore) {
+                    await fetchRoute(selectedStore.coordinate);
                 } else {
-                    Alert.alert(
-                        "Location Unavailable",
-                        "Please make sure your location services are enabled."
-                    );
+                    setShowLocationError(true);
                 }
             }
+        } else {
+            setIsLocationPermissionGranted(false);
         }
     };
 
@@ -208,6 +312,39 @@ const MapView = () => {
         </Modal>
     );
 
+    const renderLocationErrorModal = () => {
+        if (!showLocationError) return null;
+
+        return (
+            <View style={styles.locationErrorModal}>
+                <View style={styles.locationErrorContent}>
+                    <TouchableOpacity
+                        style={styles.locationErrorCloseButton}
+                        onPress={() => setShowLocationError(false)}
+                    >
+                        <Text style={styles.locationErrorCloseText}>×</Text>
+                    </TouchableOpacity>
+                    <View style={styles.locationErrorIcon}>
+                        <FontAwesomeIcon icon={faLocationDot} size={28} color="#FFF" />
+                    </View>
+                    <Text style={styles.locationErrorTitle}>Location Services Disabled</Text>
+                    <Text style={styles.locationErrorMessage}>
+                        Please enable location services in your device settings to use navigation features and see your current location on the map.
+                    </Text>
+                    <TouchableOpacity
+                        style={styles.locationErrorButton}
+                        onPress={() => {
+                            Linking.openSettings();
+                            setShowLocationError(false);
+                        }}
+                    >
+                        <Text style={styles.locationErrorButtonText}>Open Settings</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    };
+
     const renderStoreOverlay = () => {
         if (!selectedStore) return null;
 
@@ -217,7 +354,7 @@ const MapView = () => {
                     style={styles.closeButton}
                     onPress={() => {
                         setSelectedStore(null);
-                        setRoute(null);
+                        // setRouteInfo(null);
                     }}
                 >
                     <Text style={styles.closeButtonText}>×</Text>
@@ -232,6 +369,22 @@ const MapView = () => {
                 <Text style={styles.overlayRating}>
                     Rating: {selectedStore.rating.toFixed(1)} ★
                 </Text>
+                {routeInfo && (
+                    <View style={styles.routeInfoContainer}>
+                        <View style={styles.routeInfoItem}>
+                            <FontAwesomeIcon icon={faClock} size={20} color="#333" />
+                            <Text style={styles.routeInfoText}>
+                                {`${Math.round(routeInfo.duration / 60)} mins`}
+                            </Text>
+                        </View>
+                        <View style={styles.routeInfoItem}>
+                            <FontAwesomeIcon icon={faRoad} size={20} color="#333" />
+                            <Text style={styles.routeInfoText}>
+                                {`${(routeInfo.distance / 1000).toFixed(1)} km`}
+                            </Text>
+                        </View>
+                    </View>
+                )}
                 <TouchableOpacity
                     style={styles.navigateButton}
                     onPress={handleNavigatePress}
@@ -251,7 +404,7 @@ const MapView = () => {
                 styleURL={mapStyle}
                 onPress={() => {
                     setSelectedStore(null);
-                    setRoute(null);
+                    setShowSearchResults(false);
                 }}
             >
                 <MapboxGL.UserLocation
@@ -260,18 +413,19 @@ const MapView = () => {
                 />
 
                 <MapboxGL.Camera
+                    ref={cameraRef}
                     zoomLevel={12}
                     centerCoordinate={selectedStore?.coordinate || initialCamera.centerCoordinate}
                 />
 
                 {renderAnnotations()}
 
-                {route && (
+                {routeInfo && (
                     <MapboxGL.ShapeSource
                         id="route"
                         shape={{
                             type: 'Feature',
-                            geometry: route
+                            geometry: routeInfo.geometry
                         }}
                     >
                         <MapboxGL.LineLayer
@@ -286,6 +440,64 @@ const MapView = () => {
                 )}
             </MapboxGL.MapView>
 
+            {/* Search Button or Search Bar */}
+            {!showSearchBar ? (
+                <TouchableOpacity
+                    style={styles.searchButton}
+                    onPress={handleSearchButtonPress}
+                >
+                    <FontAwesomeIcon
+                        icon={faSearch}
+                        size={24}
+                        color="#fff"
+                    />
+                </TouchableOpacity>
+            ) : (
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        ref={searchInputRef}
+                        style={styles.searchInput}
+                        placeholder="Search stores..."
+                        value={searchQuery}
+                        onChangeText={handleSearch}
+                        onFocus={() => {
+                            if (searchQuery.trim() !== '') {
+                                setShowSearchResults(true);
+                            }
+                        }}
+                    />
+                    <TouchableOpacity
+                        style={styles.searchCloseButton}
+                        onPress={handleCloseSearch}
+                    >
+                        <FontAwesomeIcon
+                            icon={faTimes}
+                            size={24}
+                            color="#666"
+                        />
+                    </TouchableOpacity>
+                </View>
+            )}
+
+            {/* Search Results */}
+            {showSearchResults && filteredStores.length > 0 && (
+                <ScrollView style={styles.searchResults}>
+                    {filteredStores.map((store, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            style={[
+                                styles.searchResultItem,
+                                index === filteredStores.length - 1 && { borderBottomWidth: 0 }
+                            ]}
+                            onPress={() => handleStoreSelect(store)}
+                        >
+                            <Text style={styles.searchResultText}>{store.name}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            )}
+
+            {/* Satellite Toggle */}
             <TouchableOpacity
                 style={styles.controlButton}
                 onPress={() => setMapStyle(current =>
@@ -301,8 +513,9 @@ const MapView = () => {
                 />
             </TouchableOpacity>
 
-            {renderPermissionModal()}
             {renderStoreOverlay()}
+            {renderLocationErrorModal()}
+            {renderPermissionModal()}
         </SafeAreaView>
     );
 };
