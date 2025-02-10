@@ -4,6 +4,9 @@ import axios from "axios"
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { COLORS, FONTS } from '../assets/constants/constant';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../../types/types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 // Define the Product type
 interface Product {
@@ -24,6 +27,7 @@ interface Product {
 
 
 const ProductList = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'ProductDetails'>>();
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState('');
   useEffect(() => {
@@ -42,10 +46,11 @@ const ProductList = () => {
   return (
     <View style={styles.productGrid}>
       {products.map((product) => (
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity style={styles.card}
+        onPress={() => navigation.navigate('ProductDetails', { product })}>
           <Image
             style={styles.productImage}
-            source={require('../assets/img/handcraft.png')}
+            source={{uri: product.image_urls[0]}}
           />
           <View style={styles.cardContent}>
             <Text style={styles.cardText}>{product.name}</Text>
@@ -54,7 +59,7 @@ const ProductList = () => {
               <FontAwesomeIcon
                 icon={faStar}
                 size={15}
-                style={styles.star}
+                style={styles.star} 
               />
               <Text style={styles.starText}>{product.rating}</Text>
             </View>

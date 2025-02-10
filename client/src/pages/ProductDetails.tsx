@@ -192,14 +192,14 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
         <SafeAreaView style={styles.container}>
             <ScrollView>
                 <Image
-                    source={product.image}
+                    source={{uri: product.image_urls[1]}}
                     style={styles.productImage}
                     resizeMode="cover"
                 />
 
                 <View style={styles.detailsContainer}>
                     <Text style={styles.productTitle}>{product.name}</Text>
-                    <Text style={styles.productPrice}>₱{product.price?.toFixed(2)}</Text>
+                    {/* <Text style={styles.productPrice}>₱{product.price?.toFixed(2)}</Text> */}
 
                     <TouchableOpacity style={styles.arButton} onPress={() => setShowAR(true)}>
                         <FontAwesomeIcon icon={faCameraRetro} color='white' size={24} />
@@ -212,10 +212,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                     <Text style={styles.sectionTitle}>Shop Location</Text>
                     <TouchableOpacity style={styles.locationContainer} onPress={openMaps}>
                         <FontAwesomeIcon icon={faLocation} color='#FDD700' size={24} />
-                        <Text style={styles.locationText}>{product.shopLocation}</Text>
+                        <Text style={styles.locationText}>{product.address}</Text>
                     </TouchableOpacity>
 
-                    <Text style={styles.sectionTitle}>Product Details</Text>
+                    {/* <Text style={styles.sectionTitle}>Product Details</Text>
                     <View style={styles.detailsGrid}>
                         <View style={styles.detailItem}>
                             <FontAwesomeIcon icon={faCaretDown} color='#FDD700' size={24} />
@@ -229,7 +229,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                             <FontAwesomeIcon icon={faRuler} color='#FDD700' size={24} />
                             <Text style={styles.detailText}>Dimensions: {product.dimensions}</Text>
                         </View>
-                    </View>
+                    </View> */}
                 </View>
             </ScrollView>
         </SafeAreaView>

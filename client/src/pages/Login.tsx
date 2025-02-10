@@ -92,32 +92,32 @@ const LoginScreen: React.FC = () => {
         navigation.navigate('ForgotPassword');
     };
 
-    useEffect(() => {
-        const checkAuthStatus = async () => {
-            const token = await AsyncStorage.getItem("token");
-            if (token) {
-              try {
-                // Validate token via your backend
-                const response = await axios.get("http://192.168.1.24:8000/auth/validate", {
-                  headers: { Authorization: `Bearer ${token}` },
-                });
-                if (response.data.valid) {
-                  const profile = await getUserProfile();
-                  setUser(profile);
-                  navigation.navigate("Tabs");
-                }
-              } catch (error) {
-                await AsyncStorage.removeItem("token");
-                navigation.navigate("Login");
-              }
-            } else {
-              navigation.navigate("Login");
-            }
-          };
-        if (!user) {
-            checkAuthStatus();
-        }
-    }, [setUser, navigation, user]);
+    // useEffect(() => {
+    //     const checkAuthStatus = async () => {
+    //         const token = await AsyncStorage.getItem("token");
+    //         if (token) {
+    //           try {
+    //             // Validate token via your backend
+    //             const response = await axios.get("http://192.168.1.24:8000/auth/validate", {
+    //               headers: { Authorization: `Bearer ${token}` },
+    //             });
+    //             if (response.data.valid) {
+    //               const profile = await getUserProfile();
+    //               setUser(profile);
+    //               navigation.navigate("Tabs");
+    //             }
+    //           } catch (error) {
+    //             await AsyncStorage.removeItem("token");
+    //             navigation.navigate("Login");
+    //           }
+    //         } else {
+    //           navigation.navigate("Login");
+    //         }
+    //       };
+    //     if (!user) {
+    //         checkAuthStatus();
+    //     }
+    // }, [setUser, navigation, user]);
     
 
     return (
