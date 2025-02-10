@@ -76,7 +76,7 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, scene
             <ViroAmbientLight color="#FFFFFF" intensity={1000} />
             <ViroNode position={position}>
                 <Viro3DObject
-                    source={product.model3d}
+                    source={{uri: product.ar_asset_url}}
                     type="GLB"
                     position={[0, -0.19, -0.2]}
                     scale={scale}
@@ -192,7 +192,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
         <SafeAreaView style={styles.container}>
             <ScrollView>
                 <Image
-                    source={{uri: product.image_urls[1]}}
+                    source={{ uri: product.image_urls[1] }}
                     style={styles.productImage}
                     resizeMode="cover"
                 />
