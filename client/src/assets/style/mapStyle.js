@@ -92,14 +92,16 @@ const styles = StyleSheet.create({
         color: '#666',
         fontFamily: 'OpenSans-Regular',
     },
-    controlButton: {
+    controlsContainer: {
         position: 'absolute',
         top: 20,
         right: 20,
-        backgroundColor: '#007AFF',
-        borderRadius: 30,
-        width: 50,
-        height: 50,
+        zIndex: 1,
+    },
+    controlButton: {
+        borderRadius: 20,
+        width: 40,
+        height: 40,
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: '#000',
@@ -112,24 +114,16 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     searchButton: {
-        position: 'absolute',
-        top: 20,
-        right: 80,
-        backgroundColor: '#007AFF',
-        borderRadius: 30,
-        width: 50,
-        height: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        zIndex: 1,
+        backgroundColor: '#4A90E2', // Blue
+    },
+    satelliteButton: {
+        backgroundColor: '#50C878', // Emerald Green
+    },
+    filterButton: {
+        backgroundColor: '#9B59B6', // Purple
+    },
+    clearRouteButton: {
+        backgroundColor: '#E74C3C', // Red
     },
     searchContainer: {
         position: 'absolute',
@@ -386,6 +380,61 @@ const styles = StyleSheet.create({
         fontSize: 24,
         color: '#999',
         fontWeight: '400',
+    },
+    filterContainer: {
+        backgroundColor: 'white',
+        padding: 15,
+        borderRadius: 10,
+        width: '80%',
+        maxWidth: 300,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    filterButton: {
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 5,
+        marginVertical: 5,
+        backgroundColor: '#f0f0f0',
+    },
+    filterButtonSelected: {
+        backgroundColor: '#007AFF',
+    },
+    filterButtonText: {
+        fontSize: 16,
+        color: '#333',
+        textAlign: 'center',
+    },
+    filterButtonTextSelected: {
+        color: '#fff',
+    },
+    clearRouteContainer: {
+        position: 'absolute',
+        top: 20,
+        left: 20,
+        zIndex: 1,
+    },
+    clearRouteButton: {
+        backgroundColor: '#E74C3C', // Red
+        borderRadius: 20,
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
 });
 export default styles;
