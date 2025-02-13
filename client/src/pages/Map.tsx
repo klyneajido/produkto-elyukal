@@ -532,7 +532,7 @@ const MapView = () => {
                 <TouchableOpacity
                     style={[styles.controlButton, styles.filterButton, { marginTop: 10 }]}
                     onPress={() => setShowFilter(!showFilter)}>
-                    <FontAwesomeIcon icon={faFilter} size={16} color="#fff" />
+                    <FontAwesomeIcon icon={faFilter} size={16} color="#808080" />
                 </TouchableOpacity>
 
                 {/* Clear Route Button - only show when route is visible */}

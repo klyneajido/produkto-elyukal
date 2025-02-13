@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#50C878', // Emerald Green
     },
     filterButton: {
-        backgroundColor: '#9B59B6', // Purple
+        backgroundColor: '#9B59B6', 
     },
     clearRouteButton: {
         backgroundColor: '#E74C3C', // Red
