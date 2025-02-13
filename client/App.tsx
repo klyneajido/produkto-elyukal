@@ -12,6 +12,7 @@
   import TestEnv from './TestEnv';
   import ForgotPassword from './src/pages/ForgotPassword';
   import AuthProvider from './contextAuth';
+  import EventDetails from './src/pages/EventDetails';
 
   const Stack = createNativeStackNavigator();
 
@@ -56,6 +57,11 @@
                 component={TestEnv}
                 options={{ headerShown: false }}
               />{/* Remove spaces */}
+              <Stack.Screen
+                name="EventDetails"
+                component={EventDetails}
+                options={{ headerShown: false }}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         </AuthProvider>

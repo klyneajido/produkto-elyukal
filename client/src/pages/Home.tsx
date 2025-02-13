@@ -218,9 +218,14 @@ const Home: React.FC = () => {
                       </View>
                     </View>
                     <View style={styles.eventBottomRowLarge}>
-                      <TouchableOpacity style={styles.eventButtonLarge}>
-                        <Text style={styles.eventButtonTextLarge}>View Details</Text>
-                      </TouchableOpacity>
+                      <View style={styles.eventBottomRowLarge}>
+                        <TouchableOpacity
+                          style={styles.eventButtonLarge}
+                          onPress={() => navigation.navigate('EventDetails', { event })}
+                        >
+                          <Text style={styles.eventButtonTextLarge}>View Details</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
                 </TouchableOpacity>
