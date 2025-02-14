@@ -11,8 +11,8 @@ import {
 import styles from '../assets/style/homeStyle.js';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'; // Correct FontAwesome import
-import { faCalendar, faMapMarkedAlt, faStar, faTicketAlt, faSliders } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'; 
+import { faCalendar, faMapMarkedAlt, faStar, faTicketAlt, faSliders, faClock } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../contextAuth.tsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -27,44 +27,49 @@ interface User {
 const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { user } = useAuth();
-  console.log("Home component auth context:", user);
-  // const [storedData, setStoredData] = useState<string |null>(null);
-  const [text, onChangeText] = useState<string>('');
-
-  // useEffect(()=>{
-  //   const getData= async () =>{
-  //     try{
-  //       const value = await AsyncStorage.getItem('token')
-  //       if(value !== null){
-  //         setStoredData(value);
-  //         console.log("DATA: ",value);
-  //       }
-  //     }
-  //     catch (e){
-  //       console.log("Error Failed to fetch value data")
-  //     }
-  //   };
-  //   getData();
-
-  // },[]);
-
+  const [searchText, setSearchText] = useState<string>('');
 
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem("token");
       if (!token) {
-        // Redirect to login if no token
         navigation.navigate("Login");
       }
     };
     checkAuth();
   }, []);
 
-  //Discover scroll component
   const [activeIndex, setActiveIndex] = useState(0);
-  const items = ["Discover", "Rosario", "Sto. Tomas", "Agoo", "Aringay", "Caba", "Bauang", "San Fernando City", "San Juan", "Bacnotan", "Santol", "San Gabriel", "Bangar", "Sudipen"];
+  const locations = [
+    "Discover",
+    "Rosario",
+    "Sto. Tomas",
+    "Agoo",
+    "Aringay",
+    "Caba",
+    "Bauang",
+    "San Fernando City",
+    "San Juan",
+    "Bacnotan",
+    "Santol",
+    "San Gabriel",
+    "Bangar",
+    "Sudipen"
+  ];
 
-  // random events (mock up)
+  const categories = [
+    { name: 'Handcraft', icon: require('../assets/img/handcraft.png') },
+    { name: 'Furniture', icon: require('../assets/img/furniture.jpg') },
+    { name: 'Food', icon: require('../assets/img/food.jpg') },
+    { name: 'Pottery', icon: require('../assets/img/pottery.jpg') },
+  ];
+
+  const stats = [
+    { number: '1,200+', label: 'Artisans' },
+    { number: '50+', label: 'Communities' },
+    { number: '5,000+', label: 'Products' },
+  ];
+
   const events = [
     {
       id: 1,
@@ -73,7 +78,6 @@ const Home: React.FC = () => {
       location: 'Bacnotan Town Center',
       date: 'May 15, 2024',
       time: '10:00 AM - 6:00 PM',
-      price: 'Free Entry',
       image: require('../assets/img/events/craft-fair.jpg'),
       category: 'Handcraft'
     },
@@ -84,7 +88,6 @@ const Home: React.FC = () => {
       location: 'San Fernando Plaza',
       date: 'June 20, 2024',
       time: '12:00 PM - 9:00 PM',
-      price: 'Php 250',
       image: require('../assets/img/events/culinary-arts.png'),
       category: 'Food'
     },
@@ -95,59 +98,83 @@ const Home: React.FC = () => {
       location: 'Aringay Community Hall',
       date: 'July 5, 2024',
       time: '2:00 PM - 5:00 PM',
-      price: 'Php 500',
       image: require('../assets/img/events/pottery.jpg'),
       category: 'Pottery'
     }
   ];
-  // const { email, first_name, last_name } = user?.profile;
+
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
+          {/* Top Section with Search */}
           <View style={styles.topContainer}>
-            {/* Search Bar */}
             <View style={styles.searchBarContainer}>
               <TextInput
                 style={styles.searchBar}
-                onChangeText={onChangeText}
-                value={text}
-                placeholder="Enter Text..."
-                placeholderTextColor="#CCCCCC"
+                onChangeText={setSearchText}
+                value={searchText}
+                placeholder="Search products, events, or artisans..."
+                placeholderTextColor="#999"
               />
               <TouchableOpacity style={styles.filterButton}>
-                <FontAwesomeIcon icon={faSliders} size={20} color="#CCCCCC" />
+                <FontAwesomeIcon icon={faSliders} size={22} color="#FFF" />
               </TouchableOpacity>
             </View>
-            {/* <View>
-              <Text>Welcome, {first_name} {last_name}</Text>
-              <Text>Email: {email}</Text>
-            </View> */}
 
-            {/* Horizontal Circles */}
-            <ScrollView showsHorizontalScrollIndicator={false} horizontal style={styles.circleContainer}>
+            {/* Categories */}
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false} 
+              style={styles.circleContainer}
+            >
               <View style={styles.circleWrapper}>
-                <TouchableOpacity style={styles.circleSubContainer}>
-                  <Image style={styles.image} source={require('../assets/img/handcraft.png')} />
-                  <Text style={styles.text}>Handcraft</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.circleSubContainer}>
-                  <Image style={styles.image} source={require('../assets/img/furniture.jpg')} />
-                  <Text style={styles.text}>Furniture</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.circleSubContainer}>
-                  <Image style={styles.image} source={require('../assets/img/food.jpg')} />
-                  <Text style={styles.text}>Food</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.circleSubContainer}>
-                  <Image style={styles.image} source={require('../assets/img/pottery.jpg')} />
-                  <Text style={styles.text}>Pottery</Text>
-                </TouchableOpacity>
+                {categories.map((category, index) => (
+                  <TouchableOpacity 
+                    key={index} 
+                    style={styles.circleSubContainer}
+                    onPress={() => {/* Handle category selection */}}
+                  >
+                    <Image style={styles.image} source={category.icon} />
+                    <Text style={styles.text}>{category.name}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
             </ScrollView>
           </View>
 
+          {/* Welcome Section */}
+          <View style={styles.welcomeSection}>
+            <Text style={styles.welcomeTitle}>Discover Local Artistry</Text>
+            <Text style={styles.welcomeSubtitle}>
+              Explore the rich cultural heritage of La Union through its finest handcrafted products and talented artisans. Each piece tells a unique story of tradition and innovation.
+            </Text>
+          </View>
+
+          {/* Stats Section */}
+          <View style={styles.highlightBox}>
+            <Text style={styles.highlightTitle}>Our Growing Community</Text>
+            <Text style={styles.highlightText}>
+              Join our thriving marketplace where tradition meets innovation. We connect local artisans with global audiences, preserving cultural heritage while fostering economic growth.
+            </Text>
+            <View style={styles.statsContainer}>
+              {stats.map((stat, index) => (
+                <View key={index} style={styles.statItem}>
+                  <Text style={styles.statNumber}>{stat.number}</Text>
+                  <Text style={styles.statLabel}>{stat.label}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
           {/* Featured Section */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderTitle}>Featured Collections</Text>
+            <TouchableOpacity>
+              <Text style={styles.sectionHeaderLink}>View All</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.featuredContainer}>
             <View style={styles.square1}>
               <Image style={styles.featureImage} source={require('../assets/img/final.jpg')} />
@@ -169,62 +196,92 @@ const Home: React.FC = () => {
             </View>
           </View>
 
-          {/* Discover Section */}
-          <View style={styles.divider}></View>
-          <ScrollView showsHorizontalScrollIndicator={false} horizontal style={styles.discoverContainer}>
-            <View style={styles.discoverWrapper}>
-              {items.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => setActiveIndex(index)}
-                  style={[styles.discoverText, activeIndex === index && styles.activeDiscoverText]}
+          {/* Location Selector */}
+          <View style={styles.divider} />
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderTitle}>Explore by Location</Text>
+          </View>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            style={styles.discoverContainer}
+          >
+            {locations.map((location, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => setActiveIndex(index)}
+                style={[
+                  styles.discoverText,
+                  activeIndex === index && styles.activeDiscoverText
+                ]}
+              >
+                <Text 
+                  style={[
+                    styles.discoverText,
+                    activeIndex === index && { opacity: 1 }
+                  ]}
                 >
-                  <Text style={styles.discoverText}>{item}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+                  {location}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </ScrollView>
 
-
-
           {/* Products Section */}
-          <View style={styles.productContainer}>
-              <ProductList />
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderTitle}>Popular Products</Text>
+            <TouchableOpacity>
+              <Text style={styles.sectionHeaderLink}>See All</Text>
+            </TouchableOpacity>
           </View>
+          <View style={styles.productContainer}>
+            <ProductList />
+          </View>
+
 
           {/* Events Section */}
           <View style={styles.eventsContainer}>
-            <View style={styles.divider}></View>
-            <Text style={styles.sectionTitle}>Upcoming Events</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.divider} />
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionHeaderTitle}>Upcoming Events</Text>
+              <TouchableOpacity>
+                <Text style={styles.sectionHeaderLink}>View Calendar</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingRight: 20 }}
+            >
               {events.map((event) => (
-                <TouchableOpacity key={event.id} style={styles.eventCardLarge}>
+                <TouchableOpacity 
+                  key={event.id}
+                  style={styles.eventCardLarge}
+                  onPress={() => navigation.navigate('EventDetails', { event })}
+                >
                   <Image source={event.image} style={styles.eventImageLarge} />
                   <View style={styles.eventOverlay}>
                     <Text style={styles.eventCategory}>{event.category}</Text>
                   </View>
                   <View style={styles.eventDetailsLarge}>
-                    <Text style={styles.eventNameLarge}>{event.name}</Text>
-                    <Text style={styles.eventDescriptionLarge}>{event.description}</Text>
-
-                    <View style={styles.eventInfoRowLarge}>
-                      <View style={styles.eventInfoItemLarge}>
-                        <FontAwesomeIcon icon={faCalendar} size={14} color="#ffd700" />
-                        <Text style={styles.eventInfoTextLarge}>{event.date}</Text>
-                      </View>
-                      <View style={styles.eventInfoItemLarge}>
-                        <FontAwesomeIcon icon={faMapMarkedAlt} size={14} color="#ffd700" />
-                        <Text style={styles.eventInfoTextLarge}>{event.location}</Text>
-                      </View>
+                    <View>
+                      <Text style={styles.eventNameLarge}>{event.name}</Text>
+                      <Text style={styles.eventDescriptionLarge} numberOfLines={2}>
+                        {event.description}
+                      </Text>
                     </View>
-                    <View style={styles.eventBottomRowLarge}>
-                      <View style={styles.eventBottomRowLarge}>
-                        <TouchableOpacity
-                          style={styles.eventButtonLarge}
-                          onPress={() => navigation.navigate('EventDetails', { event })}
-                        >
-                          <Text style={styles.eventButtonTextLarge}>View Details</Text>
-                        </TouchableOpacity>
+                    <View style={styles.eventMetaContainer}>
+                      <View style={styles.eventMetaItem}>
+                        <FontAwesomeIcon icon={faCalendar} size={16} color="#666" />
+                        <Text style={styles.eventMetaText}>{event.date}</Text>
+                      </View>
+                      <View style={styles.eventMetaItem}>
+                        <FontAwesomeIcon icon={faClock} size={16} color="#666" />
+                        <Text style={styles.eventMetaText}>{event.time}</Text>
+                      </View>
+                      <View style={styles.eventMetaItem}>
+                        <FontAwesomeIcon icon={faMapMarkedAlt} size={16} color="#666" />
+                        <Text style={styles.eventMetaText}>{event.location}</Text>
                       </View>
                     </View>
                   </View>
