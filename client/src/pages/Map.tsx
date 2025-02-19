@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faMap, faSatelliteDish, faDirections, faClock, faRoad, faLocationDot, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faMap, faSatelliteDish, faDirections, faClock, faRoad, faLocationDot, faSearch, faTimes, faFilter } from '@fortawesome/free-solid-svg-icons';
 import styles from '../assets/style/mapStyle';
 import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
 
@@ -53,6 +53,8 @@ const MapView = () => {
     const [filteredStores, setFilteredStores] = useState<Store[]>([]);
     const [showSearchResults, setShowSearchResults] = useState(false);
     const [showSearchBar, setShowSearchBar] = useState(false);
+    const [showFilter, setShowFilter] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
     const mapRef = useRef(null);
     const cameraRef = useRef<MapboxGL.Camera>(null);
     const searchInputRef = useRef<TextInput>(null);
@@ -94,7 +96,7 @@ const MapView = () => {
         heading: 0
     };
 
-    
+    const storeTypes = ["All", "Traditional", "Wine Store", "Artisan Store"];
 
     const fetchRoute = async (destination: [number, number]) => {
         if (!userLocation || !isLocationPermissionGranted) return;
@@ -170,35 +172,102 @@ const MapView = () => {
         }
     };
 
-    const handleStoreSelect = useCallback((store: Store) => {
+    const handleStorePress = (store: Store) => {
         setSelectedStore(store);
+        // Clear route info when selecting a new store
         setRouteInfo(null);
-        setShowSearchResults(false);
-        setSearchQuery('');
+        // Zoom to store with animation
+        cameraRef.current?.setCamera({
+            centerCoordinate: store.coordinate,
+            zoomLevel: 15,
+            animationDuration: 1000,
+        });
+    };
+
+    const handleNavigatePress = async () => {
+        if (!selectedStore) return;
         
-        // Zoom in to the selected store
-        if (cameraRef.current) {
-            cameraRef.current.setCamera({
-                centerCoordinate: store.coordinate,
-                zoomLevel: 16,
-                animationDuration: 1000,
-            });
+        // Always show permission modal first when navigate is pressed
+        setShowPermissionModal(true);
+    };
+
+    const handlePermissionResponse = async (granted: boolean) => {
+        setShowPermissionModal(false);
+
+        if (granted) {
+            setIsLocationPermissionGranted(true);
+            if (userLocation && selectedStore) {
+                try {
+                    const response = await directionsClient.getDirections({
+                        profile: 'driving',
+                        geometries: 'geojson',
+                        waypoints: [
+                            { coordinates: userLocation },
+                            { coordinates: selectedStore.coordinate }
+                        ]
+                    }).send();
+
+                    if (response.body.routes.length > 0) {
+                        const route = response.body.routes[0];
+                        setRouteInfo({
+                            geometry: route.geometry,
+                            duration: route.duration,
+                            distance: route.distance
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching route:', error);
+                    Alert.alert('Error', 'Unable to fetch route. Please try again.');
+                }
+            } else {
+                setShowLocationError(true);
+            }
+        } else {
+            setIsLocationPermissionGranted(false);
+            setShowLocationError(true);
         }
-    }, []);
+    };
+
+    const handleCloseOverlay = () => {
+        setSelectedStore(null);
+        // Don't clear route info when closing overlay
+    };
+
+    const clearRoute = () => {
+        setRouteInfo(null);
+    };
 
     const handleSearch = (text: string) => {
         setSearchQuery(text);
-        if (text.trim() === '') {
-            setFilteredStores([]);
+        if (!text.trim()) {
+            // If search is empty, show all stores or respect current filter
+            if (selectedFilter && selectedFilter !== "All") {
+                setFilteredStores(storeLocations.filter(store => store.type === selectedFilter));
+            } else {
+                setFilteredStores(storeLocations);
+            }
             setShowSearchResults(false);
             return;
         }
 
-        const filtered = storeLocations.filter(store => 
-            store.name.toLowerCase().includes(text.toLowerCase())
+        const results = storeLocations.filter(store =>
+            store.name.toLowerCase().includes(text.toLowerCase()) ||
+            store.type.toLowerCase().includes(text.toLowerCase())
         );
-        setFilteredStores(filtered);
+        setFilteredStores(results);
         setShowSearchResults(true);
+    };
+
+    const clearSearch = () => {
+        setSearchQuery('');
+        // Show all stores or respect current filter when clearing search
+        if (selectedFilter && selectedFilter !== "All") {
+            setFilteredStores(storeLocations.filter(store => store.type === selectedFilter));
+        } else {
+            setFilteredStores(storeLocations);
+        }
+        setShowSearchResults(false);
+        setShowSearchBar(false);
     };
 
     const handleSearchButtonPress = () => {
@@ -214,6 +283,36 @@ const MapView = () => {
         setSearchQuery('');
         setFilteredStores([]);
     };
+
+    const filterStores = (type: string | null) => {
+        if (!type || type === "All") {
+            setFilteredStores(storeLocations);
+        } else {
+            setFilteredStores(storeLocations.filter(store => store.type === type));
+        }
+        setSelectedFilter(type);
+        setShowFilter(false);
+    };
+
+    const toggleMapStyle = () => {
+        setMapStyle(current =>
+            current === 'mapbox://styles/mapbox/streets-v11'
+                ? 'mapbox://styles/mapbox/satellite-streets-v11'
+                : 'mapbox://styles/mapbox/streets-v11'
+        );
+    };
+
+    useEffect(() => {
+        setFilteredStores(storeLocations);
+    }, []);
+
+    useEffect(() => {
+        if (selectedFilter && selectedFilter !== "All") {
+            setFilteredStores(storeLocations.filter(store => store.type === selectedFilter));
+        } else {
+            setFilteredStores(storeLocations);
+        }
+    }, [selectedFilter]);
 
     useEffect(() => {
         const checkInitialPermission = async () => {
@@ -231,41 +330,16 @@ const MapView = () => {
         checkInitialPermission();
     }, []);
 
-    const handleNavigatePress = async () => {
-        if (!selectedStore) return;
-
-        // Always show permission modal first when navigate is pressed
-        setShowPermissionModal(true);
-    };
-
-    const handlePermissionResponse = async (granted: boolean) => {
-        setShowPermissionModal(false);
-
-        if (granted) {
-            const hasPermission = await requestLocationPermission();
-            if (hasPermission) {
-                setIsLocationPermissionGranted(true);
-                if (userLocation && selectedStore) {
-                    await fetchRoute(selectedStore.coordinate);
-                } else {
-                    setShowLocationError(true);
-                }
-            }
-        } else {
-            setIsLocationPermissionGranted(false);
-        }
-    };
-
     const renderAnnotations = () => (
-        storeLocations.map((store) => (
+        filteredStores.map((store) => (
             <MapboxGL.MarkerView
                 key={store.id}
                 coordinate={store.coordinate}
-                onPress={() => handleStoreSelect(store)}
+                anchor={{ x: 0.5, y: 0.5 }}
             >
                 <TouchableOpacity
-                    onPress={() => handleStoreSelect(store)}
                     style={styles.annotationContainer}
+                    onPress={() => handleStorePress(store)}
                 >
                     <View style={styles.labelContainer}>
                         <Text style={styles.labelText}>{store.name}</Text>
@@ -352,10 +426,7 @@ const MapView = () => {
             <View style={styles.overlay}>
                 <TouchableOpacity
                     style={styles.closeButton}
-                    onPress={() => {
-                        setSelectedStore(null);
-                        // setRouteInfo(null);
-                    }}
+                    onPress={handleCloseOverlay}
                 >
                     <Text style={styles.closeButtonText}>×</Text>
                 </TouchableOpacity>
@@ -415,7 +486,7 @@ const MapView = () => {
                 <MapboxGL.Camera
                     ref={cameraRef}
                     zoomLevel={12}
-                    centerCoordinate={selectedStore?.coordinate || initialCamera.centerCoordinate}
+                    centerCoordinate={initialCamera.centerCoordinate}
                 />
 
                 {renderAnnotations()}
@@ -440,19 +511,42 @@ const MapView = () => {
                 )}
             </MapboxGL.MapView>
 
-            {/* Search Button or Search Bar */}
-            {!showSearchBar ? (
+            {/* Search, Theme, Filter, and Clear Route Controls */}
+            <View style={styles.controlsContainer}>
                 <TouchableOpacity
-                    style={styles.searchButton}
-                    onPress={handleSearchButtonPress}
-                >
+                    style={[styles.controlButton, styles.searchButton]}
+                    onPress={() => setShowSearchBar(!showSearchBar)}>
+                    <FontAwesomeIcon icon={faSearch} size={16} color="#fff" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[styles.controlButton, styles.satelliteButton, { marginTop: 10 }]}
+                    onPress={toggleMapStyle}>
                     <FontAwesomeIcon
-                        icon={faSearch}
-                        size={24}
+                        icon={mapStyle === 'mapbox://styles/mapbox/streets-v11' ? faMap : faSatelliteDish}
+                        size={16}
                         color="#fff"
                     />
                 </TouchableOpacity>
-            ) : (
+
+                <TouchableOpacity
+                    style={[styles.controlButton, styles.filterButton, { marginTop: 10 }]}
+                    onPress={() => setShowFilter(!showFilter)}>
+                    <FontAwesomeIcon icon={faFilter} size={16} color="#808080" />
+                </TouchableOpacity>
+
+                {/* Clear Route Button - only show when route is visible */}
+                {routeInfo && (
+                    <TouchableOpacity
+                        style={[styles.controlButton, styles.clearRouteButton, { marginTop: 10 }]}
+                        onPress={clearRoute}>
+                        <FontAwesomeIcon icon={faTimes} size={16} color="#fff" />
+                    </TouchableOpacity>
+                )}
+            </View>
+
+            {/* Search Bar */}
+            {showSearchBar && (
                 <View style={styles.searchContainer}>
                     <TextInput
                         ref={searchInputRef}
@@ -468,7 +562,7 @@ const MapView = () => {
                     />
                     <TouchableOpacity
                         style={styles.searchCloseButton}
-                        onPress={handleCloseSearch}
+                        onPress={clearSearch}
                     >
                         <FontAwesomeIcon
                             icon={faTimes}
@@ -489,7 +583,7 @@ const MapView = () => {
                                 styles.searchResultItem,
                                 index === filteredStores.length - 1 && { borderBottomWidth: 0 }
                             ]}
-                            onPress={() => handleStoreSelect(store)}
+                            onPress={() => handleStorePress(store)}
                         >
                             <Text style={styles.searchResultText}>{store.name}</Text>
                         </TouchableOpacity>
@@ -497,21 +591,34 @@ const MapView = () => {
                 </ScrollView>
             )}
 
-            {/* Satellite Toggle */}
-            <TouchableOpacity
-                style={styles.controlButton}
-                onPress={() => setMapStyle(current =>
-                    current === 'mapbox://styles/mapbox/streets-v11'
-                        ? 'mapbox://styles/mapbox/satellite-v9'
-                        : 'mapbox://styles/mapbox/streets-v11'
-                )}
-            >
-                <FontAwesomeIcon
-                    icon={mapStyle.includes('satellite') ? faMap : faSatelliteDish}
-                    size={24}
-                    color="#fff"
-                />
-            </TouchableOpacity>
+            {/* Filter Modal */}
+            <Modal
+                visible={showFilter}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setShowFilter(false)}>
+                <TouchableOpacity
+                    style={styles.modalOverlay}
+                    activeOpacity={1}
+                    onPress={() => setShowFilter(false)}>
+                    <View style={styles.filterContainer}>
+                        {storeTypes.map((type) => (
+                            <TouchableOpacity
+                                key={type}
+                                style={[
+                                    styles.filterButton,
+                                    selectedFilter === type && styles.filterButtonSelected
+                                ]}
+                                onPress={() => filterStores(type)}>
+                                <Text style={[
+                                    styles.filterButtonText,
+                                    selectedFilter === type && styles.filterButtonTextSelected
+                                ]}>{type}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </TouchableOpacity>
+            </Modal>
 
             {renderStoreOverlay()}
             {renderLocationErrorModal()}

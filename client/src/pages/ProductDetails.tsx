@@ -9,9 +9,16 @@ import {
     Linking,
     Platform,
     Alert,
+    ActivityIndicator
 } from 'react-native';
 import { ViroARSceneNavigator, ViroARScene } from '@viro-community/react-viro';
-import { Viro3DObject, ViroAmbientLight, ViroNode, ViroTrackingStateConstants } from '@viro-community/react-viro';
+import {
+    Viro3DObject,
+    ViroAmbientLight,
+    ViroNode,
+    ViroTrackingStateConstants,
+    ViroText
+} from '@viro-community/react-viro';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
     faCameraRetro,
@@ -21,12 +28,11 @@ import {
     faRuler,
     faCamera
 } from '@fortawesome/free-solid-svg-icons';
-import styles from '../assets/style/productDetailStyle';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { faLocationDot, faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
 import * as Animatable from 'react-native-animatable';
-
+import styles from '../assets/style/productDetailStyle';
 
 interface ProductARSceneProps {
     product: any;
@@ -46,7 +52,6 @@ interface ProductDetailsProps {
 
 const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, sceneNavigator, onTakePhoto }) => {
     const [isTracking, setIsTracking] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
     const [position] = useState<[number, number, number]>([0, 0, 0]);
     const [scale] = useState<[number, number, number]>([0.21, 0.21, 0.21]);
     const [rotation] = useState<[number, number, number]>([0, 0, 0]);
@@ -59,21 +64,6 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, scene
         }
     };
 
-    const onLoadStart = () => {
-        console.log("Started loading 3D model");
-        setIsLoading(true);
-    };
-
-    const onLoadEnd = () => {
-        console.log("Finished loading 3D model");
-        setIsLoading(false);
-    };
-
-    const onError = (event: any) => {
-        console.error("3D Object Loading Error:", event);
-        setIsLoading(false);
-    };
-
     return (
         <ViroARScene onTrackingUpdated={onInitialized}>
             <ViroAmbientLight color="#FFFFFF" intensity={1000} />
@@ -84,9 +74,7 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, scene
                     position={[0, -0.19, -0.2]}
                     scale={scale}
                     rotation={rotation}
-                    onError={onError}
-                    onLoadStart={onLoadStart}
-                    onLoadEnd={onLoadEnd}
+                    onError={(event) => console.error("3D Object Loading Error:", event)}
                 />
             </ViroNode>
         </ViroARScene>
@@ -102,6 +90,24 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
     const requestCameraPermission = async () => {
         try {
             const permission = Platform.select({
+                ios: PERMISSIONS.IOS.CAMERA,
+                android: PERMISSIONS.ANDROID.CAMERA,
+            });
+
+            if (permission) {
+                const result = await request(permission);
+                return result === 'granted';
+            }
+            return false;
+        } catch (err) {
+            console.error('Error requesting camera permission:', err);
+            return false;
+        }
+    };
+
+    const requestStoragePermission = async () => {
+        try {
+            const permission = Platform.select({
                 ios: PERMISSIONS.IOS.PHOTO_LIBRARY,
                 android: PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
             });
@@ -112,7 +118,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
             }
             return false;
         } catch (err) {
-            console.error('Error requesting permission:', err);
+            console.error('Error requesting storage permission:', err);
             return false;
         }
     };
@@ -120,15 +126,23 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
     const takePhoto = async () => {
         if (isTakingPhoto) return;
 
-        const hasPermission = await requestCameraPermission();
-        if (!hasPermission) {
-            Alert.alert('Permission Required', 'Please grant permission to save photos to your gallery.');
+        const hasCameraPermission = await requestCameraPermission();
+        const hasStoragePermission = await requestStoragePermission();
+
+        if (!hasCameraPermission || !hasStoragePermission) {
+            Alert.alert(
+                'Permission Required',
+                'Please grant camera and storage permissions to take and save photos.'
+            );
             return;
         }
 
         try {
             setIsTakingPhoto(true);
-            const photo = await arNavigatorRef.current?.arSceneNavigator?.takeScreenshot(`${product.name}_AR`, true);
+            const photo = await arNavigatorRef.current?.arSceneNavigator?.takeScreenshot(
+                `${product.name}_AR`,
+                true
+            );
 
             if (photo?.url) {
                 await CameraRoll.save(photo.url, {
@@ -146,7 +160,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
     };
 
     const openMaps = () => {
-        const address = encodeURIComponent(product.shopLocation);
+        const address = encodeURIComponent(product.address);
         const url = `https://www.google.com/maps/search/?api=1&query=${address}`;
         Linking.openURL(url);
     };
@@ -172,10 +186,15 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                     <TouchableOpacity
                         style={[styles.arButton, styles.cameraButton]}
                         onPress={takePhoto}
+                        disabled={isTakingPhoto}
                         activeOpacity={0.7}
                     >
                         <View style={styles.cameraButtonInner}>
-                            <View style={styles.cameraButtonInnerCircle} />
+                            {isTakingPhoto ? (
+                                <ActivityIndicator color="white" />
+                            ) : (
+                                <View style={styles.cameraButtonInnerCircle} />
+                            )}
                         </View>
                     </TouchableOpacity>
 
@@ -192,9 +211,8 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
     }
 
     return (
-<SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <ScrollView>
-                {/* Header Section with Product Image */}
                 <Animatable.View animation="fadeIn" duration={1000} style={styles.headerContainer}>
                     <Image
                         source={{ uri: product.image_urls[1] }}
@@ -214,9 +232,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                     </View>
                 </Animatable.View>
 
-                {/* Product Details Section */}
                 <View style={styles.detailsContainer}>
-                    {/* Pricing and Stock Info */}
                     <View style={styles.pricingContainer}>
                         <View style={styles.priceRow}>
                             <FontAwesomeIcon icon={faTag} color='#FDD700' size={20} />
@@ -230,20 +246,17 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                         </View>
                     </View>
 
-                    {/* AR Button */}
                     <TouchableOpacity
                         style={styles.arButton}
-                        onPress={() => navigation.navigate('ARView', { product })}
+                        onPress={() => setShowAR(true)}
                     >
                         <FontAwesomeIcon icon={faCameraRetro} color='white' size={24} />
                         <Text style={styles.arButtonText}>View in AR</Text>
                     </TouchableOpacity>
 
-                    {/* Product Description */}
                     <Text style={styles.sectionTitle}>Description</Text>
                     <Text style={styles.productDescription}>{product.description}</Text>
 
-                    {/* Disclaimer */}
                     <View style={styles.disclaimerContainer}>
                         <Text style={styles.disclaimerText}>
                             Note: This app is for product showcase purposes only.
@@ -251,7 +264,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                         </Text>
                     </View>
 
-                    {/* Shop Location */}
                     <Text style={styles.sectionTitle}>Shop Location</Text>
                     <TouchableOpacity style={styles.locationContainer} onPress={openMaps}>
                         <FontAwesomeIcon icon={faLocation} color='#FDD700' size={24} />

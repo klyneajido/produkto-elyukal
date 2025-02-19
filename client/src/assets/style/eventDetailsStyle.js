@@ -1,0 +1,163 @@
+import { StyleSheet, Dimensions } from 'react-native';
+import { COLORS, FONTS, FONT_SIZE } from '../constants/constant';
+
+const { width } = Dimensions.get('window');
+
+export default StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  imageContainer: {
+    height: 350,
+    position: 'relative',
+  },
+  headerImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  navbar: {
+    position: 'absolute',
+    top: 20,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    zIndex: 1,
+  },
+  navButton: {
+    width: 40,
+    height: 40,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+  },
+  navRight: {
+    flexDirection: 'row',
+  },
+  categoryBadge: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    backgroundColor: COLORS.secondary,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  categoryText: {
+    color: COLORS.black,
+    fontFamily: FONTS.semibold,
+    fontSize: FONT_SIZE.medium,
+  },
+  content: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+    marginTop: -20,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingHorizontal: 20,
+    paddingTop: 25,
+  },
+  title: {
+    fontSize: FONT_SIZE.extraLarge,
+    fontFamily: FONTS.bold,
+    color: COLORS.black,
+    marginBottom: 20,
+  },
+  keyInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.gray,
+    padding: 15,
+    borderRadius: 15,
+    marginBottom: 25,
+  },
+  infoItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  infoText: {
+    marginTop: 8,
+    color: COLORS.black,
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.regular,
+    textAlign: 'center',
+  },
+  highlightsSection: {
+    marginBottom: 25,
+  },
+  sectionTitle: {
+    fontSize: FONT_SIZE.large,
+    fontFamily: FONTS.semibold,
+    color: COLORS.black,
+    marginBottom: 15,
+  },
+  highlightsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginHorizontal: -5,
+  },
+  highlightCard: {
+    width: (width - 60) / 3,
+    backgroundColor: COLORS.gray,
+    borderRadius: 15,
+    padding: 15,
+    alignItems: 'center',
+    marginHorizontal: 5,
+    marginBottom: 10,
+  },
+  highlightTitle: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.semibold,
+    color: COLORS.black,
+    marginTop: 10,
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  highlightDescription: {
+    fontSize: FONT_SIZE.small,
+    fontFamily: FONTS.regular,
+    color: COLORS.black,
+    textAlign: 'center',
+  },
+  descriptionSection: {
+    marginBottom: 25,
+  },
+  descriptionText: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.regular,
+    lineHeight: 24,
+    color: COLORS.black,
+  },
+  communitySection: {
+    marginBottom: 30,
+    alignItems: 'center',
+  },
+  communityButton: {
+    backgroundColor: COLORS.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    elevation: 3,
+  },
+  communityButtonText: {
+    color: COLORS.white,
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.semibold,
+    marginLeft: 10,
+  },
+});
