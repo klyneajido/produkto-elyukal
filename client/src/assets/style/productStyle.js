@@ -35,6 +35,8 @@ searchIcon: {
 searchBar: {
   flex: 1,
   height: 40,
+  color:COLORS.black,
+  fontFamily:FONTS.regular,
 },
 filterButton: {
   marginLeft: 12,
