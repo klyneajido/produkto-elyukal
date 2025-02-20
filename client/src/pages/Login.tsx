@@ -19,11 +19,12 @@ import { COLORS } from '../assets/constants/constant';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from '../../contextAuth.tsx';
 
+
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
     const { setUser, user } = useAuth();  // Get the user context
-    const [email, setEmail] = useState(''); //hardcoded
-    const [password, setPassword] = useState(''); // hardcoded
+    const [email, setEmail] = useState('1@gmail.com'); //hardcoded
+    const [password, setPassword] = useState('123456'); // hardcoded
     const [error, setError] = useState(false);
 
     // Function to log in the user
@@ -34,7 +35,7 @@ const LoginScreen: React.FC = () => {
 
             const { access_token } = response.data;
             await AsyncStorage.setItem("token", access_token);
-            
+
             // Debugging: Log the token that is saved
             console.log("Token saved in AsyncStorage:", access_token);
 
@@ -84,6 +85,12 @@ const LoginScreen: React.FC = () => {
         }
     };
 
+    const { loginAsGuest } = useAuth();
+    const handleGuest = async () => {
+        loginAsGuest();
+        navigation.navigate("Tabs")
+        console.log(loginAsGuest())
+    }
     const handleSignup = () => {
         navigation.navigate('Signup');
     };
@@ -118,7 +125,7 @@ const LoginScreen: React.FC = () => {
     //         checkAuthStatus();
     //     }
     // }, [setUser, navigation, user]);
-    
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -168,6 +175,10 @@ const LoginScreen: React.FC = () => {
 
                     <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                         <Text style={styles.loginButtonText}>Login</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.loginButton} onPress={handleGuest}>
+                        <Text style={styles.loginButtonText}>Continue as Guest</Text>
                     </TouchableOpacity>
 
                     <View style={styles.loginContainer}>

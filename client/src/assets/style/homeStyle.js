@@ -74,11 +74,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: 85,
-    marginRight: 16,
+
   },
   image: {
-    width: 60,
-    height: 60,
+    width: 40,
+    height: 40,
     borderRadius: 30,
     backgroundColor: COLORS.white,
     borderWidth: 2,

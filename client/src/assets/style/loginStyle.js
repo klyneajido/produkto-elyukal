@@ -81,6 +81,10 @@ const loginSignupStyles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom:10,
+  },
+  continueGuest:{
+
   },
   signupButton: {
     backgroundColor: "#ffd700",

@@ -143,7 +143,6 @@ const Home: React.FC = () => {
               </View>
             </ScrollView>
           </View>
-
           {/* Welcome Section */}
           <View style={styles.welcomeSection}>
             <Text style={styles.welcomeTitle}>Discover Local Artistry</Text>

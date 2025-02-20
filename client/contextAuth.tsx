@@ -1,13 +1,18 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { User } from "@supabase/supabase-js"; // Import User type
-import { supabase } from "./supabaseClient"; // Import supabase client
+import { User } from "@supabase/supabase-js";
+import { supabase } from "./supabaseClient";
 
-// Define the shape of your context
-interface AuthContextType {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+interface GuestUser {
+  guest: boolean;
 }
+type UserType = User | GuestUser | null;
 
+interface AuthContextType {
+  user: UserType;
+  setUser: React.Dispatch<React.SetStateAction<UserType>>;
+  loading: boolean;
+  loginAsGuest: () => void;
+}
 const AuthContext = createContext<AuthContextType | null>(null);
 
 interface AuthProviderProps {
@@ -15,47 +20,63 @@ interface AuthProviderProps {
 }
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserType>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();  // Fetch session
-      console.log("Initial auth session:", { session, error });
+      setLoading(true);
 
-      if (session && session.user) {
-        setUser(session.user);  // Set user if session exists
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
+      console.log("🔵 Initial auth session:", { session, error });
+
+      if (session?.user) {
+        setUser(session.user);
+        console.log("✅ Logged in as User:", session.user);
       } else {
-        console.log("No session found.");
+        console.log("🚫 No session found.");
       }
+
+      setLoading(false);
     };
 
-    fetchSession(); // Fetch session on mount
+    fetchSession();
 
-    // Listen for auth state changes (login, logout, etc.)
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth state changed:", { event: _event, session });
+      console.log("🟡 Auth state changed:", { event: _event, session });
+
       if (session?.user) {
-        setUser(session.user); // Update user state if session contains a user
+        setUser(session.user);
+        console.log("✅ User mode activated:", session.user);
       } else {
-        setUser(null);  // Clear user state if session doesn't contain a user
-        console.log("User logged out.");
+        setUser(null);
+        console.log("🚫 User logged out.");
       }
     });
 
     return () => {
-      if (authListener?.subscription) {
-        authListener.subscription.unsubscribe();
-        console.log("Auth listener unsubscribed.");
-      }
+      authListener?.subscription.unsubscribe();
+      console.log("🔴 Auth listener unsubscribed.");
     };
   }, []);
 
+  // ✅ Log guest mode activation
+  const loginAsGuest = () => {
+    setUser({ guest: true });
+    console.log("🟢 Guest mode activated!");
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, loading, loginAsGuest }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
