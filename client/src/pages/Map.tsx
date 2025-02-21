@@ -124,43 +124,7 @@ const MapView = () => {
         }
     };
 
-    const checkLocationServices = async () => {
-        try {
-            return userLocation !== null && isLocationPermissionGranted;
-        } catch (err) {
-            console.warn('Error checking location services:', err);
-            return false;
-        }
-    };
-
-    const requestLocationPermission = async () => {
-        try {
-            if (Platform.OS === 'ios') {
-                const granted = await MapboxGL.requestAndroidPermissions();
-                setIsLocationPermissionGranted(granted);
-                return granted;
-            } else {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-                    {
-                        title: "PRODUKTO-ELYUKAL Location Permission",
-                        message: "PRODUKTO-ELYUKAL needs access to your location " +
-                            "to provide navigation services and show your position on the map.",
-                        buttonNeutral: "Ask Me Later",
-                        buttonNegative: "Cancel",
-                        buttonPositive: "OK"
-                    }
-                );
-                const isGranted = granted === PermissionsAndroid.RESULTS.GRANTED;
-                setIsLocationPermissionGranted(isGranted);
-                return isGranted;
-            }
-        } catch (err) {
-            console.warn('Error requesting location permission:', err);
-            setIsLocationPermissionGranted(false);
-            return false;
-        }
-    };
+    
 
     const handleLocationUpdate = (location: MapboxGL.Location) => {
         if (location && location.coords) {
