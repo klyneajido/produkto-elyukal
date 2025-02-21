@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     SafeAreaView,
     ScrollView,
@@ -30,10 +30,18 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { PERMISSIONS, request } from 'react-native-permissions';
-import { faLocationDot, faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
 import * as Animatable from 'react-native-animatable';
 import styles from '../assets/style/productDetailStyle';
+import axios from 'axios';
 
+interface Review {
+    id: number;
+    user_id: string;
+    review_text: string;
+    rating: number;
+    full_name: string;
+}
 interface ProductARSceneProps {
     product: any;
     onClose: () => void;
@@ -44,7 +52,22 @@ interface ProductARSceneProps {
 interface ProductDetailsProps {
     route: {
         params: {
-            product: any;
+            product: {
+                id: number;
+                name: string;
+                description: string;
+                category: string;
+                price: number;
+                location_name: string;
+                address: string;
+                latitude: string;
+                longitude: string;
+                ar_asset_url: string;
+                image_urls: string[];
+                in_stock: boolean;
+                rating: number;
+                reviews?: Review[];
+            };
         };
     };
     navigation: any;
@@ -86,6 +109,23 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
     const [isTakingPhoto, setIsTakingPhoto] = useState(false);
     const { product } = route.params;
     const arNavigatorRef = useRef(null);
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [loadingReviews, setLoadingReviews] = useState(true);
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const response = await axios.get(`http://192.168.1.24:8000/reviews/${product.id}`);
+                console.log(response.data);  // Check if this contains the expected array of reviews
+                setReviews(response.data);
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+            } finally {
+                setLoadingReviews(false);
+            }
+        };
+        fetchReviews();
+    }, [product.id]);
+
 
     const requestCameraPermission = async () => {
         try {
@@ -269,7 +309,33 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                         <FontAwesomeIcon icon={faLocation} color='#FDD700' size={24} />
                         <Text style={styles.locationText}>{product.address}</Text>
                     </TouchableOpacity>
+                    <View>
+    <Text style={styles.sectionTitle}>Reviews</Text>
+    {loadingReviews ? (
+        <ActivityIndicator size="small" color="#FDD700" />
+    ) : reviews.length > 0 ? (
+        reviews.map((review, index) => (
+            <View key={index} style={styles.reviewCard}>
+                <Text style={styles.reviewUsername}>{review.full_name}</Text>
+                <Text style={styles.reviewComment}>{review.review_text}</Text>
+                <View style={styles.starContainer}>
+                    {Array.from({ length: Math.floor(review.rating) }).map((_, i) => (
+                        <FontAwesomeIcon
+                            key={`${index}-${i}`}
+                            icon={faStar}
+                            size={12}
+                            color="#FDD700"
+                        />
+                    ))}
                 </View>
+            </View>
+        ))
+    ) : (
+        <Text>No reviews yet.</Text>
+    )}
+</View>
+                </View>
+
             </ScrollView>
         </SafeAreaView>
     );

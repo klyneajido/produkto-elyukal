@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
+import { COLORS } from "../constants/constant";
 
 const { width, height } = Dimensions.get('window');
 
@@ -258,6 +259,56 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
     },
+    reviewCard: {
+      padding: 10,
+      backgroundColor: "#f8f8f8",
+      borderRadius: 5,
+      marginVertical: 5,
+  },
+  reviewUsername: {
+      fontWeight: "bold",
+  },
+  reviewComment: {
+      marginVertical: 5,
+  },
+  starContainer: {
+      flexDirection: "row",
+  },    reviewCard: {
+    backgroundColor: 'white',
+    padding: 16,
+    marginVertical: 8,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+        width: 0,
+        height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+},
+reviewUsername: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color:COLORS.black,
+},
+reviewComment: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 8,
+     color:COLORS.black,
+},
+starContainer: {
+    flexDirection: 'row',
+    gap: 4,
+},
+noReviews: {
+    textAlign: 'center',
+    color: '#666',
+    marginTop: 16,
+}
+
 });
 
 export default styles;
