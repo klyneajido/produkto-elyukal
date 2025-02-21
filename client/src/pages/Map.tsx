@@ -1,25 +1,25 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
     TouchableOpacity,
     Text,
     SafeAreaView,
     Image,
-    Dimensions,
     PermissionsAndroid,
     Platform,
     Linking,
     Modal,
     Alert,
     TextInput,
-    ScrollView
+    ScrollView,
+    ActivityIndicator
 } from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faMap, faSatelliteDish, faDirections, faClock, faRoad, faLocationDot, faSearch, faTimes, faFilter } from '@fortawesome/free-solid-svg-icons';
 import styles from '../assets/style/mapStyle';
 import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
-
+import axios from 'axios';
 
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoia2x5bmVhamlkbyIsImEiOiJjbTYzb2J0cmsxNWR5MmxyMHFzdHJkazl1In0.zxp6GI9_XeY0s1gxpwB4lg';
 MapboxGL.setAccessToken(MAPBOX_ACCESS_TOKEN);
@@ -27,21 +27,27 @@ MapboxGL.setAccessToken(MAPBOX_ACCESS_TOKEN);
 const directionsClient = MapboxDirections({ accessToken: MAPBOX_ACCESS_TOKEN });
 
 interface Store {
-    id: string;
-    coordinate: [number, number];
+    store_id: string;
     name: string;
-    type: string;
+    description: string;
+    latitude: number;
+    longitude: number;
     rating: number;
-    image: any;
+    store_image: string | null;
+    type: string | null;
+    coordinate?: [number, number]; 
 }
 
-interface RouteInfo {
-    geometry: any;
-    duration: number;
-    distance: number;
-}
+// interface RouteInfo {
+//     geometry: any;
+//     duration: number;
+//     distance: number;
+// }
 
 const MapView = () => {
+    const [stores, setStores] = useState<Store[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [selectedStore, setSelectedStore] = useState<Store | null>(null);
     const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/streets-v11');
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
@@ -55,48 +61,89 @@ const MapView = () => {
     const [showSearchBar, setShowSearchBar] = useState(false);
     const [showFilter, setShowFilter] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+    const [storeTypes, setStoreTypes] = useState<string[]>(['All']);
+    const [isLocationEnabled, setIsLocationEnabled] = useState(false);
+
     const mapRef = useRef(null);
     const cameraRef = useRef<MapboxGL.Camera>(null);
     const searchInputRef = useRef<TextInput>(null);
     const locationRef = useRef<MapboxGL.Location | null>(null);
-    const pendingStoreRef = useRef<Store | null>(null);
-    const [isLocationEnabled, setIsLocationEnabled] = useState(false);
-
-    const storeLocations: Store[] = [
-        {
-            id: '1',
-            coordinate: [120.33591510283381, 16.668377634915878],
-            name: "Sukang Iloco Store",
-            type: "Traditional",
-            rating: 4.5,
-            image: require('../assets/img/events/culinary-arts.png')
-        },
-        {
-            id: '2',
-            coordinate: [120.3259, 16.6179],
-            name: "Vigan Basi Shop",
-            type: "Wine Store",
-            rating: 4.8,
-            image: require('../assets/img/events/pottery.jpg')
-        },
-        {
-            id: '3',
-            coordinate: [120.3159, 16.6139],
-            name: "Handcraft Center",
-            type: "Artisan Store",
-            rating: 4.2,
-            image: require('../assets/img/handcraft.png')
-        },
-    ];
 
     const initialCamera = {
-        centerCoordinate: [120.33591510283381, 16.668377634915878],
+        centerCoordinate: [120.33591510283381, 16.668377634915878], // Default center
         zoomLevel: 12,
         pitch: 0,
         heading: 0
     };
 
-    const storeTypes = ["All", "Traditional", "Wine Store", "Artisan Store"];
+    // Fetch stores from the API
+    const fetchStores = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`http://192.168.100.5:8000/stores/fetch_stores`);
+
+            if (response.data && response.data.length > 0) {
+                // Process stores to add coordinate property for compatibility
+                const processedStores = response.data.map((store: Store) => {
+                    // Validate coordinates
+                    if (
+                        Math.abs(store.latitude) > 90 ||
+                        Math.abs(store.longitude) > 180
+                    ) {
+                        console.error(`Invalid coordinates for store ${store.store_id}`);
+                        return null;
+                    }
+
+                    return {
+                        ...store,
+                        coordinate: [store.longitude, store.latitude] as [number, number]
+                    };
+                }).filter(Boolean); // Remove invalid stores
+
+                setStores(processedStores);
+                setFilteredStores(processedStores);
+
+                // Extract unique store types for filter
+                const types = ['All', ...new Set(processedStores
+                    .map((store: Store) => store.type)
+                    .filter((type: string | null): type is string => type !== null))];
+                setStoreTypes(types);
+
+                // Update initial camera to first store if available
+                if (processedStores.length > 0) {
+                    const firstStore = processedStores[0];
+                    cameraRef.current?.setCamera({
+                        centerCoordinate: [firstStore.longitude, firstStore.latitude],
+                        zoomLevel: 12,
+                        animationDuration: 0,
+                    });
+                }
+            }
+        } catch (err) {
+            console.error('Error fetching stores:', err);
+            setError('Failed to load store data. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchStores();
+        checkInitialPermission();
+    }, []);
+
+    const checkInitialPermission = async () => {
+        if (Platform.OS === 'android') {
+            try {
+                const result = await PermissionsAndroid.check(
+                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+                );
+                setIsLocationPermissionGranted(result);
+            } catch (err) {
+                console.warn('Error checking initial permission:', err);
+            }
+        }
+    };
 
     const fetchRoute = async (destination: [number, number]) => {
         if (!userLocation || !isLocationPermissionGranted) return;
@@ -121,10 +168,9 @@ const MapView = () => {
             }
         } catch (error) {
             console.error('Route fetching error', error);
+            Alert.alert('Error', 'Failed to fetch route information. Please try again.');
         }
     };
-
-    
 
     const handleLocationUpdate = (location: MapboxGL.Location) => {
         if (location && location.coords) {
@@ -138,20 +184,25 @@ const MapView = () => {
 
     const handleStorePress = (store: Store) => {
         setSelectedStore(store);
-        // Clear route info when selecting a new store
         setRouteInfo(null);
-        // Zoom to store with animation
-        cameraRef.current?.setCamera({
-            centerCoordinate: store.coordinate,
-            zoomLevel: 15,
-            animationDuration: 1000,
-        });
+
+        if (store.coordinate) {
+            cameraRef.current?.setCamera({
+                centerCoordinate: store.coordinate,
+                zoomLevel: 15,
+                animationDuration: 1000,
+            });
+        } else if (store.latitude && store.longitude) {
+            cameraRef.current?.setCamera({
+                centerCoordinate: [store.longitude, store.latitude],
+                zoomLevel: 15,
+                animationDuration: 1000,
+            });
+        }
     };
 
     const handleNavigatePress = async () => {
         if (!selectedStore) return;
-        
-        // Always show permission modal first when navigate is pressed
         setShowPermissionModal(true);
     };
 
@@ -162,12 +213,16 @@ const MapView = () => {
             setIsLocationPermissionGranted(true);
             if (userLocation && selectedStore) {
                 try {
+                    // Use coordinate if available, otherwise use lat/long
+                    const destination = selectedStore.coordinate ||
+                        [selectedStore.longitude, selectedStore.latitude];
+
                     const response = await directionsClient.getDirections({
                         profile: 'driving',
                         geometries: 'geojson',
                         waypoints: [
                             { coordinates: userLocation },
-                            { coordinates: selectedStore.coordinate }
+                            { coordinates: destination as [number, number] }
                         ]
                     }).send();
 
@@ -194,7 +249,6 @@ const MapView = () => {
 
     const handleCloseOverlay = () => {
         setSelectedStore(null);
-        // Don't clear route info when closing overlay
     };
 
     const clearRoute = () => {
@@ -204,19 +258,19 @@ const MapView = () => {
     const handleSearch = (text: string) => {
         setSearchQuery(text);
         if (!text.trim()) {
-            // If search is empty, show all stores or respect current filter
             if (selectedFilter && selectedFilter !== "All") {
-                setFilteredStores(storeLocations.filter(store => store.type === selectedFilter));
+                setFilteredStores(stores.filter(store => store.type === selectedFilter));
             } else {
-                setFilteredStores(storeLocations);
+                setFilteredStores(stores);
             }
             setShowSearchResults(false);
             return;
         }
 
-        const results = storeLocations.filter(store =>
+        const results = stores.filter(store =>
             store.name.toLowerCase().includes(text.toLowerCase()) ||
-            store.type.toLowerCase().includes(text.toLowerCase())
+            (store.type && store.type.toLowerCase().includes(text.toLowerCase())) ||
+            (store.description && store.description.toLowerCase().includes(text.toLowerCase()))
         );
         setFilteredStores(results);
         setShowSearchResults(true);
@@ -224,11 +278,10 @@ const MapView = () => {
 
     const clearSearch = () => {
         setSearchQuery('');
-        // Show all stores or respect current filter when clearing search
         if (selectedFilter && selectedFilter !== "All") {
-            setFilteredStores(storeLocations.filter(store => store.type === selectedFilter));
+            setFilteredStores(stores.filter(store => store.type === selectedFilter));
         } else {
-            setFilteredStores(storeLocations);
+            setFilteredStores(stores);
         }
         setShowSearchResults(false);
         setShowSearchBar(false);
@@ -241,18 +294,11 @@ const MapView = () => {
         }, 100);
     };
 
-    const handleCloseSearch = () => {
-        setShowSearchBar(false);
-        setShowSearchResults(false);
-        setSearchQuery('');
-        setFilteredStores([]);
-    };
-
     const filterStores = (type: string | null) => {
         if (!type || type === "All") {
-            setFilteredStores(storeLocations);
+            setFilteredStores(stores);
         } else {
-            setFilteredStores(storeLocations.filter(store => store.type === type));
+            setFilteredStores(stores.filter(store => store.type === type));
         }
         setSelectedFilter(type);
         setShowFilter(false);
@@ -266,56 +312,37 @@ const MapView = () => {
         );
     };
 
-    useEffect(() => {
-        setFilteredStores(storeLocations);
-    }, []);
-
-    useEffect(() => {
-        if (selectedFilter && selectedFilter !== "All") {
-            setFilteredStores(storeLocations.filter(store => store.type === selectedFilter));
-        } else {
-            setFilteredStores(storeLocations);
-        }
-    }, [selectedFilter]);
-
-    useEffect(() => {
-        const checkInitialPermission = async () => {
-            if (Platform.OS === 'android') {
-                try {
-                    const result = await PermissionsAndroid.check(
-                        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-                    );
-                    setIsLocationPermissionGranted(result);
-                } catch (err) {
-                    console.warn('Error checking initial permission:', err);
-                }
-            }
-        };
-        checkInitialPermission();
-    }, []);
-
     const renderAnnotations = () => (
-        filteredStores.map((store) => (
-            <MapboxGL.MarkerView
-                key={store.id}
-                coordinate={store.coordinate}
-                anchor={{ x: 0.5, y: 0.5 }}
-            >
-                <TouchableOpacity
-                    style={styles.annotationContainer}
-                    onPress={() => handleStorePress(store)}
+        filteredStores.map((store) => {
+            // Determine coordinate for marker
+            const coordinate = store.coordinate || [store.longitude, store.latitude];
+
+            return (
+                <MapboxGL.MarkerView
+                    key={store.store_id}
+                    coordinate={coordinate as [number, number]}
+                    anchor={{ x: 0.5, y: 0.5 }}
                 >
-                    <View style={styles.labelContainer}>
-                        <Text style={styles.labelText}>{store.name}</Text>
-                    </View>
-                    <Image
-                        source={store.image}
-                        style={styles.annotationImage}
-                        resizeMode="cover"
-                    />
-                </TouchableOpacity>
-            </MapboxGL.MarkerView>
-        ))
+                    <TouchableOpacity
+                        style={styles.annotationContainer}
+                        onPress={() => handleStorePress(store)}
+                    >
+                        <View style={styles.labelContainer}>
+                            <Text style={styles.labelText}>{store.name}</Text>
+                        </View>
+                        {store.store_image ? (
+                            <Image
+                                source={{ uri: store.store_image }}
+                                style={styles.annotationImage}
+                                resizeMode="cover"
+                            />
+                        ) : (
+                            <View style={[styles.annotationImage, { backgroundColor: '#ccc' }]} />
+                        )}
+                    </TouchableOpacity>
+                </MapboxGL.MarkerView>
+            );
+        })
     );
 
     const renderPermissionModal = () => (
@@ -386,6 +413,11 @@ const MapView = () => {
     const renderStoreOverlay = () => {
         if (!selectedStore) return null;
 
+        // Default image placeholder if store_image is null
+        const imageSource = selectedStore.store_image
+            ? { uri: selectedStore.store_image }
+            : require('../assets/img/events/culinary-arts.png'); // Make sure you have this placeholder image
+
         return (
             <View style={styles.overlay}>
                 <TouchableOpacity
@@ -395,12 +427,12 @@ const MapView = () => {
                     <Text style={styles.closeButtonText}>×</Text>
                 </TouchableOpacity>
                 <Image
-                    source={selectedStore.image}
+                    source={imageSource}
                     style={styles.overlayImage}
                     resizeMode="cover"
                 />
                 <Text style={styles.overlayTitle}>{selectedStore.name}</Text>
-                <Text style={styles.overlayType}>{selectedStore.type}</Text>
+                <Text style={styles.overlayType}>{selectedStore.type || 'General Store'}</Text>
                 <Text style={styles.overlayRating}>
                     Rating: {selectedStore.rating.toFixed(1)} ★
                 </Text>
@@ -431,6 +463,37 @@ const MapView = () => {
         );
     };
 
+    // Loading state
+    if (loading) {
+        return (
+            <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <ActivityIndicator size="large" color="#4A90E2" />
+                <Text style={{ marginTop: 10, fontSize: 16 }}>Loading stores...</Text>
+            </SafeAreaView>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
+                <Text style={{ fontSize: 18, color: '#E74C3C', marginBottom: 15 }}>Error</Text>
+                <Text style={{ fontSize: 16, textAlign: 'center' }}>{error}</Text>
+                <TouchableOpacity
+                    style={{
+                        marginTop: 20,
+                        backgroundColor: '#4A90E2',
+                        padding: 12,
+                        borderRadius: 8
+                    }}
+                    onPress={fetchStores}
+                >
+                    <Text style={{ color: '#fff', fontSize: 16 }}>Retry</Text>
+                </TouchableOpacity>
+            </SafeAreaView>
+        );
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <MapboxGL.MapView
@@ -449,7 +512,7 @@ const MapView = () => {
 
                 <MapboxGL.Camera
                     ref={cameraRef}
-                    zoomLevel={12}
+                    zoomLevel={initialCamera.zoomLevel}
                     centerCoordinate={initialCamera.centerCoordinate}
                 />
 
@@ -475,7 +538,7 @@ const MapView = () => {
                 )}
             </MapboxGL.MapView>
 
-            {/* Search, Theme, Filter, and Clear Route Controls */}
+            {/* Controls Container */}
             <View style={styles.controlsContainer}>
                 <TouchableOpacity
                     style={[styles.controlButton, styles.searchButton]}
@@ -496,7 +559,7 @@ const MapView = () => {
                 <TouchableOpacity
                     style={[styles.controlButton, styles.filterButton, { marginTop: 10 }]}
                     onPress={() => setShowFilter(!showFilter)}>
-                    <FontAwesomeIcon icon={faFilter} size={16} color="#808080" />
+                    <FontAwesomeIcon icon={faFilter} size={16} color="#fff" />
                 </TouchableOpacity>
 
                 {/* Clear Route Button - only show when route is visible */}
@@ -542,7 +605,7 @@ const MapView = () => {
                 <ScrollView style={styles.searchResults}>
                     {filteredStores.map((store, index) => (
                         <TouchableOpacity
-                            key={index}
+                            key={store.store_id}
                             style={[
                                 styles.searchResultItem,
                                 index === filteredStores.length - 1 && { borderBottomWidth: 0 }
