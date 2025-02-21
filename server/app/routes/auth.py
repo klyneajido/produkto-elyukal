@@ -6,7 +6,6 @@ from app.schemas.user import UserRegister, UserLogin
 from datetime import datetime, timedelta
 import bcrypt
 from app.core.config import settings
-from typing import Optional
 
 router = APIRouter()
 

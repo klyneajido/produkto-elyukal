@@ -13,6 +13,7 @@ interface AuthContextType {
   loading: boolean;
   loginAsGuest: () => void;
 }
+
 const AuthContext = createContext<AuthContextType | null>(null);
 
 interface AuthProviderProps {
