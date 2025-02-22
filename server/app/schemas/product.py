@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Union
+from uuid import UUID
 
 class Products(BaseModel):
     name:str
@@ -14,3 +15,4 @@ class Products(BaseModel):
     image_urls:List[str]
     in_stock:bool
     rating:float
+    store_id: Union[UUID, str]

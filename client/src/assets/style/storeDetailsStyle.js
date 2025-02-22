@@ -1,0 +1,223 @@
+import { StyleSheet, Dimensions } from 'react-native';
+import { COLORS, FONTS, FONT_SIZE } from '../constants/constant';
+const { width } = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#FFF',
+    },
+    headerContainer: {
+        position: 'relative',
+        marginBottom: 20,
+    },
+    storeImage: {
+        width: '100%',
+        height: 300,
+        resizeMode: 'cover',
+    },
+    placeholderImage: {
+        backgroundColor: '#F5F5F5',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    storeInfoOverlay: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        padding: 15,
+    },
+    storeTitle: {
+        fontSize: 24,
+        fontFamily: 'OpenSans-Bold',
+        color: '#FFF',
+        marginBottom: 5,
+    },
+    storeMetaContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 15,
+    },
+    ratingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    ratingText: {
+        marginLeft: 5,
+        fontSize: 14,
+        color: '#FFF',
+    },
+    typeContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    typeText: {
+        marginLeft: 5,
+        fontSize: 14,
+        color: '#FFF',
+    },
+    detailsContainer: {
+        padding: 20,
+    },
+    actionsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginBottom: 20,
+    },
+    actionButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FFF',
+        padding: 15,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    actionButtonText: {
+        color: '#333',
+        fontSize: 16,
+        fontWeight: '600',
+        marginLeft: 10,
+    },
+    sectionTitle: {
+        fontSize: 20,
+        fontFamily: 'OpenSans-Bold',
+        color: '#333',
+        marginBottom: 10,
+        borderBottomWidth: 2,
+        borderBottomColor: '#FDD700',
+        paddingBottom: 5,
+    },
+    storeDescription: {
+        fontSize: 16,
+        color: '#444',
+        lineHeight: 24,
+        textAlign: 'justify',
+        marginBottom: 20,
+    },
+    disclaimerContainer: {
+        backgroundColor: '#F8F8F8',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 20,
+    },
+    disclaimerText: {
+        fontSize: 14,
+        color: '#666',
+        textAlign: 'center',
+    },
+    locationContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F8F8F8',
+        padding: 15,
+        borderRadius: 10,
+    },
+    locationText: {
+        fontSize: 16,
+        color: '#333',
+        marginLeft: 10,
+        flex: 1,
+    },
+        productsContainer: {
+        marginTop: 10,
+    },
+    productCard: {
+        backgroundColor: '#FFF',
+        borderRadius: 12,
+        marginBottom: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        flexDirection: 'row',
+        overflow: 'hidden',
+    },
+    productImage: {
+        width: 130,
+        height: 130,
+        resizeMode: 'cover',
+    },
+    productInfo: {
+        flex: 1,
+        padding: 12,
+        justifyContent: 'space-between',
+    },
+    productName: {
+        fontSize: 16,
+        fontFamily: 'OpenSans-Bold',
+        color: '#333',
+        marginBottom: 4,
+    },
+    productCategory: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 8,
+    },
+    productMetaContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    priceContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    productPrice: {
+        fontSize: 16,
+        fontFamily: 'OpenSans-Bold',
+        color: COLORS.primary,
+        marginLeft: 4,
+    },
+    productRating: {
+        fontSize: 14,
+        color: '#666',
+        marginLeft: 4,
+    },
+    stockStatus: {
+        fontSize: 14,
+        fontFamily: 'OpenSans-SemiBold',
+    },
+    errorText: {
+        color: COLORS.error,
+        textAlign: 'center',
+        marginTop: 10,
+    },
+    noProductsText: {
+        color: '#666',
+        textAlign: 'center',
+        marginTop: 10,
+        fontStyle: 'italic',
+    },
+    emptyProductsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    marginTop: 10,
+},
+    emptyProductsText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#666',
+        textAlign: 'center',
+        fontFamily: 'OpenSans-Regular',
+    },
+    backButton: {
+        position: 'absolute',
+        top: 20,
+        left: 20,
+        zIndex: 10,
+        padding: 8,
+        borderRadius: 20,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+});
+
+export default styles;

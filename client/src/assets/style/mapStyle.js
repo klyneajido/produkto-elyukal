@@ -436,5 +436,31 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
     },
+    // Add these to your existing styles object
+viewDetailsButton: {
+    backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: '#2196F3',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+        width: 0,
+        height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
+},
+viewDetailsButtonText: {
+    color: '#2196F3',
+    fontSize: 16,
+    fontFamily: 'OpenSans-Bold',
+    textAlign: 'center',
+},
 });
 export default styles;

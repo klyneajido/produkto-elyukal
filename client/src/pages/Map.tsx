@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
     View,
     TouchableOpacity,
@@ -37,7 +39,12 @@ interface Store {
     type: string | null;
     coordinate?: [number, number]; 
 }
+type RootStackParamList = {
+    StoreDetails: { store: Store };
+    // Add other screen names and their params here
+};
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'StoreDetails'>;
 // interface RouteInfo {
 //     geometry: any;
 //     duration: number;
@@ -63,6 +70,7 @@ const MapView = () => {
     const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
     const [storeTypes, setStoreTypes] = useState<string[]>(['All']);
     const [isLocationEnabled, setIsLocationEnabled] = useState(false);
+    const navigation = useNavigation<NavigationProp>();
 
     const mapRef = useRef(null);
     const cameraRef = useRef<MapboxGL.Camera>(null);
@@ -186,15 +194,24 @@ const MapView = () => {
         setSelectedStore(store);
         setRouteInfo(null);
 
+
+        const verticalOffset = -0.003; // Adjust this value as needed for your specific map scale
+
         if (store.coordinate) {
             cameraRef.current?.setCamera({
-                centerCoordinate: store.coordinate,
+                centerCoordinate: [
+                    store.coordinate[0],
+                    store.coordinate[1] + verticalOffset
+                ],
                 zoomLevel: 15,
                 animationDuration: 1000,
             });
         } else if (store.latitude && store.longitude) {
             cameraRef.current?.setCamera({
-                centerCoordinate: [store.longitude, store.latitude],
+                centerCoordinate: [
+                    store.longitude,
+                    store.latitude + verticalOffset
+                ],
                 zoomLevel: 15,
                 animationDuration: 1000,
             });
@@ -452,6 +469,14 @@ const MapView = () => {
                         </View>
                     </View>
                 )}
+                <TouchableOpacity
+                    style={styles.viewDetailsButton}
+                    onPress={() => {
+                        navigation.navigate('StoreDetails', { store: selectedStore });
+                    }}
+                >
+                    <Text style={styles.viewDetailsButtonText}>View Store Details</Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.navigateButton}
                     onPress={handleNavigatePress}
