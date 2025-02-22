@@ -9,7 +9,9 @@ import {
     Linking,
     Platform,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
+    Button,
+    TextInput
 } from 'react-native';
 import { ViroARSceneNavigator, ViroARScene } from '@viro-community/react-viro';
 import {
@@ -34,6 +36,8 @@ import { faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
 import * as Animatable from 'react-native-animatable';
 import styles from '../assets/style/productDetailStyle';
 import axios from 'axios';
+import { useAuth } from '../../contextAuth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Review {
     id: number;
@@ -111,6 +115,11 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
     const arNavigatorRef = useRef(null);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loadingReviews, setLoadingReviews] = useState(true);
+    const [reviewText, setReviewText] = useState('');
+    const [rating, setRating] = useState(0);
+    const [submitting, setSubmitting] = useState(false);
+    const { user } = useAuth();
+
     useEffect(() => {
         const fetchReviews = async () => {
             try {
@@ -126,6 +135,54 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
         fetchReviews();
     }, [product.id]);
 
+    const submitReview = async () => {
+        if (!user || (user as any).guest) {
+            Alert.alert('Login Required', 'Please Log in as a Registered User to submit a Review');
+            return;
+        }
+        if (!reviewText || rating < 1 || rating > 5) {
+            Alert.alert('Invalid Input', 'Please provide a review and a rating between 1 and 5.');
+            return;
+        }
+        setSubmitting(true);
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+            console.log('Submitting with token:', token);
+            console.log('Payload:', { product_id: product.id, rating, review_text: reviewText });
+
+            const response = await axios.post(
+                'http://192.168.1.24:8000/reviews/',
+                {
+                    product_id: product.id,
+                    rating,
+                    review_text: reviewText
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            console.log('Response:', response.data);
+
+            // Refetch reviews instead of manually adding
+            const fetchResponse = await axios.get(`http://192.168.1.24:8000/reviews/${product.id}`);
+            setReviews(fetchResponse.data);
+
+            setReviewText('');
+            setRating(0);
+            Alert.alert('Success', 'Review submitted successfully!');
+        } catch (error: any) {
+            console.error('Error submitting review:', error.response?.data || error.message);
+            Alert.alert('Error', error.response?.data?.detail || 'Failed to submit review.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     const requestCameraPermission = async () => {
         try {
@@ -309,31 +366,62 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                         <FontAwesomeIcon icon={faLocation} color='#FDD700' size={24} />
                         <Text style={styles.locationText}>{product.address}</Text>
                     </TouchableOpacity>
+
                     <View>
-    <Text style={styles.sectionTitle}>Reviews</Text>
-    {loadingReviews ? (
-        <ActivityIndicator size="small" color="#FDD700" />
-    ) : reviews.length > 0 ? (
-        reviews.map((review, index) => (
-            <View key={index} style={styles.reviewCard}>
-                <Text style={styles.reviewUsername}>{review.full_name}</Text>
-                <Text style={styles.reviewComment}>{review.review_text}</Text>
-                <View style={styles.starContainer}>
-                    {Array.from({ length: Math.floor(review.rating) }).map((_, i) => (
-                        <FontAwesomeIcon
-                            key={`${index}-${i}`}
-                            icon={faStar}
-                            size={12}
-                            color="#FDD700"
-                        />
-                    ))}
-                </View>
-            </View>
-        ))
-    ) : (
-        <Text>No reviews yet.</Text>
-    )}
-</View>
+                        <Text style={styles.sectionTitle}>Reviews</Text>
+                        {loadingReviews ? (
+                            <ActivityIndicator size="small" color="#FDD700" />
+                        ) : reviews.length > 0 ? (
+                            reviews.map((review, index) => (
+                                <View key={index} style={styles.reviewCard}>
+                                    <Text style={styles.reviewUsername}>{review.full_name}</Text>
+                                    <Text style={styles.reviewComment}>{review.review_text}</Text>
+                                    <View style={styles.starContainer}>
+                                        {Array.from({ length: Math.floor(review.rating) }).map((_, i) => (
+                                            <FontAwesomeIcon
+                                                key={`${index}-${i}`}
+                                                icon={faStar}
+                                                size={12}
+                                                color="#FDD700"
+                                            />
+                                        ))}
+                                    </View>
+                                </View>
+                            ))
+                        ) : (
+                            <Text>No reviews yet.</Text>
+                        )}
+                    </View>
+                    {/* Review Submission Form */}
+                    {user && !(user as any).guest && (
+                        <View style={{ marginVertical: 16 }}>
+                            <Text style={styles.sectionTitle}>Add Your Review</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Write your review here..."
+                                value={reviewText}
+                                onChangeText={setReviewText}
+                                multiline
+                            />
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+                                <Text>Rating: </Text>
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <TouchableOpacity key={star} onPress={() => setRating(star)}>
+                                        <FontAwesomeIcon
+                                            icon={faStar}
+                                            size={20}
+                                            color={star <= rating ? '#FDD700' : '#ccc'}
+                                        />
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                            <Button
+                                title={submitting ? "Submitting..." : "Submit Review"}
+                                onPress={submitReview}
+                                disabled={submitting}
+                            />
+                        </View>
+                    )}
                 </View>
 
             </ScrollView>

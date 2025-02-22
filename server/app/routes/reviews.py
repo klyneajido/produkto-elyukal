@@ -1,38 +1,52 @@
 from fastapi import APIRouter, Depends, HTTPException
+import logging
 from app.db.database import supabase_client
 from app.schemas.review import ReviewCreate, ReviewResponse
 from app.auth.auth_handler import get_current_user
 from typing import List
 
 router = APIRouter()
-
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__) 
 # Submit a review (Registered users only)
 @router.post("/")
 async def create_review(review: ReviewCreate, user=Depends(get_current_user)):
-    existing_review = (
-        supabase_client.table("reviews")
-        .select("*")
-        .eq("user_id", user["id"])
-        .eq("product_id", review.product_id)
-        .execute()
-    )
-    
-    if existing_review.data:
-        raise HTTPException(status_code=400, detail="You have already reviewed this product.")
-    
-    response = (
-        supabase_client.table("reviews")
-        .insert(
-            {
-                "user_id": user["id"],
-                "product_id": review.product_id,
-                "rating": review.rating,
-                "review_text": review.review_text,
-            }
+    try:
+        logger.debug(f"User: {user}")
+        logger.debug(f"Review payload: {review.dict()}")
+
+        existing_review = (
+            supabase_client.table("reviews")
+            .select("*")
+            .eq("user_id", user["id"])
+            .eq("product_id", review.product_id)
+            .execute()
         )
-        .execute()
-    )
-    return {"message": "Review submitted successfully", "review": response.data}
+        logger.debug(f"Existing review: {existing_review.data}")
+
+        if existing_review.data:
+            raise HTTPException(status_code=400, detail="You have already reviewed this product.")
+
+        response = (
+            supabase_client.table("reviews")
+            .insert(
+                {
+                    "user_id": user["id"],
+                    "product_id": review.product_id,
+                    "rating": review.rating,
+                    "review_text": review.review_text,
+                }
+            )
+            .execute()
+        )
+        logger.debug(f"Insert response: {response.data}")
+
+        return {"message": "Review submitted successfully", "review": response.data[0] if response.data else response.data}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error in create_review: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @router.get("/{product_id}", response_model=List[ReviewResponse])
 async def get_reviews(product_id: int):

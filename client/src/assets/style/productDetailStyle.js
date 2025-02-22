@@ -307,8 +307,16 @@ noReviews: {
     textAlign: 'center',
     color: '#666',
     marginTop: 16,
+},
+input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 8,
+    marginVertical: 8,
+    minHeight: 60,
+    color:COLORS.black,
 }
-
 });
 
 export default styles;
