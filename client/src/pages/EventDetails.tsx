@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,10 @@ import {
   Image,
   TouchableOpacity,
   Share,
-  Animated,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
-import { ParamListBase, useNavigation, useRoute } from '@react-navigation/native';
+import { ParamListBase, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
@@ -22,23 +23,154 @@ import {
   faHeart,
   faMusic,
   faUtensils,
+  faHandshake,
+  faTheaterMasks,
+  faPalette,
+  faShoppingBag,
+  faGamepad,
+  IconDefinition
 } from '@fortawesome/free-solid-svg-icons';
 import styles from '../assets/style/eventDetailsStyle';
 import { COLORS } from '../assets/constants/constant';
 
+const API_BASE_URL = 'http://192.168.100.5:8000';
+
+interface Event {
+  id: string;
+  title: string;
+  date: string;
+  start_time: string | null;
+  end_time: string | null;
+  location: string;
+  category: string;
+  description: string;
+  image_url: string;
+}
+
+interface Highlight {
+  id: string;
+  event_id: string;
+  title: string;
+  description: string;
+  icon: string;
+}
+
+type RootStackParamList = {
+  EventDetails: { eventId: string };
+};
+
+const getIconByName = (iconName: string): IconDefinition => {
+  const iconMap: { [key: string]: IconDefinition } = {
+    'music': faMusic,
+    'food': faUtensils,
+    'culture': faPeopleGroup,
+    'handshake': faHandshake,
+    'theater': faTheaterMasks,
+    'art': faPalette,
+    'shopping': faShoppingBag,
+    'entertainment': faGamepad,
+  };
+  return iconMap[iconName.toLowerCase()] || faPeopleGroup;
+};
+
+const formatTime = (time: string | null): string => {
+  if (!time) return '';
+  return time.slice(0, 5);
+};
+
+const formatDate = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  } catch (error) {
+    console.error('Date formatting error:', error);
+    return dateString;
+  }
+};
+
 const EventDetails: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const route = useRoute();
-  const event = route.params?.event;
+  const route = useRoute<RouteProp<RootStackParamList, 'EventDetails'>>();
+  const eventId = route.params?.eventId;
+
+  const [event, setEvent] = useState<Event | null>(null);
+  const [eventHighlights, setEventHighlights] = useState<Highlight[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
 
+  useEffect(() => {
+    const loadEventData = async () => {
+      if (!eventId) {
+        setError('No event ID provided');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // First, fetch all events
+        const eventsResponse = await fetch(`${API_BASE_URL}/events/fetch_events`);
+
+        if (!eventsResponse.ok) {
+          throw new Error(`Failed to load events (Status: ${eventsResponse.status})`);
+        }
+
+        const eventsData = await eventsResponse.json();
+
+        // Find the specific event from the array
+        const foundEvent = eventsData.find((e: Event) => e.id === eventId);
+
+        if (!foundEvent) {
+          throw new Error('Event not found');
+        }
+
+        setEvent(foundEvent);
+
+        // Fetch highlights if they exist
+        try {
+          const highlightsUrl = `${API_BASE_URL}/highlights/fetch_highlights?event_id=${eventId}`;
+          const highlightsResponse = await fetch(highlightsUrl);
+
+          if (highlightsResponse.ok) {
+            const highlightsData = await highlightsResponse.json();
+            setEventHighlights(highlightsData);
+          }
+        } catch (highlightError) {
+          console.warn('Error loading highlights:', highlightError);
+          // Don't fail the whole component if highlights fail to load
+          setEventHighlights([]);
+        }
+
+      } catch (error) {
+        console.error('Error loading event data:', error);
+        setError(error instanceof Error ? error.message : 'Failed to load event');
+        Alert.alert(
+          'Error',
+          'Unable to load event details. Please check your connection and try again.',
+          [{ text: 'OK' }]
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadEventData();
+  }, [eventId]);
+
   const handleShare = async () => {
+    if (!event) return;
+
     try {
       await Share.share({
-        message: `Join me at ${event.name} - A cultural festival at ${event.location} on ${event.date}!`,
+        message: `Join me at ${event.title} - A cultural festival at ${event.location} on ${formatDate(event.date)}!`,
       });
     } catch (error) {
-      console.error(error);
+      console.error('Share error:', error);
+      Alert.alert('Error', 'Failed to share event');
     }
   };
 
@@ -46,18 +178,55 @@ const EventDetails: React.FC = () => {
     setIsFavorite(!isFavorite);
   };
 
-  const highlights = [
-    { icon: faMusic, title: 'Live Performances', description: 'Traditional music and dances' },
-    { icon: faUtensils, title: 'Local Cuisine', description: 'Taste authentic regional dishes' },
-    { icon: faPeopleGroup, title: 'Cultural Shows', description: 'Experience local traditions' },
-  ];
+  if (error) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text>
+        <TouchableOpacity
+          style={{ marginTop: 20, padding: 10, backgroundColor: COLORS.primary, borderRadius: 5 }}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={{ color: 'white' }}>Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
+  if (!event) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text>Event not found</Text>
+        <TouchableOpacity
+          style={{ marginTop: 20, padding: 10, backgroundColor: COLORS.primary, borderRadius: 5 }}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={{ color: 'white' }}>Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const startTime = formatTime(event.start_time);
+  const endTime = formatTime(event.end_time);
+  const timeDisplay = startTime && endTime ? `${startTime} - ${endTime}` : 'Time TBA';
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Header Image with Parallax */}
         <View style={styles.imageContainer}>
-          <Image source={event.image} style={styles.headerImage} />
+          <Image
+            source={event.image_url ? { uri: event.image_url } : require('../assets/img/events/culinary-arts.png')}
+            style={styles.headerImage}
+            defaultSource={require('../assets/img/events/craft-fair.jpg')}
+          />
           <View style={styles.overlay} />
 
           {/* Navigation Bar */}
@@ -73,11 +242,14 @@ const EventDetails: React.FC = () => {
               <TouchableOpacity style={styles.navButton} onPress={handleShare}>
                 <FontAwesomeIcon icon={faShare} size={20} color="#fff" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.navButton} onPress={toggleFavorite}>
-                <FontAwesomeIcon 
-                  icon={faHeart} 
-                  size={20} 
-                  color={isFavorite ? COLORS.secondary : "#fff"} 
+              <TouchableOpacity
+                style={styles.navButton}
+                onPress={toggleFavorite}
+              >
+                <FontAwesomeIcon
+                  icon={faHeart}
+                  size={20}
+                  color={isFavorite ? COLORS.secondary : "#fff"}
                 />
               </TouchableOpacity>
             </View>
@@ -91,17 +263,19 @@ const EventDetails: React.FC = () => {
 
         {/* Content */}
         <View style={styles.content}>
-          <Text style={styles.title}>{event.name}</Text>
+          <Text style={styles.title}>{event.title}</Text>
 
           {/* Key Information */}
           <View style={styles.keyInfo}>
             <View style={styles.infoItem}>
               <FontAwesomeIcon icon={faCalendar} size={20} color={COLORS.primary} />
-              <Text style={styles.infoText}>{event.date}</Text>
+              <Text style={styles.infoText}>
+                {formatDate(event.date)}
+              </Text>
             </View>
             <View style={styles.infoItem}>
               <FontAwesomeIcon icon={faClock} size={20} color={COLORS.primary} />
-              <Text style={styles.infoText}>{event.time}</Text>
+              <Text style={styles.infoText}>{timeDisplay}</Text>
             </View>
             <View style={styles.infoItem}>
               <FontAwesomeIcon icon={faMapMarkerAlt} size={20} color={COLORS.primary} />
@@ -110,18 +284,26 @@ const EventDetails: React.FC = () => {
           </View>
 
           {/* Festival Highlights */}
-          <View style={styles.highlightsSection}>
-            <Text style={styles.sectionTitle}>Festival Highlights</Text>
-            <View style={styles.highlightsGrid}>
-              {highlights.map((item, index) => (
-                <View key={index} style={styles.highlightCard}>
-                  <FontAwesomeIcon icon={item.icon} size={24} color={COLORS.primary} />
-                  <Text style={styles.highlightTitle}>{item.title}</Text>
-                  <Text style={styles.highlightDescription}>{item.description}</Text>
-                </View>
-              ))}
+          {eventHighlights.length > 0 && (
+            <View style={styles.highlightsSection}>
+              <Text style={styles.sectionTitle}>Festival Highlights</Text>
+              <View style={styles.highlightsGrid}>
+                {eventHighlights.map((highlight) => (
+                  <View key={highlight.id} style={styles.highlightCard}>
+                    <FontAwesomeIcon
+                      icon={getIconByName(highlight.icon)}
+                      size={24}
+                      color={COLORS.primary}
+                    />
+                    <Text style={styles.highlightTitle}>{highlight.title}</Text>
+                    <Text style={styles.highlightDescription}>
+                      {highlight.description}
+                    </Text>
+                  </View>
+                ))}
+              </View>
             </View>
-          </View>
+          )}
 
           {/* Description Section */}
           <View style={styles.descriptionSection}>
@@ -132,7 +314,10 @@ const EventDetails: React.FC = () => {
           {/* Join Community Section */}
           <View style={styles.communitySection}>
             <Text style={styles.sectionTitle}>Join the Community</Text>
-            <TouchableOpacity style={styles.communityButton}>
+            <TouchableOpacity
+              style={styles.communityButton}
+              onPress={() => {/* Handle community join */ }}
+            >
               <FontAwesomeIcon icon={faPeopleGroup} size={20} color="#fff" />
               <Text style={styles.communityButtonText}>Join Festival Group</Text>
             </TouchableOpacity>
