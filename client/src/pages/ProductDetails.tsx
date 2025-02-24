@@ -36,6 +36,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../config/config';
 import { Review, Product, ProductARSceneProps, RootStackParamList } from '../../types/types';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import ReviewList from '../components/ReviewList';
 
 type ProductDetailsRouteProp = RouteProp<RootStackParamList, 'ProductDetails'>;
 
@@ -73,7 +74,7 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, scene
 const ProductDetails: React.FC<Product> = () => {
     const [showAR, setShowAR] = useState(false);
     const [isTakingPhoto, setIsTakingPhoto] = useState(false);
-    const route = useRoute<ProductDetailsRouteProp>(); 
+    const route = useRoute<ProductDetailsRouteProp>();
     const { product } = route.params;
     // Use the ViroARSceneNavigator type directly
     const arNavigatorRef: RefObject<ViroARSceneNavigatorType> = useRef(null);
@@ -361,61 +362,8 @@ const ProductDetails: React.FC<Product> = () => {
                         <Text style={styles.locationText}>{product.address}</Text>
                     </TouchableOpacity>
 
-                    <View>
-                        <Text style={styles.sectionTitle}>Reviews</Text>
-                        {loadingReviews ? (
-                            <ActivityIndicator size="small" color="#FDD700" />
-                        ) : reviews.length > 0 ? (
-                            reviews.map((review, index) => (
-                                <View key={index} style={styles.reviewCard}>
-                                    <Text style={styles.reviewUsername}>{review.full_name}</Text>
-                                    <Text style={styles.reviewComment}>{review.review_text}</Text>
-                                    <View style={styles.starContainer}>
-                                        {Array.from({ length: Math.floor(review.rating) }).map((_, i) => (
-                                            <FontAwesomeIcon
-                                                key={`${index}-${i}`}
-                                                icon={faStar}
-                                                size={12}
-                                                color="#FDD700"
-                                            />
-                                        ))}
-                                    </View>
-                                </View>
-                            ))
-                        ) : (
-                            <Text>No reviews yet.</Text>
-                        )}
-                    </View>
-
-                    {user && !(user as any).guest && (
-                        <View style={{ marginVertical: 16 }}>
-                            <Text style={styles.sectionTitle}>Add Your Review</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Write your review here..."
-                                value={reviewText}
-                                onChangeText={setReviewText}
-                                multiline
-                            />
-                            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-                                <Text>Rating: </Text>
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                    <TouchableOpacity key={star} onPress={() => setRating(star)}>
-                                        <FontAwesomeIcon
-                                            icon={faStar}
-                                            size={20}
-                                            color={star <= rating ? '#FDD700' : '#ccc'}
-                                        />
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                            <Button
-                                title={submitting ? "Submitting..." : "Submit Review"}
-                                onPress={submitReview}
-                                disabled={submitting}
-                            />
-                        </View>
-                    )}
+                    {/* Reviews Section */}
+                    <ReviewList />
                 </View>
             </ScrollView>
         </SafeAreaView>
