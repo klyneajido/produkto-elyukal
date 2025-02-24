@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, RefObject } from 'react';
 import {
     SafeAreaView,
     ScrollView,
@@ -13,7 +13,7 @@ import {
     Button,
     TextInput
 } from 'react-native';
-import { ViroARSceneNavigator, ViroARScene } from '@viro-community/react-viro';
+import { ViroARSceneNavigator, ViroARScene, ViroTrackingState, ViroARSceneNavigator as ViroARSceneNavigatorType } from '@viro-community/react-viro';
 import {
     Viro3DObject,
     ViroAmbientLight,
@@ -83,10 +83,10 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, scene
     const [scale] = useState<[number, number, number]>([0.21, 0.21, 0.21]);
     const [rotation] = useState<[number, number, number]>([0, 0, 0]);
 
-    const onInitialized = (state: string) => {
+    const onInitialized = (state: ViroTrackingState) => {
         if (state === ViroTrackingStateConstants.TRACKING_NORMAL) {
             setIsTracking(true);
-        } else if (state === ViroTrackingStateConstants.TRACKING_NONE) {
+        } else if (state === ViroTrackingStateConstants.TRACKING_UNAVAILABLE) {
             setIsTracking(false);
         }
     };
@@ -112,7 +112,8 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
     const [showAR, setShowAR] = useState(false);
     const [isTakingPhoto, setIsTakingPhoto] = useState(false);
     const { product } = route.params;
-    const arNavigatorRef = useRef(null);
+    // Use the ViroARSceneNavigator type directly
+    const arNavigatorRef: RefObject<ViroARSceneNavigatorType> = useRef(null);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loadingReviews, setLoadingReviews] = useState(true);
     const [reviewText, setReviewText] = useState('');
@@ -121,18 +122,26 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
     const { user } = useAuth();
 
     useEffect(() => {
+        const abortController = new AbortController();
         const fetchReviews = async () => {
             try {
-                const response = await axios.get(`http://192.168.1.24:8000/reviews/${product.id}`);
-                console.log(response.data);  // Check if this contains the expected array of reviews
+                const response = await axios.get(`http://192.168.100.5:8000/reviews/${product.id}`, {
+                    signal: abortController.signal,
+                });
+                console.log(response.data);
                 setReviews(response.data);
-            } catch (error) {
-                console.error('Error fetching reviews:', error);
+            } catch (error: any) {
+                if (error.name === 'AbortError') {
+                    console.log('Review fetch aborted');
+                } else {
+                    console.error('Error fetching reviews:', error.message, error.response?.data);
+                }
             } finally {
                 setLoadingReviews(false);
             }
         };
         fetchReviews();
+        return () => abortController.abort();
     }, [product.id]);
 
     const submitReview = async () => {
@@ -145,6 +154,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
             return;
         }
         setSubmitting(true);
+        const abortController = new AbortController();
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
@@ -154,7 +164,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
             console.log('Payload:', { product_id: product.id, rating, review_text: reviewText });
 
             const response = await axios.post(
-                'http://192.168.1.24:8000/reviews/',
+                'http://192.168.100.5:8000/reviews/',
                 {
                     product_id: product.id,
                     rating,
@@ -164,21 +174,27 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    signal: abortController.signal,
                 }
             );
             console.log('Response:', response.data);
 
-            // Refetch reviews instead of manually adding
-            const fetchResponse = await axios.get(`http://192.168.1.24:8000/reviews/${product.id}`);
+            const fetchResponse = await axios.get(`http://192.168.100.5:8000/reviews/${product.id}`, {
+                signal: abortController.signal,
+            });
             setReviews(fetchResponse.data);
 
             setReviewText('');
             setRating(0);
             Alert.alert('Success', 'Review submitted successfully!');
         } catch (error: any) {
-            console.error('Error submitting review:', error.response?.data || error.message);
-            Alert.alert('Error', error.response?.data?.detail || 'Failed to submit review.');
+            if (error.name === 'AbortError') {
+                console.log('Review submission aborted');
+            } else {
+                console.error('Error submitting review:', error.message, error.response?.data);
+                Alert.alert('Error', error.response?.data?.detail || 'Failed to submit review.');
+            }
         } finally {
             setSubmitting(false);
         }
@@ -234,12 +250,20 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
             return;
         }
 
+        if (!arNavigatorRef.current) {
+            Alert.alert('Error', 'AR Scene Navigator is not initialized.');
+            return;
+        }
+
         try {
             setIsTakingPhoto(true);
-            const photo = await arNavigatorRef.current?.arSceneNavigator?.takeScreenshot(
+            console.log('Attempting to take screenshot...');
+            // Use _takeScreenshot instead of arSceneNavigator.takeScreenshot
+            const photo = await arNavigatorRef.current._takeScreenshot(
                 `${product.name}_AR`,
                 true
             );
+            console.log('Screenshot result:', photo);
 
             if (photo?.url) {
                 await CameraRoll.save(photo.url, {
@@ -247,10 +271,17 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                     album: 'AR Products'
                 });
                 Alert.alert('Success', 'Photo saved to gallery!');
+            } else {
+                throw new Error('No photo URL returned');
             }
-        } catch (error) {
-            console.error('Error taking photo:', error);
-            Alert.alert('Error', 'Failed to save photo');
+        } catch (error: any) {
+            if (error.name === 'AbortError') {
+                console.log('Screenshot aborted');
+                Alert.alert('Error', 'Photo capture was aborted.');
+            } else {
+                console.error('Error taking photo:', error.message, error.stack);
+                Alert.alert('Error', 'Failed to save photo: ' + error.message);
+            }
         } finally {
             setIsTakingPhoto(false);
         }
@@ -338,7 +369,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                         <View style={styles.stockRow}>
                             <FontAwesomeIcon icon={faBox} color='#FDD700' size={20} />
                             <Text style={styles.stockText}>
-                                {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                                {product.in_stock ? 'In stock' : 'Out of stock'}
                             </Text>
                         </View>
                     </View>
@@ -392,7 +423,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                             <Text>No reviews yet.</Text>
                         )}
                     </View>
-                    {/* Review Submission Form */}
+
                     {user && !(user as any).guest && (
                         <View style={{ marginVertical: 16 }}>
                             <Text style={styles.sectionTitle}>Add Your Review</Text>
@@ -423,7 +454,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                         </View>
                     )}
                 </View>
-
             </ScrollView>
         </SafeAreaView>
     );

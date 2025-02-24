@@ -20,7 +20,6 @@ const loginSignupStyles = StyleSheet.create({
     height: 200,
     width: screenWidth,
     padding: 15,
-
   },
   text: {
     fontFamily: FONTS.bold,
@@ -29,7 +28,6 @@ const loginSignupStyles = StyleSheet.create({
     marginTop: 30,
     color: COLORS.white,
   },
-
   subText: {
     marginLeft: 15,
     fontFamily: FONTS.regular,
@@ -51,12 +49,9 @@ const loginSignupStyles = StyleSheet.create({
   },
   inputContainer: {
     alignItems: "center",
-    // borderWidth: 1,
-    // borderColor: '#ddd',
     borderRadius: 10,
     marginBottom: 15,
     paddingHorizontal: 15,
-    // backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   inputIcon: {
     marginRight: 10,
@@ -81,10 +76,29 @@ const loginSignupStyles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom:10,
+    marginBottom: 10,
   },
-  continueGuest:{
-
+  // New style for Continue as Guest button
+  continueGuestButton: {
+    backgroundColor: COLORS.white, // White background
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    borderWidth: 2, // Add border to distinguish it
+    borderColor: "#ffd700", // Gold border to match theme
+  },
+  loginButtonText: {
+    fontFamily: "OpenSans-Semibold",
+    color: "#fff",
+    fontSize: 16,
+  },
+  // New text style for Continue as Guest button
+  continueGuestButtonText: {
+    fontFamily: "OpenSans-Semibold",
+    color: "#ffd700", // Gold text to match theme
+    fontSize: 16,
   },
   signupButton: {
     backgroundColor: "#ffd700",
@@ -92,11 +106,6 @@ const loginSignupStyles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
-  },
-  loginButtonText: {
-    fontFamily: "OpenSans-Semibold",
-    color: "#fff",
-    fontSize: 16,
   },
   signupButtonText: {
     fontFamily: "OpenSans-Semibold",

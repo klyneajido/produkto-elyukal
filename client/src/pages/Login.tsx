@@ -1,4 +1,3 @@
-// Login.tsx
 import React, { useState, useEffect } from 'react';
 import {
     View,
@@ -13,33 +12,28 @@ import {
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
-import styles from '../assets/style/loginStyle';
+import styles from '../assets/style/loginStyle'; // Ensure this is the correct path
 import InputText from '../components/TextInput.tsx';
 import { COLORS } from '../assets/constants/constant';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from '../../contextAuth.tsx';
 
-
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-    const { setUser, user } = useAuth();  // Get the user context
-    const [email, setEmail] = useState('1@gmail.com'); //hardcoded
+    const { setUser, user } = useAuth();
+    const [email, setEmail] = useState('1@gmail.com'); // hardcoded
     const [password, setPassword] = useState('123456'); // hardcoded
     const [error, setError] = useState(false);
 
-    // Function to log in the user
     const loginUser = async (email: string, password: string) => {
         try {
             console.log('Attempting to login with:', { email, password });
-            const response = await axios.post('http://192.168.1.24:8000/auth/login', { email, password });
+            const response = await axios.post('http://192.168.100.5:8000/auth/login', { email, password });
 
             const { access_token } = response.data;
             await AsyncStorage.setItem("token", access_token);
-
-            // Debugging: Log the token that is saved
             console.log("Token saved in AsyncStorage:", access_token);
-
-            return access_token;  // Return the access token for further use
+            return access_token;
         } catch (error: any) {
             console.error("Login failed:", error.response?.data?.detail || error.message);
             Alert.alert("Login Failed", error.response?.data?.detail || "Invalid credentials");
@@ -47,22 +41,17 @@ const LoginScreen: React.FC = () => {
         }
     };
 
-    // Function to get the user's profile after login
     const getUserProfile = async () => {
         try {
             const token = await AsyncStorage.getItem("token");
-
             if (!token) {
                 console.error('No token found in AsyncStorage!');
                 throw new Error('No token found');
             }
-
             console.log('Fetching user profile with token:', token);
-
-            const response = await axios.get("http://192.168.1.24:8000/auth/profile", {
+            const response = await axios.get("http://192.168.100.5:8000/auth/profile", {
                 headers: { Authorization: `Bearer ${token}` },
             });
-
             console.log("User Profile:", response.data);
             return response.data;
         } catch (error: any) {
@@ -71,16 +60,14 @@ const LoginScreen: React.FC = () => {
         }
     };
 
-    // Handle login flow
     const handleLogin = async () => {
         const token = await loginUser(email, password);
         if (token) {
-            // Now fetch user profile and update context
             const profile = await getUserProfile();
             if (profile) {
                 console.log('Updating user context with profile:', profile);
-                setUser(profile);  // This updates the user context
-                navigation.navigate("Tabs");  // Navigate to the next screen
+                setUser(profile);
+                navigation.navigate("Tabs");
             }
         }
     };
@@ -88,9 +75,10 @@ const LoginScreen: React.FC = () => {
     const { loginAsGuest } = useAuth();
     const handleGuest = async () => {
         loginAsGuest();
-        navigation.navigate("Tabs")
-        console.log(loginAsGuest())
-    }
+        navigation.navigate("Tabs");
+        console.log(loginAsGuest());
+    };
+
     const handleSignup = () => {
         navigation.navigate('Signup');
     };
@@ -98,34 +86,6 @@ const LoginScreen: React.FC = () => {
     const handleForgotPassword = () => {
         navigation.navigate('ForgotPassword');
     };
-
-    // useEffect(() => {
-    //     const checkAuthStatus = async () => {
-    //         const token = await AsyncStorage.getItem("token");
-    //         if (token) {
-    //           try {
-    //             // Validate token via your backend
-    //             const response = await axios.get("http://192.168.1.24:8000/auth/validate", {
-    //               headers: { Authorization: `Bearer ${token}` },
-    //             });
-    //             if (response.data.valid) {
-    //               const profile = await getUserProfile();
-    //               setUser(profile);
-    //               navigation.navigate("Tabs");
-    //             }
-    //           } catch (error) {
-    //             await AsyncStorage.removeItem("token");
-    //             navigation.navigate("Login");
-    //           }
-    //         } else {
-    //           navigation.navigate("Login");
-    //         }
-    //       };
-    //     if (!user) {
-    //         checkAuthStatus();
-    //     }
-    // }, [setUser, navigation, user]);
-
 
     return (
         <SafeAreaView style={styles.container}>
@@ -177,8 +137,9 @@ const LoginScreen: React.FC = () => {
                         <Text style={styles.loginButtonText}>Login</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.loginButton} onPress={handleGuest}>
-                        <Text style={styles.loginButtonText}>Continue as Guest</Text>
+                    {/* Updated Continue as Guest button with new style */}
+                    <TouchableOpacity style={styles.continueGuestButton} onPress={handleGuest}>
+                        <Text style={styles.continueGuestButtonText}>Continue as Guest</Text>
                     </TouchableOpacity>
 
                     <View style={styles.loginContainer}>
