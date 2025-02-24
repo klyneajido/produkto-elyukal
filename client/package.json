@@ -48,6 +48,7 @@
     "@react-native/eslint-config": "0.73.2",
     "@react-native/metro-config": "0.73.4",
     "@react-native/typescript-config": "0.73.1",
+    "@types/mapbox__mapbox-sdk": "^0.16.0",
     "@types/react": "^18.2.6",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.6.3",

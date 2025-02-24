@@ -15,7 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { BASE_URL } from '../config/config.ts';
 import {
-
+  faSearch,
   faCalendar,
   faMapMarkedAlt,
   faStar,
@@ -223,16 +223,19 @@ const Home: React.FC = () => {
           {/* Top Section with Search */}
           <View style={styles.topContainer}>
             <View style={styles.searchBarContainer}>
+              <FontAwesomeIcon
+                icon={faSearch}
+                size={16}
+                color="#888"
+                style={styles.searchIcon}
+              />
               <TextInput
                 style={styles.searchBar}
                 onChangeText={setSearchText}
                 value={searchText}
-                placeholder="Search products, events, or artisans..."
-                placeholderTextColor="#999"
+                placeholder="Explore your deepest darkest desires >;)"
+                placeholderTextColor="#888"
               />
-              <TouchableOpacity style={styles.filterButton}>
-                <FontAwesomeIcon icon={faSliders} size={22} color="#FFF" />
-              </TouchableOpacity>
             </View>
 
             {/* Categories */}

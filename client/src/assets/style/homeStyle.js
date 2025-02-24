@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import {COLORS, FONT_SIZES, FONTS} from '../constants/constant';
+import {COLORS, FONT_SIZE, FONTS} from '../constants/constant';
 
 
 const styles = StyleSheet.create({
@@ -34,30 +34,45 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   searchBarContainer: {
-    flexDirection: "row",
+      flex: 1, 
+      height: 48,
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+      borderRadius: 15,
+      paddingHorizontal: 16,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    searchIcon: {
+      marginRight: 12,
+    },
+    searchBar: {
+      flex: 1,
+      height: '100%', 
+      color: COLORS.black,
+      fontFamily: FONTS.medium,
+      fontSize: FONT_SIZE.medium,
+      padding: 0, 
+      marginTop: 0, 
+      marginBottom: 0, 
+    },
+  filterButton: {
+    width: 48,
+    height: 48, 
+    backgroundColor: COLORS.secondary,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 5,
-  },
-  searchBar: {
-    flex: 1,
-    height: 45,
-    backgroundColor: COLORS.white,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 15,
-    color: COLORS.black,
-    shadowColor: '#000',
+    shadowColor: COLORS.secondary,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
-  },
-  filterButton: {
-    marginLeft: 12,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    padding: 10,
-    borderRadius: 10,
+    padding: 0, 
   },
   content: {
     flex: 1,

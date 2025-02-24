@@ -46,11 +46,12 @@ type RootStackParamList = {
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'StoreDetails'>;
-// interface RouteInfo {
-//     geometry: any;
-//     duration: number;
-//     distance: number;
-// }
+
+interface RouteInfo {
+    geometry: any;
+    duration: number;
+    distance: number;
+}
 
 const MapView = () => {
     const [stores, setStores] = useState<Store[]>([]);
@@ -92,33 +93,33 @@ const MapView = () => {
             const response = await axios.get(`${BASE_URL}/stores/fetch_stores`);
 
             if (response.data && response.data.length > 0) {
-                // Process stores to add coordinate property for compatibility
-                const processedStores = response.data.map((store: Store) => {
-                    // Validate coordinates
-                    if (
-                        Math.abs(store.latitude) > 90 ||
-                        Math.abs(store.longitude) > 180
-                    ) {
-                        console.error(`Invalid coordinates for store ${store.store_id}`);
-                        return null;
-                    }
-
-                    return {
-                        ...store,
-                        coordinate: [store.longitude, store.latitude] as [number, number]
-                    };
-                }).filter(Boolean); // Remove invalid stores
+                const processedStores: Store[] = response.data
+                    .map((store: Store) => {
+                        if (
+                            Math.abs(store.latitude) > 90 ||
+                            Math.abs(store.longitude) > 180
+                        ) {
+                            console.error(`Invalid coordinates for store ${store.store_id}`);
+                            return null;
+                        }
+                        return {
+                            ...store,
+                            coordinate: [store.longitude, store.latitude] as [number, number]
+                        };
+                    })
+                    .filter((store): store is Store => store !== null);
 
                 setStores(processedStores);
                 setFilteredStores(processedStores);
 
-                // Extract unique store types for filter
-                const types = ['All', ...new Set(processedStores
-                    .map((store: Store) => store.type)
-                    .filter((type: string | null): type is string => type !== null))];
+                // Extract unique store types
+                const validTypes = processedStores
+                    .map((store) => store.type)
+                    .filter((type): type is string => type !== null); // Type predicate
+                const storeTypesSet = new Set<string>(validTypes);
+                const types: string[] = ['All', ...storeTypesSet];
                 setStoreTypes(types);
 
-                // Update initial camera to first store if available
                 if (processedStores.length > 0) {
                     const firstStore = processedStores[0];
                     cameraRef.current?.setCamera({
@@ -158,7 +159,7 @@ const MapView = () => {
         if (!userLocation || !isLocationPermissionGranted) return;
 
         try {
-            const response = await directionsClient.getDirections({
+            const response: any = await directionsClient.getDirections({
                 waypoints: [
                     { coordinates: userLocation },
                     { coordinates: destination }
