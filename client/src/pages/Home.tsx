@@ -10,59 +10,23 @@ import {
   Alert,
 } from 'react-native';
 import styles from '../assets/style/homeStyle.js';
-import { ParamListBase, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { BASE_URL } from '../config/config.ts';
 import {
   faSearch,
-  faCalendar,
-  faMapMarkedAlt,
-  faStar,
-  faTicketAlt,
-  faSliders,
-  faClock
+ 
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../contextAuth.tsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProductList from '../components/ProductList.tsx';
-
-interface User {
-  email: string;
-  first_name: string;
-  last_name: string;
-  profile: string;
-}
-
-interface Event {
-  id: string;  // Explicitly typed as string for UUID
-  title: string;
-  date: string;
-  start_time: string;
-  end_time: string;
-  location: string;
-  category: string;
-  description: string;
-  image_url: string;
-}
-
-interface Highlight {
-  id: string;
-  event_id: string;
-  title: string;
-  description: string;
-  icon: string;
-}
-
-type RootStackParamList = {
-  EventDetails: { eventId: string };
-  Login: undefined;
-  Products: undefined;
-};
+import { RootStackParamList, Event, Highlight } from '../../types/types.ts';
+import EventList from '../components/EventList.tsx';
 
 const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const [searchText, setSearchText] = useState<string>('');
   const [events, setEvents] = useState<Event[]>([]);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
@@ -79,27 +43,8 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    fetchEvents();
     fetchHighlights();
   }, []);
-
-  const fetchEvents = async () => {
-    try {
-      console.log('Fetching events from:', `${BASE_URL}/events/fetch_events`);
-      const response = await fetch(`${BASE_URL}/events/fetch_events`);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('Received events:', data);
-      setEvents(data);
-    } catch (error) {
-      console.error('Error fetching events:', error);
-      Alert.alert('Error', 'Failed to load events. Please try again later.');
-    }
-  };
 
   const fetchHighlights = async () => {
     try {
@@ -143,78 +88,7 @@ const Home: React.FC = () => {
     "Bangar",
     "Sudipen"
   ];
-  const renderEvents = () => (
-    <View style={styles.eventsContainer}>
-      <View style={styles.divider} />
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionHeaderTitle}>Upcoming Events</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('EventDetails', { eventId: 'someEventId' })}>
-          <Text style={styles.sectionHeaderLink}>View Calendar</Text>
-        </TouchableOpacity>
-      </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingRight: 20 }}
-      >
-        {events.map((event) => (
-          <TouchableOpacity
-            key={event.id}
-            style={styles.eventCardLarge}
-            onPress={() => {
-              console.log('Event being navigated to:', {
-                id: event.id,
-                type: typeof event.id,
-                title: event.title,
-              });
-              navigation.navigate('EventDetails', { eventId: event.id });
-            }}
-          >
-            <Image
-              source={event.image_url ? { uri: event.image_url } : require('../assets/img/events/pottery.jpg')}
-              style={styles.eventImageLarge}
-              defaultSource={require('../assets/img/events/culinary-arts.png')}
-            />
-            <View style={styles.eventOverlay}>
-              <Text style={styles.eventCategory}>{event.category}</Text>
-            </View>
-            <View style={styles.eventDetailsLarge}>
-              <View>
-                <Text style={styles.eventNameLarge} numberOfLines={1} ellipsizeMode="tail">
-                  {event.title}
-                </Text>
-                <Text style={styles.eventDescriptionLarge} numberOfLines={2} ellipsizeMode="tail">
-                  {event.description}
-                </Text>
-              </View>
-              <View style={styles.eventMetaContainer}>
-                <View style={styles.eventMetaItem}>
-                  <FontAwesomeIcon icon={faCalendar} size={16} color="#666" />
-                  <Text style={styles.eventMetaText} numberOfLines={1} ellipsizeMode="tail">
-                    {new Date(event.date).toLocaleDateString()}
-                  </Text>
-                </View>
-                <View style={styles.eventMetaItem}>
-                  <FontAwesomeIcon icon={faClock} size={16} color="#666" />
-                  <Text style={styles.eventMetaText} numberOfLines={1} ellipsizeMode="tail">
-                    {event.start_time && event.end_time
-                      ? `${event.start_time.slice(0, 5)} - ${event.end_time.slice(0, 5)}`
-                      : 'Time TBA'}
-                  </Text>
-                </View>
-                <View style={styles.eventMetaItem}>
-                  <FontAwesomeIcon icon={faMapMarkedAlt} size={16} color="#666" />
-                  <Text style={styles.eventMetaText} numberOfLines={1} ellipsizeMode="tail">
-                    {event.location}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
-  );
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -325,8 +199,18 @@ const Home: React.FC = () => {
           </View>
 
           {/* Events Section */}
-          {renderEvents()}
-        </View>
+          <View style={styles.eventsContainer}>
+            <View style={styles.divider} />
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionHeaderTitle}>Upcoming Events</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('EventDetails', { eventId: 'someEventId' })}>
+                <Text style={styles.sectionHeaderLink}>View Calendar</Text>
+              </TouchableOpacity>
+            </View>
+            {EventList()}
+            </View>
+         
+          </View>
       </ScrollView>
     </SafeAreaView>
   );

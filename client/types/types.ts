@@ -5,6 +5,8 @@ export type RootStackParamList = {
     ForgotPassword: undefined;
     Tabs: undefined;
     ProductDetails: { product: Product };
+    Products: undefined;
+    EventDetails: {eventId:string};
     Testenv: undefined;
   };
   
@@ -23,3 +25,30 @@ export type RootStackParamList = {
     in_stock: boolean;
     rating: number;
   }
+
+export interface Event {
+  id:string;
+  title:string;
+  date:string;
+  start_time:string;
+  end_time:string;
+  location:string;
+  category:string;
+  description:string;
+  image_url:string;
+}
+
+export interface User{
+  email:string;
+  first_name:string;
+  last_name:string;
+  profile:string;
+}
+
+export interface Highlight {
+  id: string;
+  event_id: string;
+  title: string;
+  description: string;
+  icon: string;
+}
