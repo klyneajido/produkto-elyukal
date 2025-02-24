@@ -33,30 +33,7 @@ import {
 import styles from '../assets/style/eventDetailsStyle';
 import { COLORS } from '../assets/constants/constant';
 import { BASE_URL } from '../config/config';
-
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  start_time: string | null;
-  end_time: string | null;
-  location: string;
-  category: string;
-  description: string;
-  image_url: string;
-}
-
-interface Highlight {
-  id: string;
-  event_id: string;
-  title: string;
-  description: string;
-  icon: string;
-}
-
-type RootStackParamList = {
-  EventDetails: { eventId: string };
-};
+import { Event, Highlight, RootStackParamList } from '../../types/types';
 
 const getIconByName = (iconName: string): IconDefinition => {
   const iconMap: { [key: string]: IconDefinition } = {

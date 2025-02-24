@@ -13,23 +13,19 @@ import styles from '../assets/style/homeStyle.js';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { BASE_URL } from '../config/config.ts';
 import {
   faSearch,
  
 } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from '../../contextAuth.tsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProductList from '../components/ProductList.tsx';
-import { RootStackParamList, Event, Highlight } from '../../types/types.ts';
+import { RootStackParamList} from '../../types/types.ts';
 import EventList from '../components/EventList.tsx';
 
 const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   // const { user } = useAuth();
   const [searchText, setSearchText] = useState<string>('');
-  const [events, setEvents] = useState<Event[]>([]);
-  const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -42,22 +38,6 @@ const Home: React.FC = () => {
     checkAuth();
   }, []);
 
-  useEffect(() => {
-    fetchHighlights();
-  }, []);
-
-  const fetchHighlights = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/highlights/fetch_highlights`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setHighlights(data);
-    } catch (error) {
-      console.error('Error fetching highlights:', error);
-    }
-  };
 
   const categories = [
     { name: 'Handcraft', icon: require('../assets/img/handcraft.png') },
@@ -203,7 +183,7 @@ const Home: React.FC = () => {
             <View style={styles.divider} />
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderTitle}>Upcoming Events</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('EventDetails', { eventId: 'someEventId' })}>
+              <TouchableOpacity>
                 <Text style={styles.sectionHeaderLink}>View Calendar</Text>
               </TouchableOpacity>
             </View>
