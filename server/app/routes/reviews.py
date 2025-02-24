@@ -15,18 +15,6 @@ async def create_review(review: ReviewCreate, user=Depends(get_current_user)):
         logger.debug(f"User: {user}")
         logger.debug(f"Review payload: {review.dict()}")
 
-        existing_review = (
-            supabase_client.table("reviews")
-            .select("*")
-            .eq("user_id", user["id"])
-            .eq("product_id", review.product_id)
-            .execute()
-        )
-        logger.debug(f"Existing review: {existing_review.data}")
-
-        if existing_review.data:
-            raise HTTPException(status_code=400, detail="You have already reviewed this product.")
-
         response = (
             supabase_client.table("reviews")
             .insert(
