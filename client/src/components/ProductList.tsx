@@ -5,36 +5,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { COLORS, FONTS } from '../assets/constants/constant';
 import { useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '../../types/types';
+import { Product, RootStackParamList } from '../../types/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { BASE_URL } from '../config/config.ts';
 
-interface Review {
-  id: number;
-  username: string;
-  comment: string;
-  rating: number;
-  created_at: string;
-  product_id: number;
-  user_id: string;
-}
 
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  category: string;
-  price: number;
-  location_name: string;
-  address: string;
-  latitude: string;
-  longitude: string;
-  ar_asset_url: string;
-  image_urls: string[];
-  in_stock: boolean;
-  rating: number;
-  reviews?: Review[];
-}
 
 const ProductList = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -84,7 +59,7 @@ const ProductList = () => {
               </Text>
               <View style={styles.starContainer}>
                 <FontAwesomeIcon icon={faStar} color={COLORS.secondary} size={12} />
-                <Text style={styles.starText}> {product.rating || 'N/A'}</Text>
+                <Text style={styles.starText}> {product.average_rating || 'N/A'}</Text>
               </View>
             </View>
           </TouchableOpacity>

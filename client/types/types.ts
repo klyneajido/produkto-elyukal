@@ -1,3 +1,5 @@
+import { RouteProp } from "@react-navigation/native";
+
 export type RootStackParamList = {
   Welcome: undefined;
   Login: undefined;
@@ -10,7 +12,17 @@ export type RootStackParamList = {
 
   Testenv: undefined;
 };
-
+export interface Review {
+  id: number;
+  username: string;
+  comment: string;
+  rating: number;
+  created_at: string;
+  product_id: number;
+  user_id: string;
+  full_name:string;
+  review_text:string;
+}
 export interface Product {
   id: number;
   name: string;
@@ -25,6 +37,9 @@ export interface Product {
   image_urls: string[];
   in_stock: boolean;
   rating: number;
+  average_rating: number;
+  total_reviews:number;
+  reviews?: Review[];
 }
 
 export interface Event {
@@ -52,4 +67,11 @@ export interface Highlight {
   title: string;
   description: string;
   icon: string;
+}
+
+export interface ProductARSceneProps {
+  product: any;
+  onClose: () => void;
+  sceneNavigator?: any;
+  onTakePhoto: () => Promise<void>;
 }

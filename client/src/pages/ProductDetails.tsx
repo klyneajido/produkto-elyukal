@@ -19,16 +19,11 @@ import {
     ViroAmbientLight,
     ViroNode,
     ViroTrackingStateConstants,
-    ViroText
 } from '@viro-community/react-viro';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
     faCameraRetro,
     faLocation,
-    faCaretDown,
-    faWeightScale,
-    faRuler,
-    faCamera
 } from '@fortawesome/free-solid-svg-icons';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { PERMISSIONS, request } from 'react-native-permissions';
@@ -39,44 +34,10 @@ import axios from 'axios';
 import { useAuth } from '../../contextAuth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../config/config';
+import { Review, Product, ProductARSceneProps, RootStackParamList } from '../../types/types';
+import { RouteProp, useRoute } from '@react-navigation/native';
 
-interface Review {
-    id: number;
-    user_id: string;
-    review_text: string;
-    rating: number;
-    full_name: string;
-}
-interface ProductARSceneProps {
-    product: any;
-    onClose: () => void;
-    sceneNavigator?: any;
-    onTakePhoto: () => Promise<void>;
-}
-
-interface ProductDetailsProps {
-    route: {
-        params: {
-            product: {
-                id: number;
-                name: string;
-                description: string;
-                category: string;
-                price: number;
-                location_name: string;
-                address: string;
-                latitude: string;
-                longitude: string;
-                ar_asset_url: string;
-                image_urls: string[];
-                in_stock: boolean;
-                rating: number;
-                reviews?: Review[];
-            };
-        };
-    };
-    navigation: any;
-}
+type ProductDetailsRouteProp = RouteProp<RootStackParamList, 'ProductDetails'>;
 
 const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, sceneNavigator, onTakePhoto }) => {
     const [isTracking, setIsTracking] = useState(false);
@@ -109,9 +70,10 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, scene
     );
 };
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) => {
+const ProductDetails: React.FC<Product> = () => {
     const [showAR, setShowAR] = useState(false);
     const [isTakingPhoto, setIsTakingPhoto] = useState(false);
+    const route = useRoute<ProductDetailsRouteProp>(); 
     const { product } = route.params;
     // Use the ViroARSceneNavigator type directly
     const arNavigatorRef: RefObject<ViroARSceneNavigatorType> = useRef(null);
@@ -354,7 +316,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
                             <View style={styles.ratingContainer}>
                                 <FontAwesomeIcon icon={faStar} color='#FDD700' size={16} />
                                 <Text style={styles.ratingText}>
-                                    {product.rating || 'N/A'} ({product.reviewCount || 0} reviews)
+                                    {product.average_rating || 'N/A'} ({product.total_reviews || 0} reviews)
                                 </Text>
                             </View>
                         </View>
