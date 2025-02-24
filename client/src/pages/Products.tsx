@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// Products.tsx
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,185 +7,211 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
-  Image,
   Modal,
+  Image,
+  StyleSheet,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import styles from '../assets/style/productStyle';
 import {
-  faCaretDown,
-  faCheckCircle,
-  faCheckSquare,
-  faCircle,
-  faDotCircle,
   faSearch,
   faSliders,
+  faTimes,
+  faCheckSquare,
   faSquare,
   faStar,
-  faTimes
 } from '@fortawesome/free-solid-svg-icons';
-import { COLORS } from '../assets/constants/constant'
-import ProductList from '../components/ProductList';
+import axios from 'axios';
+import { BASE_URL } from '../config/config.ts';
+import { COLORS, FONTS } from '../assets/constants/constant';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../types/types';
+import styles from '../assets/style/productStyle.js';
+
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  price: number;
+  location_name: string;
+  address: string;
+  latitude: string;
+  longitude: string;
+  ar_asset_url: string;
+  image_urls: string[];
+  in_stock: boolean;
+  rating: number;
+  store_id: string;
+}
 
 interface ProductsProps {
   navigation: {
     navigate: (screen: string, params?: any) => void;
   };
 }
-const sampleProducts = [
-  {
-    id: 1,
-    name: 'Sukang Iloco',
-    price: 99.99,
-    description: 'This is a detailed description of product 1.',
-    image: require('../assets/img/product-images/sukang-iloco.png'),
-    model3d: require('../assets/3d-assets/sukangiloco.glb'),
-    shopLocation: 'Bacnotan, La Union',
-    rating: 4.9,
-  },
-  {
-    id: 2,
-    name: 'Cutie Patootie Hamster',
-    price: 149.99,
-    description: 'This is a detailed description of product 2.',
-    image: require('../assets/img/furniture.jpg'),
-    model3d: require('../assets/3d-assets/meme.glb'),
-    shopLocation: 'San Juan, La Union',
-    rating: 5.0,
-  },
-  {
-    id: 3,
-    name: 'Vigan Basi',
-    price: 149.99,
-    description: 'This is a detailed description of product 2.',
-    image: require('../assets/img/product-images/basi-wine.jpg'),
-    model3d: require('../assets/3d-assets/basi-wine.glb'),
-    shopLocation: 'Bacnotan, La Union',
-    rating: 4.4,
-  },
-  {
-    id: 4,
-    name: 'Good Tree',
-    price: 149.99,
-    description: 'This is a detailed description of product 2.',
-    image: require('../assets/img/handcraft.png'),
-    model3d: require('../assets/3d-assets/decorative_tree.glb'),
-    shopLocation: 'Bacnotan, La Union',
-    rating: 2.9,
-  },
-  {
-    id: 5,
-    name: 'Furniture',
-    price: 149.99,
-    description: 'This is a detailed description of product 2.',
-    image: require('../assets/img/pottery.jpg'),
-    model3d: require('../assets/3d-assets/sukangiloco.glb'),
-    shopLocation: 'Bacnotan, La Union',
-    rating: 4.3,
-  },
-  {
-    id: 6,
-    name: 'Furniture',
-    price: 149.99,
-    description: 'This is a detailed description of product 2.',
-    image: require('../assets/img/food.jpg'),
-    model3d: require('../assets/3d-assets/sukangiloco.glb'),
-    shopLocation: 'Bacnotan, La Union',
-    rating: 4.9,
-  },
-];
 
 const priceRanges = [
-  { label: 'Under ₱100', min: 0, max: 100 },
-  { label: '₱100 - ₱150', min: 100, max: 150 },
-  { label: 'Over ₱150', min: 150, max: Infinity },
+  { label: 'Under $50', value: 'under50', min: 0, max: 50 },
+  { label: '$50 - $100', value: '50to100', min: 50, max: 100 },
+  { label: 'Over $100', value: 'over100', min: 100, max: Infinity },
 ];
 
+const ProductList: React.FC<{ products: Product[] }> = ({ products }) => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  return (
+    <View style={styles.productContainer}>
+      <View style={styles.productGrid}>
+        {products.map((product) => (
+          <TouchableOpacity
+            key={product.id}
+            style={styles.card}
+            onPress={() => navigation.navigate('ProductDetails', { product })}
+          >
+            <Image
+              source={{ uri: product.image_urls[0] }}
+              style={styles.productImage}
+            />
+            <View style={styles.cardContent}>
+              <Text style={styles.cardText} numberOfLines={1}>
+                {product.name}
+              </Text>
+              <Text style={styles.locationText} numberOfLines={1}>
+                {product.address}
+              </Text>
+              <View style={styles.starContainer}>
+                <FontAwesomeIcon icon={faStar} color={COLORS.secondary} size={12} />
+                <Text style={styles.starText}> {product.rating || 'N/A'}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ))}
+        {products.length === 0 && (
+          <View style={styles.noResults}>
+            <Text style={styles.noResultsText}>No products found</Text>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+};
+
 const Products: React.FC<ProductsProps> = ({ navigation }) => {
-  const [text, onChangeText] = useState('');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [searchText, setSearchText] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedPrices, setSelectedPrices] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedPriceRange, setSelectedPriceRange] = useState<string[]>([]);
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [error, setError] = useState('');
 
-  const locations = [...new Set(sampleProducts.map(p => p.shopLocation))];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/products/fetch_products`);
+        setProducts(response.data.products);
+      } catch (e) {
+        setError('Error fetching products');
+        console.error(e);
+      }
+    };
+    fetchProducts();
+  }, []);
 
-  const applyFiltersAndSort = () => {
-    let filtered = sampleProducts.filter(product =>
-      product.name.toLowerCase().includes(text.toLowerCase())
-    );
+  const categories = [...new Set(products.map(p => p.category))];
 
-    // Price filter
-    if (selectedPrices.length > 0) {
-      filtered = filtered.filter(product =>
-        selectedPrices.some(range =>
-          product.price >= range.min && product.price <= range.max
-        )
+  const applyFilters = () => {
+    let filteredProducts = [...products];
+
+    if (searchText) {
+      filteredProducts = filteredProducts.filter(product =>
+        product.name.toLowerCase().includes(searchText.toLowerCase())
       );
     }
-    if (selectedLocation) {
-      filtered = filtered.filter(product =>
-        product.shopLocation === selectedLocation
+
+    if (selectedCategories.length > 0) {
+      filteredProducts = filteredProducts.filter(product =>
+        selectedCategories.includes(product.category)
       );
     }
-    switch (sortBy) {
-      case 'priceAsc':
-        return [...filtered].sort((a, b) => a.price - b.price);
-      case 'priceDesc':
-        return [...filtered].sort((a, b) => b.price - a.price);
-      case 'nameAsc':
-        return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
-      case 'nameDesc':
-        return [...filtered].sort((a, b) => b.name.localeCompare(a.name));
-      default:
-        return filtered;
+
+    if (selectedPriceRange.length > 0) {
+      filteredProducts = filteredProducts.filter(product =>
+        selectedPriceRange.some(range => {
+          const rangeObj = priceRanges.find(r => r.value === range);
+          return rangeObj && product.price >= rangeObj.min && product.price <= rangeObj.max;
+        })
+      );
     }
+
+    if (inStockOnly) {
+      filteredProducts = filteredProducts.filter(product => product.in_stock);
+    }
+
+    return filteredProducts;
   };
 
-  const togglePriceFilter = (range) => {
-    setSelectedPrices(prev =>
-      prev.some(r => r.label === range.label)
-        ? prev.filter(r => r.label !== range.label)
+  const toggleCategory = (category: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
+
+  const togglePriceRange = (range: string) => {
+    setSelectedPriceRange(prev =>
+      prev.includes(range)
+        ? prev.filter(r => r !== range)
         : [...prev, range]
     );
   };
 
   const resetFilters = () => {
-    setSelectedPrices([]);
-    setSelectedLocation('');
-    setSortBy('');
+    setSearchText('');
+    setSelectedCategories([]);
+    setSelectedPriceRange([]);
+    setInStockOnly(false);
   };
 
-  const filteredProducts = applyFiltersAndSort();
+  const filteredProducts = applyFilters();
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.topHeader}>
-          <View style={styles.filterHeader}>
-            <View style={styles.searchBarContainer}>
-              <FontAwesomeIcon
-                icon={faSearch}
-                size={16}
-                color="#888"
-                style={styles.searchIcon}
-              />
-              <TextInput
-                style={styles.searchBar}
-                onChangeText={onChangeText}
-                value={text}
-                placeholder="Search Products"
-                placeholderTextColor="#888"
-              />
-            </View>
-            <TouchableOpacity
-              style={styles.filterButton}
-              onPress={() => setShowFilters(true)}
-            >
-              <FontAwesomeIcon icon={faSliders} size={20} color={COLORS.white} />
-            </TouchableOpacity>
+          <View style={styles.searchBarContainer}>
+            <FontAwesomeIcon
+              icon={faSearch}
+              size={16}
+              color="#888"
+              style={styles.searchIcon}
+            />
+            <TextInput
+              style={styles.searchBar}
+              onChangeText={setSearchText}
+              value={searchText}
+              placeholder="Search by product name"
+              placeholderTextColor="#888"
+            />
           </View>
+          <TouchableOpacity
+            style={styles.filterButton}
+            onPress={() => setShowFilters(true)}
+          >
+            <FontAwesomeIcon icon={faSliders} size={20} color="#fff" />
+          </TouchableOpacity>
         </View>
+
         <Modal visible={showFilters} animationType="slide" transparent>
           <View style={styles.filterModal}>
             <View style={styles.filterContent}>
@@ -197,15 +224,33 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
 
               <ScrollView>
                 <View style={styles.filterSection}>
+                  <Text style={styles.filterSubtitle}>Category</Text>
+                  {categories.map(category => (
+                    <TouchableOpacity
+                      key={category}
+                      style={styles.filterOption}
+                      onPress={() => toggleCategory(category)}
+                    >
+                      <FontAwesomeIcon
+                        icon={selectedCategories.includes(category) ? faCheckSquare : faSquare}
+                        size={20}
+                        color="#666"
+                      />
+                      <Text style={styles.filterOptionText}>{category}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                <View style={styles.filterSection}>
                   <Text style={styles.filterSubtitle}>Price Range</Text>
                   {priceRanges.map(range => (
                     <TouchableOpacity
-                      key={range.label}
+                      key={range.value}
                       style={styles.filterOption}
-                      onPress={() => togglePriceFilter(range)}
+                      onPress={() => togglePriceRange(range.value)}
                     >
                       <FontAwesomeIcon
-                        icon={selectedPrices.some(r => r.label === range.label) ? faCheckSquare : faSquare}
+                        icon={selectedPriceRange.includes(range.value) ? faCheckSquare : faSquare}
                         size={20}
                         color="#666"
                       />
@@ -215,68 +260,43 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
                 </View>
 
                 <View style={styles.filterSection}>
-                  <Text style={styles.filterSubtitle}>Location</Text>
-                  {locations.map(location => (
-                    <TouchableOpacity
-                      key={location}
-                      style={styles.filterOption}
-                      onPress={() => setSelectedLocation(prev => prev === location ? '' : location)}
-                    >
-                      <FontAwesomeIcon
-                        icon={selectedLocation === location ? faCheckCircle : faCircle}
-                        size={20}
-                        color="#666"
-                      />
-                      <Text style={styles.filterOptionText}>{location}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-
-                <View style={styles.filterSection}>
-                  <Text style={styles.filterSubtitle}>Sort By</Text>
-                  {[
-                    { label: 'Price: Low to High', value: 'priceAsc' },
-                    { label: 'Price: High to Low', value: 'priceDesc' },
-                    { label: 'Name: A to Z', value: 'nameAsc' },
-                    { label: 'Name: Z to A', value: 'nameDesc' },
-                  ].map(option => (
-                    <TouchableOpacity
-                      key={option.value}
-                      style={styles.filterOption}
-                      onPress={() => setSortBy(prev => prev === option.value ? '' : option.value)}
-                    >
-                      <FontAwesomeIcon
-                        icon={sortBy === option.value ? faDotCircle : faCircle}
-                        size={20}
-                        color="#666"
-                      />
-                      <Text style={styles.filterOptionText}>{option.label}</Text>
-                    </TouchableOpacity>
-                  ))}
+                  <Text style={styles.filterSubtitle}>Availability</Text>
+                  <TouchableOpacity
+                    style={styles.filterOption}
+                    onPress={() => setInStockOnly(!inStockOnly)}
+                  >
+                    <FontAwesomeIcon
+                      icon={inStockOnly ? faCheckSquare : faSquare}
+                      size={20}
+                      color="#666"
+                    />
+                    <Text style={styles.filterOptionText}>In Stock Only</Text>
+                  </TouchableOpacity>
                 </View>
               </ScrollView>
 
               <View style={styles.filterActions}>
                 <TouchableOpacity style={styles.resetButton} onPress={resetFilters}>
-                  <Text style={styles.resetButtonText}>Reset Filters</Text>
+                  <Text style={styles.resetButtonText}>Reset</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.applyButton}
                   onPress={() => setShowFilters(false)}
                 >
-                  <Text style={styles.applyButtonText}>Apply Filters</Text>
+                  <Text style={styles.applyButtonText}>Apply</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
         </Modal>
 
-        <ScrollView style={styles.productContainer} showsVerticalScrollIndicator={false}>
-          <ProductList/>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <ProductList products={filteredProducts} />
         </ScrollView>
       </View>
     </SafeAreaView>
   );
 };
+
 
 export default Products;
