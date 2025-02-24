@@ -150,7 +150,7 @@ const Home: React.FC = () => {
       <View style={styles.divider} />
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionHeaderTitle}>Upcoming Events</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('EventDetails', { eventId: 'someEventId' })}>
           <Text style={styles.sectionHeaderLink}>View Calendar</Text>
         </TouchableOpacity>
       </View>
@@ -167,7 +167,7 @@ const Home: React.FC = () => {
               console.log('Event being navigated to:', {
                 id: event.id,
                 type: typeof event.id,
-                title: event.title
+                title: event.title,
               });
               navigation.navigate('EventDetails', { eventId: event.id });
             }}
@@ -182,21 +182,23 @@ const Home: React.FC = () => {
             </View>
             <View style={styles.eventDetailsLarge}>
               <View>
-                <Text style={styles.eventNameLarge}>{event.title}</Text>
-                <Text style={styles.eventDescriptionLarge} numberOfLines={2}>
+                <Text style={styles.eventNameLarge} numberOfLines={1} ellipsizeMode="tail">
+                  {event.title}
+                </Text>
+                <Text style={styles.eventDescriptionLarge} numberOfLines={2} ellipsizeMode="tail">
                   {event.description}
                 </Text>
               </View>
               <View style={styles.eventMetaContainer}>
                 <View style={styles.eventMetaItem}>
                   <FontAwesomeIcon icon={faCalendar} size={16} color="#666" />
-                  <Text style={styles.eventMetaText}>
+                  <Text style={styles.eventMetaText} numberOfLines={1} ellipsizeMode="tail">
                     {new Date(event.date).toLocaleDateString()}
                   </Text>
                 </View>
                 <View style={styles.eventMetaItem}>
                   <FontAwesomeIcon icon={faClock} size={16} color="#666" />
-                  <Text style={styles.eventMetaText}>
+                  <Text style={styles.eventMetaText} numberOfLines={1} ellipsizeMode="tail">
                     {event.start_time && event.end_time
                       ? `${event.start_time.slice(0, 5)} - ${event.end_time.slice(0, 5)}`
                       : 'Time TBA'}
@@ -204,7 +206,9 @@ const Home: React.FC = () => {
                 </View>
                 <View style={styles.eventMetaItem}>
                   <FontAwesomeIcon icon={faMapMarkedAlt} size={16} color="#666" />
-                  <Text style={styles.eventMetaText}>{event.location}</Text>
+                  <Text style={styles.eventMetaText} numberOfLines={1} ellipsizeMode="tail">
+                    {event.location}
+                  </Text>
                 </View>
               </View>
             </View>
