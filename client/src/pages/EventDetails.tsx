@@ -32,8 +32,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import styles from '../assets/style/eventDetailsStyle';
 import { COLORS } from '../assets/constants/constant';
-
-const API_BASE_URL = 'http://192.168.100.5:8000';
+import { BASE_URL } from '../config/config';
 
 interface Event {
   id: string;
@@ -113,7 +112,7 @@ const EventDetails: React.FC = () => {
 
       try {
         // First, fetch all events
-        const eventsResponse = await fetch(`${API_BASE_URL}/events/fetch_events`);
+        const eventsResponse = await fetch(`${BASE_URL}/events/fetch_events`);
 
         if (!eventsResponse.ok) {
           throw new Error(`Failed to load events (Status: ${eventsResponse.status})`);
@@ -132,7 +131,7 @@ const EventDetails: React.FC = () => {
 
         // Fetch highlights if they exist
         try {
-          const highlightsUrl = `${API_BASE_URL}/highlights/fetch_highlights?event_id=${eventId}`;
+          const highlightsUrl = `${BASE_URL}/highlights/fetch_highlights?event_id=${eventId}`;
           const highlightsResponse = await fetch(highlightsUrl);
 
           if (highlightsResponse.ok) {

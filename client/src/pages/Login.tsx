@@ -17,6 +17,7 @@ import InputText from '../components/TextInput.tsx';
 import { COLORS } from '../assets/constants/constant';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from '../../contextAuth.tsx';
+import { BASE_URL } from '../config/config.ts';
 
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -28,7 +29,7 @@ const LoginScreen: React.FC = () => {
     const loginUser = async (email: string, password: string) => {
         try {
             console.log('Attempting to login with:', { email, password });
-            const response = await axios.post('http://192.168.100.5:8000/auth/login', { email, password });
+            const response = await axios.post(`${BASE_URL}/auth/login`, { email, password });
 
             const { access_token } = response.data;
             await AsyncStorage.setItem("token", access_token);
@@ -49,7 +50,7 @@ const LoginScreen: React.FC = () => {
                 throw new Error('No token found');
             }
             console.log('Fetching user profile with token:', token);
-            const response = await axios.get("http://192.168.100.5:8000/auth/profile", {
+            const response = await axios.get(`${BASE_URL}/auth/profile`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             console.log("User Profile:", response.data);

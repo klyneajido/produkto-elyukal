@@ -38,6 +38,7 @@ import styles from '../assets/style/productDetailStyle';
 import axios from 'axios';
 import { useAuth } from '../../contextAuth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '../config/config';
 
 interface Review {
     id: number;
@@ -125,7 +126,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
         const abortController = new AbortController();
         const fetchReviews = async () => {
             try {
-                const response = await axios.get(`http://192.168.100.5:8000/reviews/${product.id}`, {
+                const response = await axios.get(`${BASE_URL}/reviews/${product.id}`, {
                     signal: abortController.signal,
                 });
                 console.log(response.data);
@@ -164,7 +165,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
             console.log('Payload:', { product_id: product.id, rating, review_text: reviewText });
 
             const response = await axios.post(
-                'http://192.168.100.5:8000/reviews/',
+                `${BASE_URL}/reviews/`,
                 {
                     product_id: product.id,
                     rating,
@@ -180,7 +181,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ route, navigation }) =>
             );
             console.log('Response:', response.data);
 
-            const fetchResponse = await axios.get(`http://192.168.100.5:8000/reviews/${product.id}`, {
+            const fetchResponse = await axios.get(`${BASE_URL}/reviews/${product.id}`, {
                 signal: abortController.signal,
             });
             setReviews(fetchResponse.data);

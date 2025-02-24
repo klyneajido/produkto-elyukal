@@ -13,7 +13,9 @@ import styles from '../assets/style/homeStyle.js';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { BASE_URL } from '../config/config.ts';
 import {
+
   faCalendar,
   faMapMarkedAlt,
   faStar,
@@ -23,11 +25,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../contextAuth.tsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Products from './Products.tsx';
-
 import ProductList from '../components/ProductList.tsx';
-
-const API_BASE_URL = 'http://192.168.100.5:8000';
 
 interface User {
   email: string;
@@ -87,8 +85,8 @@ const Home: React.FC = () => {
 
   const fetchEvents = async () => {
     try {
-      console.log('Fetching events from:', `${API_BASE_URL}/events/fetch_events`);
-      const response = await fetch(`${API_BASE_URL}/events/fetch_events`);
+      console.log('Fetching events from:', `${BASE_URL}/events/fetch_events`);
+      const response = await fetch(`${BASE_URL}/events/fetch_events`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -105,7 +103,7 @@ const Home: React.FC = () => {
 
   const fetchHighlights = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/highlights/fetch_highlights`);
+      const response = await fetch(`${BASE_URL}/highlights/fetch_highlights`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

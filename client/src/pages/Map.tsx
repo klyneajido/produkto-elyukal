@@ -21,6 +21,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faMap, faSatelliteDish, faDirections, faClock, faRoad, faLocationDot, faSearch, faTimes, faFilter } from '@fortawesome/free-solid-svg-icons';
 import styles from '../assets/style/mapStyle';
 import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
+import { BASE_URL } from '../config/config';
 import axios from 'axios';
 
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoia2x5bmVhamlkbyIsImEiOiJjbTYzb2J0cmsxNWR5MmxyMHFzdHJkazl1In0.zxp6GI9_XeY0s1gxpwB4lg';
@@ -88,7 +89,7 @@ const MapView = () => {
     const fetchStores = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://192.168.100.5:8000/stores/fetch_stores`);
+            const response = await axios.get(`${BASE_URL}/stores/fetch_stores`);
 
             if (response.data && response.data.length > 0) {
                 // Process stores to add coordinate property for compatibility

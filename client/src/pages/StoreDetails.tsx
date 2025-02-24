@@ -24,6 +24,7 @@ import {
 import * as Animatable from 'react-native-animatable';
 import { COLORS } from '../assets/constants/constant';
 import styles from '../assets/style/storeDetailsStyle';
+import { BASE_URL } from '../config/config';
 import axios from 'axios';
 
 interface Product {
@@ -71,7 +72,7 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
     const fetchStoreProducts = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://192.168.100.5:8000/products/fetch_products`);
+            const response = await axios.get(`${BASE_URL}/products/fetch_products`);
             if (response.data && response.data.products) {
                 // Filter products by store_id
                 const storeProducts = response.data.products.filter(

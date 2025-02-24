@@ -18,6 +18,7 @@ import { COLORS } from "../assets/constants/constant";
 import InputText from "../components/TextInput";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { BASE_URL } from "../config/config";
 
 const SignupScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -29,7 +30,7 @@ const SignupScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error] = useState(false);
 
-  const apiURL = "http://192.168.1.24:8000/auth/register";
+  const apiURL = `${BASE_URL}/auth/register`;
 
   const handleSignup = async () => {
     console.log("handleSignup from Signup.tsx");

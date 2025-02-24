@@ -7,6 +7,7 @@
   import { useNavigation } from '@react-navigation/native';
   import { RootStackParamList } from '../../types/types';
   import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { BASE_URL } from '../config/config.ts';
 
   interface Review {
     id: number;
@@ -45,7 +46,7 @@
     useEffect(() => {
       const fetchProducts = async () => {
         try {
-          const response = await axios.get("http://192.168.1.24:8000/products/fetch_products");
+          const response = await axios.get(`${BASE_URL}/products/fetch_products`);
           setProducts(response.data.products);
         } catch (e) {
           setError("Error fetching products");
