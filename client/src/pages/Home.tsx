@@ -23,6 +23,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../contextAuth.tsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Products from './Products.tsx';
 
 import ProductList from '../components/ProductList.tsx';
 
@@ -58,6 +59,7 @@ interface Highlight {
 type RootStackParamList = {
   EventDetails: { eventId: string };
   Login: undefined;
+  Products: undefined;
 };
 
 const Home: React.FC = () => {
@@ -143,7 +145,6 @@ const Home: React.FC = () => {
     "Bangar",
     "Sudipen"
   ];
-
   const renderEvents = () => (
     <View style={styles.eventsContainer}>
       <View style={styles.divider} />
@@ -310,7 +311,7 @@ const Home: React.FC = () => {
           {/* Products Section */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionHeaderTitle}>Popular Products</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Products")}>
               <Text style={styles.sectionHeaderLink}>See All</Text>
             </TouchableOpacity>
           </View>
