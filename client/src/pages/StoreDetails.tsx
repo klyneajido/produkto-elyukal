@@ -6,25 +6,24 @@ import {
     ScrollView,
     SafeAreaView,
     TouchableOpacity,
-    Linking,
-    Platform,
-    ActivityIndicator
+    ActivityIndicator,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
     faStar,
-    faMapMarkerAlt,
     faStore,
-    faHeart,
-    faCommentDots,
     faTag,
     faPesoSign,
     faArrowLeft,
+    faClock, 
+    faPhone, 
+    faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 import * as Animatable from 'react-native-animatable';
 import { COLORS } from '../assets/constants/constant';
 import styles from '../assets/style/storeDetailsStyle';
 import { BASE_URL } from '../config/config';
+
 import axios from 'axios';
 
 interface Product {
@@ -48,6 +47,8 @@ interface Store {
     rating: number | null;
     store_image: string | null;
     type: string | null;
+    operating_hours?: string; // Highlight field
+    phone?: string;          // Highlight field
 }
 
 interface StoreDetailsProps {
@@ -74,7 +75,6 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
             setLoading(true);
             const response = await axios.get(`${BASE_URL}/products/fetch_products`);
             if (response.data && response.data.products) {
-                // Filter products by store_id
                 const storeProducts = response.data.products.filter(
                     (product: Product) => product.store_id === store.store_id
                 );
@@ -85,19 +85,6 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
             setError('Failed to load products');
         } finally {
             setLoading(false);
-        }
-    };
-
-    const openMaps = () => {
-        const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
-        const latLng = `${store.latitude},${store.longitude}`;
-        const label = encodeURIComponent(store.name);
-        const url = Platform.select({
-            ios: `${scheme}${label}@${latLng}`,
-            android: `${scheme}${latLng}(${label})`
-        });
-        if (url) {
-            Linking.openURL(url);
         }
     };
 
@@ -144,8 +131,9 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                     </View>
                 </View>
                 <Text
-                    style={[styles.stockStatus,
-                    { color: product.in_stock ? COLORS.success : COLORS.error }
+                    style={[
+                        styles.stockStatus,
+                        { color: product.in_stock ? COLORS.success : COLORS.error },
                     ]}
                 >
                     {product.in_stock ? 'In Stock' : 'Out of Stock'}
@@ -178,14 +166,14 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                         <Text style={styles.storeTitle}>{store.name}</Text>
                         <View style={styles.storeMetaContainer}>
                             <View style={styles.ratingContainer}>
-                                <FontAwesomeIcon icon={faStar} color='#FDD700' size={16} />
+                                <FontAwesomeIcon icon={faStar} color="#FDD700" size={16} />
                                 <Text style={styles.ratingText}>
                                     {formatRating(store.rating)}
                                 </Text>
                             </View>
                             {store.type && (
                                 <View style={styles.typeContainer}>
-                                    <FontAwesomeIcon icon={faTag} color='#FDD700' size={16} />
+                                    <FontAwesomeIcon icon={faTag} color="#FDD700" size={16} />
                                     <Text style={styles.typeText}>{store.type}</Text>
                                 </View>
                             )}
@@ -197,11 +185,58 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                     <Text style={styles.sectionTitle}>About</Text>
                     <Text style={styles.storeDescription}>{store.description || 'No description available'}</Text>
 
-                    <Text style={styles.sectionTitle}>Location</Text>
-                    <TouchableOpacity style={styles.locationContainer} onPress={openMaps}>
-                        <FontAwesomeIcon icon={faMapMarkerAlt} color='#FDD700' size={24} />
-                        <Text style={styles.locationText}>View on Maps</Text>
-                    </TouchableOpacity>
+                    <Text style={styles.sectionTitle}>Store Highlights</Text>
+                    <View style={styles.highlightsContainer}>
+                        <View style={styles.highlightsContent}>
+                            {store.operating_hours ? (
+                                <TouchableOpacity style={styles.highlightItem}>
+                                    <View style={styles.iconContainer}>
+                                        <FontAwesomeIcon icon={faClock} color="#FFFFFF" size={18} />
+                                    </View>
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.highlightLabel}>HOURS</Text>
+                                        <Text style={styles.highlightText}>{store.operating_hours}</Text>
+                                    </View>
+                                    <FontAwesomeIcon icon={faChevronRight} color="#DDD" size={16} />
+                                </TouchableOpacity>
+                            ) : (
+                                <View style={styles.highlightItemDisabled}>
+                                    <View style={[styles.iconContainer, styles.iconDisabled]}>
+                                        <FontAwesomeIcon icon={faClock} color="#FFFFFF" size={18} />
+                                    </View>
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.highlightLabel}>HOURS</Text>
+                                        <Text style={styles.noHighlightText}>Not specified</Text>
+                                    </View>
+                                </View>
+                            )}
+
+                            <View style={styles.divider} />
+
+                            {store.phone ? (
+                                <TouchableOpacity style={styles.highlightItem}>
+                                    <View style={[styles.iconContainer, styles.phoneIcon]}>
+                                        <FontAwesomeIcon icon={faPhone} color="#FFFFFF" size={18} />
+                                    </View>
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.highlightLabel}>CONTACT</Text>
+                                        <Text style={styles.highlightText}>{store.phone}</Text>
+                                    </View>
+                                    <FontAwesomeIcon icon={faChevronRight} color="#DDD" size={16} />
+                                </TouchableOpacity>
+                            ) : (
+                                <View style={styles.highlightItemDisabled}>
+                                    <View style={[styles.iconContainer, styles.phoneIcon, styles.iconDisabled]}>
+                                        <FontAwesomeIcon icon={faPhone} color="#FFFFFF" size={18} />
+                                    </View>
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.highlightLabel}>CONTACT</Text>
+                                        <Text style={styles.noHighlightText}>Not available</Text>
+                                    </View>
+                                </View>
+                            )}
+                        </View>
+                    </View>
 
                     <Text style={styles.sectionTitle}>Products</Text>
                     {loading ? (

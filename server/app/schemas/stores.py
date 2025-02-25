@@ -11,3 +11,5 @@ class Store(BaseModel):
     rating: float
     store_image: Optional[str] = None  # Make it optional
     type: Optional[str] = None  # Make it optional as well based on previous error
+    operating_hours: Optional[str] = None  # For highlights
+    phone: Optional[str] = None           # For highlights

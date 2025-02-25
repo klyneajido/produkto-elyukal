@@ -259,6 +259,69 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
     },
+     storeCard: {
+        flexDirection: 'row',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        padding: 15,
+        marginBottom: 20,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        borderWidth: 1,
+        borderColor: '#FDD70033',
+    },
+    
+    storeImage: {
+        width: 60,
+        height: 60,
+        borderRadius: 8,
+        backgroundColor: '#F0F0F0',
+    },
+    
+    storeInfoContainer: {
+        flex: 1,
+        marginLeft: 15,
+        marginRight: 10,
+    },
+    
+    storeNameText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: 5,
+    },
+    
+    storeDetailsRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    
+    storeRatingText: {
+        fontSize: 14,
+        color: '#666',
+        marginLeft: 5,
+        marginRight: 10,
+    },
+    
+    storeTypeText: {
+        fontSize: 14,
+        color: '#666',
+        backgroundColor: '#F8F8F8',
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 10,
+    },
+    
+    viewStoreText: {
+        fontSize: 14,
+        color: '#FDD700',
+        fontWeight: '500',
+    },
 });
 
 export default styles;

@@ -1,3 +1,4 @@
+# app/routes/fetch_stores.py
 from fastapi import APIRouter, HTTPException
 from app.db.database import supabase_client
 from app.schemas.stores import Store
@@ -8,11 +9,11 @@ router = APIRouter()
 @router.get("/fetch_stores", response_model=List[Store])
 async def fetch_stores():
     try:
-        # Add more detailed logging
         print("Attempting to connect to Supabase...")
         
+        # Query updated to include only operating_hours and phone for highlights
         response = supabase_client.table("stores").select(
-            "store_id, name, description, latitude, longitude, rating, store_image, type"
+            "store_id, name, description, latitude, longitude, rating, store_image, type, operating_hours, phone"
         ).execute()
         
         print("Supabase Response:", response)

@@ -24,6 +24,8 @@ export interface Review {
   review_text:string;
 }
 export interface Product {
+  store_id: any;
+  stores(stores: any): unknown;
   id: number;
   name: string;
   description: string;
