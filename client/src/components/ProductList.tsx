@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '48%',
-    height: 250,
+    height: 200,
     backgroundColor: COLORS.white,
     borderRadius: 8,
     overflow: 'hidden',
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     position: 'absolute',
-    top: 150,
+    top: 115,
     right:5
   },
   ratings: {

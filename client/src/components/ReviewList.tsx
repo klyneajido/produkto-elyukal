@@ -8,7 +8,7 @@ import { ActivityIndicator, Alert, Button, StyleSheet, Text, TextInput, Touchabl
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
-import { COLORS } from "../assets/constants/constant";
+import { COLORS, FONTS } from "../assets/constants/constant";
 
 type ProductDetailsRouteProp = RouteProp<RootStackParamList, 'ProductDetails'>;
 
@@ -109,7 +109,6 @@ export default function ReviewList() {
                 reviews.map((review, index) => (
                     <View key={index} style={styles.reviewCard}>
                         <Text style={styles.reviewUsername}>{review.full_name}</Text>
-                        <Text style={styles.reviewComment}>{review.review_text}</Text>
                         <View style={styles.starContainer}>
                             {Array.from({ length: Math.floor(review.rating) }).map((_, i) => (
                                 <FontAwesomeIcon
@@ -120,6 +119,7 @@ export default function ReviewList() {
                                 />
                             ))}
                         </View>
+                        <Text style={styles.reviewComment}>{review.review_text}</Text>
                     </View>
                 ))
             ) : (
@@ -166,11 +166,11 @@ export default function ReviewList() {
 const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 20,
-        fontFamily: 'OpenSans-Bold',
+        fontFamily: FONTS.bold,
         color: '#333',
         marginBottom: 10,
         borderBottomWidth: 2,
-        borderBottomColor: '#FDD700',
+        borderBottomColor: COLORS.secondary,
         paddingBottom: 5,
     },
     text: {
@@ -193,22 +193,22 @@ const styles = StyleSheet.create({
         borderColor: "rgba(255, 255, 255, 0.2)", 
       },
       submitButtonDisabled: {
-        backgroundColor: "#B0B0B0",
+        backgroundColor: COLORS.lightgray,
         borderColor: "rgba(0, 0, 0, 0.1)", 
       },
       submitButtonText: {
         fontSize: 16,
-        fontFamily: "OpenSans-SemiBold",
+        fontFamily: FONTS.semibold,
         color: "white",
         letterSpacing: 0.5, 
         textTransform: "uppercase", 
       },
     reviewCard: {
-        backgroundColor: 'white',
+        backgroundColor: '#fefefe',
         padding: 16,
         marginVertical: 8,
         borderRadius: 8,
-        shadowColor: '#000',
+        shadowColor: COLORS.black,
         shadowOffset: {
             width: 0,
             height: 1,
@@ -221,8 +221,8 @@ const styles = StyleSheet.create({
     },
     reviewUsername: {
         fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 8,
+        fontFamily: FONTS.bold,
+        marginBottom:2,
         color: COLORS.black,
     },
     reviewComment: {
@@ -236,12 +236,12 @@ const styles = StyleSheet.create({
     },
     noReviews: {
         textAlign: 'center',
-        color: '#666',
+        color: COLORS.gray,
         marginTop: 16,
     },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: COLORS.lightgray,
         borderRadius: 4,
         padding: 8,
         marginVertical: 8,
