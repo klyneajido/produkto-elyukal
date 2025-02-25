@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, RefObject } from 'react';
+import React, { useState, useRef, RefObject } from 'react';
 import {
     SafeAreaView,
     ScrollView,
@@ -11,41 +11,51 @@ import {
     Alert,
     ActivityIndicator,
 } from 'react-native';
-import { ViroARSceneNavigator, ViroARScene, ViroTrackingState, ViroARSceneNavigator as ViroARSceneNavigatorType } from '@viro-community/react-viro';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
+    ViroARSceneNavigator,
+    ViroARScene,
+    ViroTrackingState,
+    ViroTrackingStateConstants,
     Viro3DObject,
     ViroAmbientLight,
     ViroNode,
-    ViroTrackingStateConstants,
 } from '@viro-community/react-viro';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import {
-    faCameraRetro,
-    faLocation,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCameraRetro, faStore, faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { PERMISSIONS, request } from 'react-native-permissions';
-import { faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
 import * as Animatable from 'react-native-animatable';
 import styles from '../assets/style/productDetailStyle';
 import { Product, ProductARSceneProps, RootStackParamList } from '../../types/types';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ReviewList from '../components/ReviewList';
+import axios from 'axios';
+import { BASE_URL } from '../config/config';
 
 type ProductDetailsRouteProp = RouteProp<RootStackParamList, 'ProductDetails'>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'StoreDetails'>;
 
-const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, sceneNavigator, onTakePhoto }) => {
+interface Store {
+    store_id: string;
+    name: string;
+    description: string;
+    latitude: number;
+    longitude: number;
+    store_image: string | null;
+    type: string | null;
+    rating: number;
+}
+
+const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTakePhoto }) => {
     const [isTracking, setIsTracking] = useState(false);
     const [position] = useState<[number, number, number]>([0, 0, 0]);
     const [scale] = useState<[number, number, number]>([0.21, 0.21, 0.21]);
     const [rotation] = useState<[number, number, number]>([0, 0, 0]);
 
     const onInitialized = (state: ViroTrackingState) => {
-        if (state === ViroTrackingStateConstants.TRACKING_NORMAL) {
-            setIsTracking(true);
-        } else if (state === ViroTrackingStateConstants.TRACKING_UNAVAILABLE) {
-            setIsTracking(false);
-        }
+        setIsTracking(state === ViroTrackingStateConstants.TRACKING_NORMAL);
     };
 
     return (
@@ -65,13 +75,36 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, scene
     );
 };
 
-const ProductDetails: React.FC<Product> = () => {
+const ProductDetails: React.FC = () => {
     const [showAR, setShowAR] = useState(false);
     const [isTakingPhoto, setIsTakingPhoto] = useState(false);
+    const [storeData, setStoreData] = useState<Store | null>(null);
+    const [loadingStore, setLoadingStore] = useState(false);
     const route = useRoute<ProductDetailsRouteProp>();
     const { product } = route.params;
-    // Use the ViroARSceneNavigator type directly
-    const arNavigatorRef: RefObject<ViroARSceneNavigatorType> = useRef(null);
+    const navigation = useNavigation<NavigationProp>();
+    const arNavigatorRef: RefObject<ViroARSceneNavigator> = useRef(null);
+
+    // Fetch store data based on store_id
+    const fetchStoreData = async () => {
+        if (!product.store_id) return;
+        setLoadingStore(true);
+        try {
+            const response = await axios.get(`${BASE_URL}/stores/fetch_stores`);
+            const stores = response.data;
+            const matchingStore = stores.find((store: Store) => store.store_id === product.store_id);
+            setStoreData(matchingStore || null);
+        } catch (error) {
+            console.error('Error fetching store data:', error);
+            setStoreData(null);
+        } finally {
+            setLoadingStore(false);
+        }
+    };
+
+    React.useEffect(() => {
+        fetchStoreData();
+    }, [product.store_id]);
 
     const requestCameraPermission = async () => {
         try {
@@ -130,40 +163,30 @@ const ProductDetails: React.FC<Product> = () => {
 
         try {
             setIsTakingPhoto(true);
-            console.log('Attempting to take screenshot...');
-            // Use _takeScreenshot instead of arSceneNavigator.takeScreenshot
             const photo = await arNavigatorRef.current._takeScreenshot(
                 `${product.name}_AR`,
                 true
             );
-            console.log('Screenshot result:', photo);
 
             if (photo?.url) {
                 await CameraRoll.save(photo.url, {
                     type: 'photo',
-                    album: 'AR Products'
+                    album: 'AR Products',
                 });
                 Alert.alert('Success', 'Photo saved to gallery!');
             } else {
                 throw new Error('No photo URL returned');
             }
         } catch (error: any) {
-            if (error.name === 'AbortError') {
-                console.log('Screenshot aborted');
-                Alert.alert('Error', 'Photo capture was aborted.');
-            } else {
-                console.error('Error taking photo:', error.message, error.stack);
-                Alert.alert('Error', 'Failed to save photo: ' + error.message);
-            }
+            console.error('Error taking photo:', error);
+            Alert.alert('Error', 'Failed to save photo: ' + error.message);
         } finally {
             setIsTakingPhoto(false);
         }
     };
 
-    const openMaps = () => {
-        const address = encodeURIComponent(product.address);
-        const url = `https://www.google.com/maps/search/?api=1&query=${address}`;
-        Linking.openURL(url);
+    const navigateToStoreDetails = (store: Store) => {
+        navigation.navigate('StoreDetails', { store });
     };
 
     if (showAR) {
@@ -172,9 +195,8 @@ const ProductDetails: React.FC<Product> = () => {
                 <ViroARSceneNavigator
                     ref={arNavigatorRef}
                     initialScene={{
-                        scene: (props: any) => (
+                        scene: () => (
                             <ProductARScene
-                                {...props}
                                 product={product}
                                 onClose={() => setShowAR(false)}
                                 onTakePhoto={takePhoto}
@@ -198,7 +220,6 @@ const ProductDetails: React.FC<Product> = () => {
                             )}
                         </View>
                     </TouchableOpacity>
-
                     <TouchableOpacity
                         style={styles.closeButton}
                         onPress={() => setShowAR(false)}
@@ -224,7 +245,7 @@ const ProductDetails: React.FC<Product> = () => {
                         <Text style={styles.productTitle}>{product.name}</Text>
                         <View style={styles.productMetaContainer}>
                             <View style={styles.ratingContainer}>
-                                <FontAwesomeIcon icon={faStar} color='#FDD700' size={16} />
+                                <FontAwesomeIcon icon={faStar} color="#FDD700" size={16} />
                                 <Text style={styles.ratingText}>
                                     {product.average_rating || 'N/A'} ({product.total_reviews || 0} reviews)
                                 </Text>
@@ -236,11 +257,11 @@ const ProductDetails: React.FC<Product> = () => {
                 <View style={styles.detailsContainer}>
                     <View style={styles.pricingContainer}>
                         <View style={styles.priceRow}>
-                            <FontAwesomeIcon icon={faTag} color='#FDD700' size={20} />
+                            <FontAwesomeIcon icon={faTag} color="#FDD700" size={20} />
                             <Text style={styles.priceText}>₱{product.price?.toFixed(2)}</Text>
                         </View>
                         <View style={styles.stockRow}>
-                            <FontAwesomeIcon icon={faBox} color='#FDD700' size={20} />
+                            <FontAwesomeIcon icon={faBox} color="#FDD700" size={20} />
                             <Text style={styles.stockText}>
                                 {product.in_stock ? 'In stock' : 'Out of stock'}
                             </Text>
@@ -251,7 +272,7 @@ const ProductDetails: React.FC<Product> = () => {
                         style={styles.arButton}
                         onPress={() => setShowAR(true)}
                     >
-                        <FontAwesomeIcon icon={faCameraRetro} color='white' size={24} />
+                        <FontAwesomeIcon icon={faCameraRetro} color="white" size={24} />
                         <Text style={styles.arButtonText}>View in AR</Text>
                     </TouchableOpacity>
 
@@ -265,11 +286,39 @@ const ProductDetails: React.FC<Product> = () => {
                         </Text>
                     </View>
 
-                    <Text style={styles.sectionTitle}>Shop Location</Text>
-                    <TouchableOpacity style={styles.locationContainer} onPress={openMaps}>
-                        <FontAwesomeIcon icon={faLocation} color='#FDD700' size={24} />
-                        <Text style={styles.locationText}>{product.address}</Text>
-                    </TouchableOpacity>
+                    <Text style={styles.sectionTitle}>Available At</Text>
+                    {loadingStore ? (
+                        <ActivityIndicator size="small" color="#FDD700" />
+                    ) : !storeData ? (
+                        <Text style={{ fontSize: 16, color: '#666', textAlign: 'center' }}>
+                            No store information available for this product.
+                        </Text>
+                    ) : (
+                        <TouchableOpacity
+                            style={styles.storeCard}
+                            onPress={() => navigateToStoreDetails(storeData)}
+                        >
+                            <Image
+                                source={{ uri: storeData.store_image || 'https://via.placeholder.com/50' }}
+                                style={styles.storeImage}
+                                defaultSource={require('../assets/img/product-images/basi-wine.jpg')}
+                            />
+                            <View style={styles.storeInfoContainer}>
+                                <Text style={styles.storeNameText}>{storeData.name}</Text>
+                                <View style={styles.storeDetailsRow}>
+                                    <FontAwesomeIcon icon={faStar} color="#FDD700" size={14} />
+                                    <Text style={styles.storeRatingText}>
+                                        {storeData.rating || 'N/A'}
+                                    </Text>
+                                    <Text style={styles.storeTypeText}>
+                                        {storeData.type || 'Store'}
+                                    </Text>
+                                </View>
+                                <Text style={styles.viewStoreText}>View Store Details</Text>
+                            </View>
+                            <FontAwesomeIcon icon={faStore} color="#FDD700" size={24} />
+                        </TouchableOpacity>
+                    )}
 
                     {/* Reviews Section */}
                     <ReviewList />

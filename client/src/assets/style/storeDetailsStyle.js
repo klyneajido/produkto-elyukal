@@ -218,6 +218,74 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
+highlightsContainer: {
+    marginVertical: 20,
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+  },
+  highlightsContent: {
+    borderRadius: 16,
+  },
+  highlightItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  highlightItemDisabled: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    opacity: 0.7,
+  },
+  iconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    backgroundColor: '#FFCB14',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  phoneIcon: {
+    backgroundColor: '#4A90E2',
+  },
+  iconDisabled: {
+    backgroundColor: '#AAAAAA',
+  },
+  textContainer: {
+    flex: 1,
+    marginLeft: 16,
+  },
+  highlightLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.8,
+    color: '#777',
+    marginBottom: 4,
+  },
+  highlightText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+  },
+  noHighlightText: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: '#999',
+    fontStyle: 'italic',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#EEEEEE',
+    marginHorizontal: 16,
+  },
 });
 
 export default styles;
