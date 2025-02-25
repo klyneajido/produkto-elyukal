@@ -9,8 +9,8 @@ export type RootStackParamList = {
   ProductDetails: { product: Product };
   Products: undefined;
   EventDetails: { eventId: string };
-
-  Testenv: undefined;
+  StoreDetails: { store: Store };
+  MapView: {longitude: number, latitude:number}
 };
 export interface Review {
   id: number;
@@ -74,4 +74,28 @@ export interface ProductARSceneProps {
   onClose: () => void;
   sceneNavigator?: any;
   onTakePhoto: () => Promise<void>;
+}
+
+
+export interface ProductsProps {
+  navigation: {
+    navigate: (screen: string, params?: any) => void;
+  };
+}
+
+export interface Store {
+    store_id: string;
+    name: string;
+    description: string;
+    latitude: number;
+    longitude: number;
+    rating: number;
+    store_image: string | null;
+    type: string | null;
+    coordinate?: [number, number]; 
+}
+export interface RouteInfo {
+  geometry: any;
+  duration: number;
+  distance: number;
 }

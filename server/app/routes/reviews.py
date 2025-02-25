@@ -40,7 +40,7 @@ async def create_review(review: ReviewCreate, user=Depends(get_current_user)):
 async def get_reviews(product_id: int):
     response = (
         supabase_client.table("reviews")
-        .select("*, users(first_name, last_name)")  # Fetch first_name and last_name from users
+        .select("*, users(first_name, last_name)")
         .eq("product_id", product_id)
         .execute()
     )

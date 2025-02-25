@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
-import { COLORS, FONTS } from '../assets/constants/constant';
+import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 import { useNavigation } from '@react-navigation/native';
 import { Product, RootStackParamList } from '../../types/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -50,6 +50,12 @@ const ProductList = () => {
               source={{ uri: product.image_urls[0] }}
               style={styles.productImage}
             />
+            <View style={styles.starContainer}>
+              <View style={styles.ratings}>
+                <FontAwesomeIcon icon={faStar} color={COLORS.secondary} size={12} />
+                <Text style={styles.starText}> {product.average_rating || 'N/A'}</Text>
+              </View>
+            </View>
             <View style={styles.cardContent}>
               <Text style={styles.cardText} numberOfLines={1}>
                 {product.name}
@@ -57,10 +63,7 @@ const ProductList = () => {
               <Text style={styles.locationText} numberOfLines={1}>
                 {product.address}
               </Text>
-              <View style={styles.starContainer}>
-                <FontAwesomeIcon icon={faStar} color={COLORS.secondary} size={12} />
-                <Text style={styles.starText}> {product.average_rating || 'N/A'}</Text>
-              </View>
+
             </View>
           </TouchableOpacity>
         ))}
@@ -87,7 +90,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -104,7 +107,18 @@ const styles = StyleSheet.create({
   starContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 5,
+    position: 'absolute',
+    top: 150,
+    right:5
+  },
+  ratings: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.lightgray,
+    borderRadius: 4,
+    padding: 2,
+    opacity:0.9,
   },
   starText: {
     color: COLORS.gray,
@@ -114,13 +128,13 @@ const styles = StyleSheet.create({
   cardText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
-    fontFamily: FONTS.regular,
+    color: COLORS.black,
+    fontFamily: FONTS.bold,
     marginBottom: 4,
   },
   locationText: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: FONT_SIZE.small,
+    color: COLORS.gray,
     fontFamily: FONTS.regular,
   },
   errorContainer: {

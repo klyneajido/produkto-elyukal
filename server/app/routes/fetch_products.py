@@ -24,7 +24,7 @@ async def fetch_products():
             .execute()
         ) 
         ratings = [r["rating"] for r in ratings_response.data]
-        product["average_rating"] = round(sum(ratings) / len(ratings), 1) if ratings else 0
+        product["average_rating"] = "{:.1f}".format(round(sum(ratings) / len(ratings), 1)) if ratings else 0
         product["total_reviews"] = len(ratings)
 
     return {"products": products}

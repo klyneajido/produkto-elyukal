@@ -4,12 +4,13 @@ export const COLORS:Record<string,string> = {
     secondary:"#FFD700",
     white:"#F5EFE7",
     black: "#000000",
-    gray:"#CCCCCC"
+    gray:"#727D73",
+    lightgray:"#ECEBDE"
 }as const;
 
 //FONT SIZES
 export const FONT_SIZE:Record<string,number> ={
-    small:11,
+    small:10,
     medium: 13,
     large:20,
     extraLarge:24,

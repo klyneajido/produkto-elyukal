@@ -10,8 +10,6 @@ import {
     Platform,
     Alert,
     ActivityIndicator,
-    Button,
-    TextInput
 } from 'react-native';
 import { ViroARSceneNavigator, ViroARScene, ViroTrackingState, ViroARSceneNavigator as ViroARSceneNavigatorType } from '@viro-community/react-viro';
 import {
@@ -30,11 +28,7 @@ import { PERMISSIONS, request } from 'react-native-permissions';
 import { faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
 import * as Animatable from 'react-native-animatable';
 import styles from '../assets/style/productDetailStyle';
-import axios from 'axios';
-import { useAuth } from '../../contextAuth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BASE_URL } from '../config/config';
-import { Review, Product, ProductARSceneProps, RootStackParamList } from '../../types/types';
+import { Product, ProductARSceneProps, RootStackParamList } from '../../types/types';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ReviewList from '../components/ReviewList';
 
@@ -78,91 +72,6 @@ const ProductDetails: React.FC<Product> = () => {
     const { product } = route.params;
     // Use the ViroARSceneNavigator type directly
     const arNavigatorRef: RefObject<ViroARSceneNavigatorType> = useRef(null);
-    const [reviews, setReviews] = useState<Review[]>([]);
-    const [loadingReviews, setLoadingReviews] = useState(true);
-    const [reviewText, setReviewText] = useState('');
-    const [rating, setRating] = useState(0);
-    const [submitting, setSubmitting] = useState(false);
-    const { user } = useAuth();
-
-    useEffect(() => {
-        const abortController = new AbortController();
-        const fetchReviews = async () => {
-            try {
-                const response = await axios.get(`${BASE_URL}/reviews/${product.id}`, {
-                    signal: abortController.signal,
-                });
-                console.log(response.data);
-                setReviews(response.data);
-            } catch (error: any) {
-                if (error.name === 'AbortError') {
-                    console.log('Review fetch aborted');
-                } else {
-                    console.error('Error fetching reviews:', error.message, error.response?.data);
-                }
-            } finally {
-                setLoadingReviews(false);
-            }
-        };
-        fetchReviews();
-        return () => abortController.abort();
-    }, [product.id]);
-
-    const submitReview = async () => {
-        if (!user || (user as any).guest) {
-            Alert.alert('Login Required', 'Please Log in as a Registered User to submit a Review');
-            return;
-        }
-        if (!reviewText || rating < 1 || rating > 5) {
-            Alert.alert('Invalid Input', 'Please provide a review and a rating between 1 and 5.');
-            return;
-        }
-        setSubmitting(true);
-        const abortController = new AbortController();
-        try {
-            const token = await AsyncStorage.getItem('token');
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
-            console.log('Submitting with token:', token);
-            console.log('Payload:', { product_id: product.id, rating, review_text: reviewText });
-
-            const response = await axios.post(
-                `${BASE_URL}/reviews/`,
-                {
-                    product_id: product.id,
-                    rating,
-                    review_text: reviewText
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    signal: abortController.signal,
-                }
-            );
-            console.log('Response:', response.data);
-
-            const fetchResponse = await axios.get(`${BASE_URL}/reviews/${product.id}`, {
-                signal: abortController.signal,
-            });
-            setReviews(fetchResponse.data);
-
-            setReviewText('');
-            setRating(0);
-            Alert.alert('Success', 'Review submitted successfully!');
-        } catch (error: any) {
-            if (error.name === 'AbortError') {
-                console.log('Review submission aborted');
-            } else {
-                console.error('Error submitting review:', error.message, error.response?.data);
-                Alert.alert('Error', error.response?.data?.detail || 'Failed to submit review.');
-            }
-        } finally {
-            setSubmitting(false);
-        }
-    };
 
     const requestCameraPermission = async () => {
         try {

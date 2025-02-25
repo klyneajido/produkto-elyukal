@@ -22,80 +22,18 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { BASE_URL } from '../config/config.ts';
-import { COLORS, FONTS } from '../assets/constants/constant';
+import { COLORS } from '../assets/constants/constant';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../types/types';
+import { Product, ProductsProps, RootStackParamList } from '../../types/types';
 import styles from '../assets/style/productStyle.js';
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  category: string;
-  price: number;
-  location_name: string;
-  address: string;
-  latitude: string;
-  longitude: string;
-  ar_asset_url: string;
-  image_urls: string[];
-  in_stock: boolean;
-  rating: number;
-  store_id: string;
-}
-
-interface ProductsProps {
-  navigation: {
-    navigate: (screen: string, params?: any) => void;
-  };
-}
+import ProductList from '../components/ProductList.tsx';
 
 const priceRanges = [
   { label: 'Under $50', value: 'under50', min: 0, max: 50 },
   { label: '$50 - $100', value: '50to100', min: 50, max: 100 },
   { label: 'Over $100', value: 'over100', min: 100, max: Infinity },
 ];
-
-const ProductList: React.FC<{ products: Product[] }> = ({ products }) => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-  return (
-    <View style={styles.productContainer}>
-      <View style={styles.productGrid}>
-        {products.map((product) => (
-          <TouchableOpacity
-            key={product.id}
-            style={styles.card}
-            onPress={() => navigation.navigate('ProductDetails', { product })}
-          >
-            <Image
-              source={{ uri: product.image_urls[0] }}
-              style={styles.productImage}
-            />
-            <View style={styles.cardContent}>
-              <Text style={styles.cardText} numberOfLines={1}>
-                {product.name}
-              </Text>
-              <Text style={styles.locationText} numberOfLines={1}>
-                {product.address}
-              </Text>
-              <View style={styles.starContainer}>
-                <FontAwesomeIcon icon={faStar} color={COLORS.secondary} size={12} />
-                <Text style={styles.starText}> {product.rating || 'N/A'}</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-        {products.length === 0 && (
-          <View style={styles.noResults}>
-            <Text style={styles.noResultsText}>No products found</Text>
-          </View>
-        )}
-      </View>
-    </View>
-  );
-};
 
 const Products: React.FC<ProductsProps> = ({ navigation }) => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -290,8 +228,8 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
           </View>
         </Modal>
 
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <ProductList products={filteredProducts} />
+        <ScrollView style={styles.productContainer} showsVerticalScrollIndicator={false}>
+            <ProductList />
         </ScrollView>
       </View>
     </SafeAreaView>

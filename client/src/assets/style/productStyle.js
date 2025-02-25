@@ -4,7 +4,7 @@ import { COLORS, FONTS, FONT_SIZE } from '../constants/constant';
 const styles = StyleSheet.create({
    container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: COLORS.white,
   },
   content: {
     flex: 1,
@@ -155,46 +155,9 @@ const styles = StyleSheet.create({
   },
   productContainer: {
     flex: 1,
-    padding: 16,
+
   },
-  productGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingBottom: 24,
-  },
-  card: {
-    width: '48%',
-    backgroundColor: '#FFFF',
-    borderRadius: 20,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 6,
-    overflow: 'hidden',
-  },
-  productImage: {
-    width: '100%',
-    height: 180,
-    resizeMode: 'cover',
-  },
-  cardContent: {
-    padding: 16,
-  },
-  cardText: {
-    fontSize: FONT_SIZE.medium + 1,
-    fontFamily: FONTS.bold,
-    color: COLORS.black,
-    marginBottom: 6,
-  },
-  locationText: {
-    fontSize: FONT_SIZE.small,
-    fontFamily: FONTS.medium,
-    color: COLORS.gray,
-    marginBottom: 8,
-  },
+
   priceText: {
     fontSize: FONT_SIZE.medium + 2,
     color: COLORS.primary,
