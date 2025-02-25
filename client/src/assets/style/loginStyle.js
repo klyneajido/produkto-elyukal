@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
-import { COLORS, FONTS, FONT_SIZE, FONT_SIZES } from "../constants/constant";
+import { COLORS, FONTS} from "../constants/constant";
 
 const screenWidth = Dimensions.get("window").width;
 const loginSignupStyles = StyleSheet.create({
@@ -31,7 +31,7 @@ const loginSignupStyles = StyleSheet.create({
   subText: {
     marginLeft: 15,
     fontFamily: FONTS.regular,
-    color: COLORS.gray,
+    color: COLORS.lightgray,
   },
   logo: {
     width: 100,
@@ -39,9 +39,9 @@ const loginSignupStyles = StyleSheet.create({
     borderRadius: 50,
   },
   appTitle: {
-    fontFamily: "OpenSans-Bold",
+    fontFamily: FONTS.bold,
     fontSize: 22,
-    color: "#333",
+    color:  COLORS.black,
     marginTop: 15,
   },
   formContainer: {
@@ -59,57 +59,57 @@ const loginSignupStyles = StyleSheet.create({
   input: {
     flex: 1,
     height: 50,
-    fontFamily: "OpenSans-Regular",
-    color: "#333",
+    fontFamily: FONTS.regular,
+    color: COLORS.black,
   },
   forgotPasswordContainer: {
     alignSelf: "flex-end",
     marginBottom: 20,
   },
   forgotPasswordText: {
-    fontFamily: "OpenSans-Regular",
-    color: "#666",
+    fontFamily: FONTS.regular,
+    color: COLORS.lightgray,
   },
   loginButton: {
-    backgroundColor: "#ffd700",
+    backgroundColor: COLORS.secondary,
     height: 50,
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
   },
-  // New style for Continue as Guest button
+
   continueGuestButton: {
-    backgroundColor: COLORS.white, // White background
+    backgroundColor: COLORS.white, 
     height: 50,
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
-    borderWidth: 2, // Add border to distinguish it
-    borderColor: "#ffd700", // Gold border to match theme
+    borderWidth: 2, 
+    borderColor: COLORS.secondary, 
   },
   loginButtonText: {
-    fontFamily: "OpenSans-Semibold",
-    color: "#fff",
+    fontFamily: FONTS.regular,
+    color: COLORS.white,
     fontSize: 16,
   },
   // New text style for Continue as Guest button
   continueGuestButtonText: {
-    fontFamily: "OpenSans-Semibold",
-    color: "#ffd700", // Gold text to match theme
+    fontFamily: FONTS.semibold,
+    color: COLORS.secondary, 
     fontSize: 16,
   },
   signupButton: {
-    backgroundColor: "#ffd700",
+    backgroundColor: COLORS.secondary,
     height: 50,
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
   },
   signupButtonText: {
-    fontFamily: "OpenSans-Semibold",
-    color: "#fff",
+    fontFamily: FONTS.semibold,
+    color: COLORS.white,
     fontSize: 16,
   },
   signupContainer: {
@@ -123,20 +123,20 @@ const loginSignupStyles = StyleSheet.create({
     marginTop: 20,
   },
   signupText: {
-    fontFamily: "OpenSans-Regular",
-    color: "#666",
+    fontFamily: FONTS.regular,
+    color: COLORS.lightgray,
   },
   loginText: {
-    fontFamily: "OpenSans-Regular",
-    color: "#666",
+    fontFamily: FONTS.regular,
+    color: COLORS.gray,
   },
   signupLinkText: {
-    fontFamily: "OpenSans-Semibold",
-    color: "#ffd700",
+    fontFamily: FONTS.semibold,
+    color: COLORS.secondary,
   },
   loginLinkText: {
-    fontFamily: "OpenSans-Semibold",
-    color: "#ffd700",
+    fontFamily: FONTS.semibold,
+    color: COLORS.secondary,
   },
   errorContainer: {
     backgroundColor: "rgba(255,0,0,0.1)",
@@ -149,7 +149,7 @@ const loginSignupStyles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    fontFamily: "OpenSans-Regular",
+    fontFamily: FONTS.regular,
     textAlign: "center",
   },
   eyeIcon: {
