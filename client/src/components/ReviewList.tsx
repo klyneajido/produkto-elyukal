@@ -31,7 +31,6 @@ export default function ReviewList() {
                 const response = await axios.get(`${BASE_URL}/reviews/${product.id}`, {
                     signal: abortController.signal,
                 });
-                console.log(response.data);
                 setReviews(response.data);
             } catch (error: any) {
                 if (error.name === 'AbortError') {

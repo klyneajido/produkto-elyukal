@@ -11,7 +11,6 @@ type AllReviewsRouteProp = RouteProp<RootStackParamList, 'Reviews'>;
 const ReviewScreen: React.FC = () => {
     const route = useRoute<AllReviewsRouteProp>();
     const reviews = route.params.reviews;
-    const [loadingReviews, setLoadingReviews] = useState(true);
     const [reviewText, setReviewText] = useState('');
     const [rating, setRating] = useState(0);
     const [submitting, setSubmitting] = useState(false);
@@ -24,11 +23,10 @@ const ReviewScreen: React.FC = () => {
                 year: "numeric",
             });
         }
+        console.log(reviews)
         return (
             <View>
-                {loadingReviews ? (
-                    <ActivityIndicator size="small" color={COLORS.secondary} />
-                ) : reviews.length > 0 ? (
+                {reviews.length > 0 ? (
                     reviews.map((review, index) => (
                         <View key={index} style={styles.reviewCard}>
                             <View style={styles.topCardContainer}>

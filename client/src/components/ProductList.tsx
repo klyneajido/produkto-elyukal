@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.small,
     color: COLORS.gray,
     fontFamily: FONTS.regular,
-    borderWidth:1
+
   },
   errorContainer: {
     flex: 1,
