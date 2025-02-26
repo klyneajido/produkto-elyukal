@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFF',
-        position: 'relative',
+       
     },
 
     headerContainer: {
@@ -55,12 +55,12 @@ const styles = StyleSheet.create({
     },
 
     detailsContainer: {
-        padding: 20,
         paddingBottom: 80,
     },
 
     pricingContainer: {
         flexDirection: 'row',
+        margin: 20,
         justifyContent: 'space-between',
         marginBottom: 20,
     },
@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: '#FDD700',
         padding: 15,
+        margin: 20,
         borderRadius: 10,
         marginBottom: 20,
         shadowColor: '#000',
@@ -118,6 +119,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         borderBottomColor: '#FDD700',
         paddingBottom: 5,
+        marginHorizontal: 20,
     },
 
     productDescription: {
@@ -126,6 +128,7 @@ const styles = StyleSheet.create({
         lineHeight: 24,
         textAlign: 'justify',
         marginBottom: 20,
+        marginHorizontal: 20,
     },
 
     disclaimerContainer: {
@@ -133,6 +136,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10,
         marginBottom: 20,
+        marginHorizontal: 20,
     },
 
     disclaimerText: {
@@ -147,6 +151,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F8F8',
         padding: 15,
         borderRadius: 10,
+        marginHorizontal: 20,
     },
 
     locationText: {
@@ -273,6 +278,7 @@ const styles = StyleSheet.create({
         elevation: 3,
         borderWidth: 1,
         borderColor: '#FDD70033',
+        marginHorizontal: 20,
     },
     
     storeImage: {

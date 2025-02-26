@@ -18,14 +18,10 @@ import {
   faTimes,
   faCheckSquare,
   faSquare,
-  faStar,
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { BASE_URL } from '../config/config.ts';
-import { COLORS } from '../assets/constants/constant';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Product, ProductsProps, RootStackParamList } from '../../types/types';
+import { Product, ProductsProps } from '../../types/types';
 import styles from '../assets/style/productStyle.js';
 import ProductList from '../components/ProductList.tsx';
 

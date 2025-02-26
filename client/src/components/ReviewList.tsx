@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contextAuth";
 import { Review, RootStackParamList } from "../../types/types";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import { BASE_URL } from "../config/config";
-import { ActivityIndicator, Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
-import { COLORS, FONTS } from "../assets/constants/constant";
+import { COLORS, FONT_SIZE, FONTS } from "../assets/constants/constant";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack/lib/typescript/src/types";
 
 type ProductDetailsRouteProp = RouteProp<RootStackParamList, 'ProductDetails'>;
 
 export default function ReviewList() {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const [loadingReviews, setLoadingReviews] = useState(true);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [reviewText, setReviewText] = useState('');
@@ -100,15 +102,33 @@ export default function ReviewList() {
             setSubmitting(false);
         }
     };
+
+    // date format
+    const formatDate = (timestamp: string): string => {
+        const date = new Date(timestamp);
+        return date.toLocaleString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+    }
     return (
-        <View>
-            <Text style={styles.sectionTitle}>Reviews</Text>
+        <View style={styles.reviewContainer}>
+            <View style={styles.topHeader}>
+                <Text style={styles.title}>Reviews</Text>
+                <TouchableOpacity onPress={() => {navigation.navigate('Reviews', {reviews: reviews})}}>
+                    <Text style={styles.subTitle}>See More</Text>
+                </TouchableOpacity>
+            </View>
             {loadingReviews ? (
                 <ActivityIndicator size="small" color="#FDD700" />
             ) : reviews.length > 0 ? (
-                reviews.map((review, index) => (
+                reviews.slice(0, 2).map((review, index) => (
                     <View key={index} style={styles.reviewCard}>
-                        <Text style={styles.reviewUsername}>{review.full_name}</Text>
+                        <View style={styles.topCardContainer}>
+                            <Text style={styles.reviewUsername}>{review.full_name}</Text>
+                            <Text style={styles.reviewDate}>{formatDate(review.created_at)}</Text>
+                        </View>
                         <View style={styles.starContainer}>
                             {Array.from({ length: Math.floor(review.rating) }).map((_, i) => (
                                 <FontAwesomeIcon
@@ -135,7 +155,7 @@ export default function ReviewList() {
                         onChangeText={setReviewText}
                         multiline
                     />
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, marginHorizontal: 20, }}>
                         <Text style={styles.text}>Rating: </Text>
                         {[1, 2, 3, 4, 5].map((star) => (
                             <TouchableOpacity key={star} onPress={() => setRating(star)}>
@@ -164,70 +184,98 @@ export default function ReviewList() {
     );
 };
 const styles = StyleSheet.create({
-    sectionTitle: {
-        fontSize: 20,
-        fontFamily: FONTS.bold,
-        color: '#333',
-        marginBottom: 10,
+    reviewContainer: {
+
+    },
+    topHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         borderBottomWidth: 2,
         borderBottomColor: COLORS.secondary,
         paddingBottom: 5,
+        marginBottom: 10,
+        marginHorizontal: 20,
+    },
+    sectionTitle: {
+        fontSize: FONT_SIZE.large,
+        fontFamily: FONTS.bold,
+        color: '#333',
+        marginHorizontal: 20,
+    },
+    title: {
+        fontSize: FONT_SIZE.large,
+        fontFamily: FONTS.bold,
+        color: '#333',
+    },
+    subTitle: {
+        fontSize: FONT_SIZE.medium,
+        fontFamily: FONTS.regular,
+        color: COLORS.primary,
     },
     text: {
         color: COLORS.black,
     },
     submitButton: {
-        marginTop:10,
-        backgroundColor: COLORS.primary, 
+        marginTop: 10,
+        backgroundColor: COLORS.primary,
         paddingVertical: 14,
-        paddingHorizontal: 20, 
-        borderRadius: 14, 
+        paddingHorizontal: 20,
+        borderRadius: 14,
         alignItems: "center",
         justifyContent: "center",
-        shadowColor: COLORS.primary, 
+        shadowColor: COLORS.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 6,
         elevation: 5,
         borderWidth: 1,
-        borderColor: "rgba(255, 255, 255, 0.2)", 
-      },
-      submitButtonDisabled: {
+        borderColor: "rgba(255, 255, 255, 0.2)",
+        marginHorizontal: 20,
+    },
+    submitButtonDisabled: {
         backgroundColor: COLORS.lightgray,
-        borderColor: "rgba(0, 0, 0, 0.1)", 
-      },
-      submitButtonText: {
+        borderColor: "rgba(0, 0, 0, 0.1)",
+        marginHorizontal: 20,
+    },
+    submitButtonText: {
         fontSize: 16,
         fontFamily: FONTS.semibold,
         color: "white",
-        letterSpacing: 0.5, 
-        textTransform: "uppercase", 
-      },
+        letterSpacing: 0.5,
+        textTransform: "uppercase",
+        marginHorizontal: 20,
+    },
     reviewCard: {
         backgroundColor: '#fefefe',
         padding: 16,
-        marginVertical: 8,
         borderRadius: 8,
         shadowColor: COLORS.black,
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.22,
-        shadowRadius: 2.22,
         borderLeftColor: COLORS.primary,
         borderLeftWidth: 4,
-        elevation: 3
+        marginHorizontal: 5,
+        borderBottomColor: COLORS.lightgray,
+        borderBottomWidth: 1
+    },
+    topCardContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
     reviewUsername: {
-        fontSize: 16,
-        fontFamily: FONTS.bold,
-        marginBottom:2,
+        fontSize: FONT_SIZE.medium,
+        fontFamily: FONTS.semibold,
+        marginBottom: 2,
         color: COLORS.black,
     },
+    reviewDate: {
+        fontSize: FONT_SIZE.medium - 2,
+        fontFamily: FONTS.regular,
+        color: COLORS.gray,
+    },
     reviewComment: {
-        fontSize: 14,
-        marginBottom: 8,
+        fontSize: FONT_SIZE.small + 2,
+        marginVertical: 8,
         color: COLORS.black,
     },
     starContainer: {
@@ -238,6 +286,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: COLORS.gray,
         marginTop: 16,
+        marginHorizontal: 20,
     },
     input: {
         borderWidth: 1,
@@ -247,5 +296,6 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         minHeight: 60,
         color: COLORS.black,
+        marginHorizontal: 20,
     }
 });

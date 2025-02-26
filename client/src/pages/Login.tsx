@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -12,7 +12,7 @@ import {
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
-import styles from '../assets/style/loginStyle'; // Ensure this is the correct path
+import styles from '../assets/style/loginStyle';
 import InputText from '../components/TextInput.tsx';
 import { COLORS } from '../assets/constants/constant';
 import AsyncStorage from "@react-native-async-storage/async-storage";

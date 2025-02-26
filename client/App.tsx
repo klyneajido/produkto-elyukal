@@ -15,6 +15,7 @@ import AuthProvider, { useAuth } from './contextAuth';
 import EventDetails from './src/pages/EventDetails';
 import StoreDetails  from './src/pages/StoreDetails';
 import { ActivityIndicator, View } from 'react-native';
+import ReviewScreen from './src/pages/Reviews';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +43,7 @@ const AppNavigator = () => {
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
       <Stack.Screen name="Tabs" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="Reviews" component={ReviewScreen} />
       <Stack.Screen name="EventDetails" component={EventDetails} options={{ headerShown: false }} />
       <Stack.Screen name="TestEnv" component={TestEnv} options={{ headerShown: false }} />
       <Stack.Screen name="StoreDetails" component={StoreDetails}  options={{ headerShown: false }} />

@@ -8,6 +8,7 @@ export type RootStackParamList = {
   Tabs: undefined;
   ProductDetails: { product: Product };
   Products: undefined;
+  Reviews:{reviews: Review[]};
   EventDetails: { eventId: string };
   StoreDetails: { store: Store };
   MapView: {longitude: number, latitude:number}

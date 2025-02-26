@@ -6,7 +6,6 @@ import {
     Text,
     View,
     Image,
-    Linking,
     Platform,
     Alert,
     ActivityIndicator,
@@ -28,7 +27,7 @@ import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import * as Animatable from 'react-native-animatable';
 import styles from '../assets/style/productDetailStyle';
-import { Product, ProductARSceneProps, RootStackParamList } from '../../types/types';
+import { ProductARSceneProps, RootStackParamList } from '../../types/types';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ReviewList from '../components/ReviewList';
 import axios from 'axios';
@@ -320,8 +319,7 @@ const ProductDetails: React.FC = () => {
                         </TouchableOpacity>
                     )}
 
-                    {/* Reviews Section */}
-                    <ReviewList />
+                   <ReviewList/>
                 </View>
             </ScrollView>
         </SafeAreaView>
