@@ -8,15 +8,17 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Modal,
 } from 'react-native';
 import styles from '../assets/style/homeStyle.js';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+
 import {
   faSearch,
- 
 } from '@fortawesome/free-solid-svg-icons';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProductList from '../components/ProductList.tsx';
 import { RootStackParamList} from '../../types/types.ts';
@@ -27,6 +29,8 @@ const Home: React.FC = () => {
   // const { user } = useAuth();
   const [searchText, setSearchText] = useState<string>('');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showCalendar, setShowCalendar] = useState(false); 
+  const [selectedDate, setSelectedDate] = useState(new Date()); 
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -222,14 +226,64 @@ const Home: React.FC = () => {
             <View style={styles.divider} />
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderTitle}>Upcoming Events</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => setShowCalendar(true)}>
                 <Text style={styles.sectionHeaderLink}>View Calendar</Text>
               </TouchableOpacity>
             </View>
-              <EventList />
-            </View>
+            <EventList />
+          </View>
          
           </View>
+        {/* Footer Section */}
+        <View style={styles.footerContainer}>
+          <View style={styles.footerTop}>
+            <Image
+              source={require('../assets/img/logo.png')}
+              style={styles.footerLogo}
+              resizeMode="contain"
+            />
+            <Text style={styles.footerTagline}>Connecting You to La Union's Local Products</Text>
+          </View>
+
+          <View style={styles.footerDivider} />
+
+          <View style={styles.footerLinks}>
+            <TouchableOpacity style={styles.footerLinkItem}>
+              <Text style={styles.footerLinkText}>About Us</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.footerLinkItem}>
+              <Text style={styles.footerLinkText}>Contact</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.footerLinkItem}>
+              <Text style={styles.footerLinkText}>Terms</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.footerLinkItem}>
+              <Text style={styles.footerLinkText}>Privacy</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.socialLinks}>
+            <TouchableOpacity style={styles.socialIcon}>
+              <Image
+                style={styles.image}
+                source={require('../assets/img/facebook-icon.png')} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialIcon}>
+              <Image
+                style={styles.image}
+                source={require('../assets/img/instagram-icon.png')} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialIcon}>
+              <Image
+                style={styles.image}
+                source={require('../assets/img/twitter-icon.png')} 
+              />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.copyright}>© 2025 Produkto Elyukal. Amin to, gawa namin to.</Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

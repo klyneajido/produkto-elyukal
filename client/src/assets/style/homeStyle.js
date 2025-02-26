@@ -418,7 +418,107 @@ imageBadgeText: {
   fontFamily: FONTS.bold,
   fontSize: 12,
   color: COLORS.primary,
-}
+},
+footerContainer: {
+  backgroundColor: COLORS.white,
+  paddingHorizontal: 20,
+  paddingTop: 30,
+  paddingBottom: 40,
+  marginTop: 20,
+  borderTopLeftRadius: 30,
+  borderTopRightRadius: 30,
+},
+footerTop: {
+  alignItems: 'center',
+  marginBottom: 20,
+},
+footerLogo: {
+  width: 70,
+  height: 70,
+  marginBottom: 10,
+  borderRadius: 100,
+},
+footerTagline: {
+  fontFamily: FONTS.medium,
+  fontSize: 14,
+  color: COLORS.black,
+  opacity: 0.7,
+  textAlign: 'center',
+},
+footerDivider: {
+  height: 1,
+  backgroundColor: COLORS.black,
+  opacity: 0.1,
+  marginVertical: 20,
+},
+footerLinks: {
+  flexDirection: 'row',
+  justifyContent: 'center',
+  flexWrap: 'wrap',
+  marginBottom: 25,
+},
+footerLinkItem: {
+  marginHorizontal: 12,
+  marginVertical: 8,
+},
+footerLinkText: {
+  fontFamily: FONTS.medium,
+  fontSize: 14,
+  color: COLORS.black,
+},
+socialLinks: {
+  flexDirection: 'row',
+  justifyContent: 'center',
+  marginBottom: 25,
+},
+socialIcon: {
+  width: 36,
+  height: 36,
+  borderRadius: 18,
+  backgroundColor: 'transparent',
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginHorizontal: 8,
+},
+socialIconText: {
+  color: COLORS.white,
+  fontFamily: FONTS.semibold,
+  fontSize: 12,
+},
+copyright: {
+  fontFamily: FONTS.regular,
+  fontSize: 12,
+  color: COLORS.black,
+  opacity: 0.5,
+  textAlign: 'center',
+},
+calendarOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+  },
+  calendarContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  closeButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 });
 
 export default styles;
