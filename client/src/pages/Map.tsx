@@ -38,11 +38,10 @@ interface Store {
     rating: number;
     store_image: string | null;
     type: string | null;
-    coordinate?: [number, number]; 
+    coordinate?: [number, number];
 }
 type RootStackParamList = {
     StoreDetails: { store: Store };
-    // Add other screen names and their params here
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'StoreDetails'>;
@@ -114,8 +113,8 @@ const MapView = () => {
 
                 // Extract unique store types
                 const validTypes = processedStores
-                    .map((store) => store.type)
-                    .filter((type): type is string => type !== null); // Type predicate
+                    .map((store: Store) => store.type)
+                    .filter((type): type is string => type !== null);
                 const storeTypesSet = new Set<string>(validTypes);
                 const types: string[] = ['All', ...storeTypesSet];
                 setStoreTypes(types);
@@ -129,7 +128,7 @@ const MapView = () => {
                     });
                 }
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error fetching stores:', err);
             setError('Failed to load store data. Please try again later.');
         } finally {
@@ -196,7 +195,6 @@ const MapView = () => {
         setSelectedStore(store);
         setRouteInfo(null);
 
-
         const verticalOffset = -0.003; // Adjust this value as needed for your specific map scale
 
         if (store.coordinate) {
@@ -232,9 +230,7 @@ const MapView = () => {
             setIsLocationPermissionGranted(true);
             if (userLocation && selectedStore) {
                 try {
-                    // Use coordinate if available, otherwise use lat/long
-                    const destination = selectedStore.coordinate ||
-                        [selectedStore.longitude, selectedStore.latitude];
+                    const destination = selectedStore.coordinate || [selectedStore.longitude, selectedStore.latitude];
 
                     const response = await directionsClient.getDirections({
                         profile: 'driving',
@@ -332,7 +328,7 @@ const MapView = () => {
     };
 
     const renderAnnotations = () => (
-        filteredStores.map((store) => {
+        filteredStores.map((store: Store) => { // Explicitly typed store as Store
             // Determine coordinate for marker
             const coordinate = store.coordinate || [store.longitude, store.latitude];
 
@@ -550,7 +546,8 @@ const MapView = () => {
                         id="route"
                         shape={{
                             type: 'Feature',
-                            geometry: routeInfo.geometry
+                            geometry: routeInfo.geometry,
+                            properties: {}
                         }}
                     >
                         <MapboxGL.LineLayer
@@ -630,7 +627,7 @@ const MapView = () => {
             {/* Search Results */}
             {showSearchResults && filteredStores.length > 0 && (
                 <ScrollView style={styles.searchResults}>
-                    {filteredStores.map((store, index) => (
+                    {filteredStores.map((store: Store, index) => ( // Explicitly typed store as Store
                         <TouchableOpacity
                             key={store.store_id}
                             style={[
