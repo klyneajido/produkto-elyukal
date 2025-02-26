@@ -15,11 +15,11 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     annotationImage: {
-        width: 36,  // A bit smaller than the container
+        width: 36,  
         height: 36,
         borderRadius: 18, 
         borderWidth: 1.5,
-        borderColor: COLORS.primary,
+        borderColor: COLORS.secondary,
     },
     labelContainer: {
         backgroundColor: 'white',
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     navigateButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#2196F3',
+        backgroundColor: COLORS.secondary,
         padding: 12,
         borderRadius: 8,
         marginTop: 10,
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
         opacity: 0.8,    
     },
     modalButtonAllow: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: COLORS.secondary,
     },
     modalButtonText: {
         color: COLORS.white,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
 viewDetailsButton: {
     backgroundColor: 'white',
     borderWidth: 2,
-    borderColor: '#2196F3',
+    borderColor: COLORS.secondary,
     padding: 12,
     borderRadius: 8,
     marginTop: 10,
@@ -457,7 +457,7 @@ viewDetailsButton: {
     elevation: 3,
 },
 viewDetailsButtonText: {
-    color: '#2196F3',
+    color: COLORS.secondary,
     fontSize: 16,
     fontFamily: 'OpenSans-Bold',
     textAlign: 'center',

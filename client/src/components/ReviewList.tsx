@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     },
     submitButton: {
         marginTop: 15,
-        backgroundColor: COLORS.primary,
+        backgroundColor: COLORS.secondary,
         paddingVertical: 14,
         paddingHorizontal: 20,
         borderRadius: 14,
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     emptyStateButton: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: COLORS.secondary,
         paddingVertical: 12,
         paddingHorizontal: 24,
         borderRadius: 25,

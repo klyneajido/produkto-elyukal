@@ -1,30 +1,49 @@
 import { DefaultTheme, configureFonts } from 'react-native-paper';
 
-// Define your custom font configuration
-const fontConfig = {
+type FontConfig = {
+  [key: string]: {
+    [key: string]: {
+      fontFamily: string;
+      fontWeight?: 'normal' | 'bold' | '500';
+      fontSize?: number;
+      letterSpacing?: number;
+      lineHeight?: number;
+    };
+  };
+};
+
+const fontConfig: FontConfig = {
   default: {
     regular: {
       fontFamily: 'OpenSans-Regular',
       fontWeight: 'normal',
+      fontSize: 14,
+      letterSpacing: 0,
+      lineHeight: 20,
     },
     medium: {
       fontFamily: 'OpenSans-Semibold',
       fontWeight: '500',
+      fontSize: 14,
+      letterSpacing: 0,
+      lineHeight: 20,
     },
     bold: {
       fontFamily: 'OpenSans-Bold',
       fontWeight: 'bold',
+      fontSize: 14,
+      letterSpacing: 0,
+      lineHeight: 20,
     },
   },
-} as const;
+};
 
-// Create a custom theme
 export const theme = {
   ...DefaultTheme,
-  fonts: configureFonts({ config: fontConfig, isV3: true }), // Set `isV3: true` for React Native Paper v5+
+  fonts: configureFonts({ config: fontConfig, isV3: true }),
   colors: {
     ...DefaultTheme.colors,
-    primary: '#6200ee', // Customize your theme colors
+    primary: '#6200ee',
     accent: '#03dac4',
   },
 };

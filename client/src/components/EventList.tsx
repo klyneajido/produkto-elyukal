@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList, Event } from "../../types/types";
 import { useEffect, useState } from "react";
-import { BASE_URL } from "../config/config";
+import { BASE_URL } from "../config/config.ts";
 import {
     ScrollView,
     StyleSheet,
