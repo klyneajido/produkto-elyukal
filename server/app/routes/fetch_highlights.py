@@ -6,15 +6,19 @@ from typing import List
 router = APIRouter()
 
 @router.get("/fetch_highlights", response_model=List[Highlight])
-async def fetch_highlights():
+async def fetch_highlights(event_id: str = None):
     try:
-        # Logging for debugging
         print("Connecting to Supabase to fetch festival highlights...")
 
-        response = supabase_client.table("festival_highlights").select(
+        query = supabase_client.table("festival_highlights").select(
             "id, event_id, title, description, icon"
-        ).execute()
-
+        )
+        
+        if event_id:
+            query = query.eq("event_id", event_id)
+        
+        response = query.execute()
+        
         print("Supabase Response:", response)
 
         if not response.data:

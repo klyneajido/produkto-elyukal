@@ -136,36 +136,75 @@ const Home: React.FC = () => {
             </View>
           </View>
 
-          {/* Location Selector */}
-          <View style={styles.divider} />
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionHeaderTitle}>Explore by Location</Text>
+          {/* Enhanced Product Promotion */}
+          <View style={styles.enhancedPromo}>
+            <View style={styles.promoPattern}>
+              {/* Decorative elements */}
+              <View style={[styles.patternCircle, styles.patternCircle1]} />
+              <View style={[styles.patternCircle, styles.patternCircle2]} />
+              <View style={[styles.patternCircle, styles.patternCircle3]} />
+            </View>
+
+            <View style={styles.promoTextContainer}>
+              <Text style={styles.promoTagline}>LOCALLY CRAFTED</Text>
+              <Text style={styles.promoHeadline}>Support Local Products</Text>
+              <Text style={styles.promoSubtext}>
+                Empowering La Union's skilled artisans and preserving generations of craftsmanship.
+              </Text>
+
+              <View style={styles.promoStats}>
+                <View style={styles.promoStatItem}>
+                  <Text style={styles.promoStatNumber}>85%</Text>
+                  <Text style={styles.promoStatLabel}>Hidden local gems</Text>
+                </View>
+                <View style={styles.promoStatItem}>
+                  <Text style={styles.promoStatNumber}>12+</Text>
+                  <Text style={styles.promoStatLabel}>Unique traditions</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.promoImageContainer}>
+              <Image
+                source={require('../assets/img/feature4.png')}
+                style={styles.promoMainImage}
+              />
+              <View style={styles.imageBadge}>
+                <Text style={styles.imageBadgeText}>100% Local</Text>
+              </View>
+            </View>
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.discoverContainer}
-          >
-            {locations.map((location, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => setActiveIndex(index)}
-                style={[
-                  styles.discoverText,
-                  activeIndex === index && styles.activeDiscoverText
-                ]}
-              >
-                <Text
+
+          {/* Location Selector */}
+          {/* <View style={styles.divider} />
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionHeaderTitle}>Explore by Location</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.discoverContainer}
+            >
+              {locations.map((location, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => setActiveIndex(index)}
                   style={[
                     styles.discoverText,
-                    activeIndex === index && { opacity: 1 }
+                    activeIndex === index && styles.activeDiscoverText
                   ]}
                 >
-                  {location}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+                  <Text
+                    style={[
+                      styles.discoverText,
+                      activeIndex === index && { opacity: 1 }
+                    ]}
+                  >
+                    {location}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+          </ScrollView> */}
 
           {/* Products Section */}
           <View style={styles.sectionHeader}>
@@ -187,7 +226,7 @@ const Home: React.FC = () => {
                 <Text style={styles.sectionHeaderLink}>View Calendar</Text>
               </TouchableOpacity>
             </View>
-            {EventList()}
+              <EventList />
             </View>
          
           </View>
