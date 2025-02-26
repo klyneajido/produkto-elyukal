@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
+  RefreshControl
 } from 'react-native';
 import styles from '../assets/style/homeStyle.js';
 import { useNavigation } from '@react-navigation/native';
@@ -31,6 +32,7 @@ const Home: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showCalendar, setShowCalendar] = useState(false); 
   const [selectedDate, setSelectedDate] = useState(new Date()); 
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -41,7 +43,17 @@ const Home: React.FC = () => {
     };
     checkAuth();
   }, []);
-
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000)); 
+      console.log("Page refreshed!");
+    } catch (error) {
+      console.error("Refresh failed:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const categories = [
     { name: 'Handcraft', icon: require('../assets/img/handcraft.png') },
@@ -76,7 +88,18 @@ const Home: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#0000ff"]} // Customize the refresh indicator color
+            tintColor="#0000ff" // iOS spinner color
+          />
+        }
+      >
         <View style={styles.content}>
           {/* Top Section with Search */}
           <View style={styles.topContainer}>
@@ -141,6 +164,7 @@ const Home: React.FC = () => {
           </View>
 
           {/* Enhanced Product Promotion */}
+          <View style={styles.divider} />
           <View style={styles.enhancedPromo}>
             <View style={styles.promoPattern}>
               {/* Decorative elements */}
@@ -211,6 +235,7 @@ const Home: React.FC = () => {
           </ScrollView> */}
 
           {/* Products Section */}
+          <View style={styles.divider} />
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionHeaderTitle}>Popular Products</Text>
             <TouchableOpacity onPress={() => navigation.navigate("Products")}>
