@@ -5,7 +5,10 @@ export const COLORS:Record<string,string> = {
     white:"#F5EFE7",
     black: "#000000",
     gray:"#727D73",
-    lightgray:"#ECEBDE"
+    lightgray:"#ECEBDE",
+    container: "#F1F5F9", 
+    accent: "#1E293B",   
+    highlight: "#3498DB" 
 }as const;
 
 //FONT SIZES

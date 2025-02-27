@@ -80,7 +80,7 @@ const MapView = () => {
 
     const initialCamera = {
         centerCoordinate: [120.33591510283381, 16.668377634915878], // Default center
-        zoomLevel: 12,
+        zoomLevel: 10,
         pitch: 0,
         heading: 0
     };

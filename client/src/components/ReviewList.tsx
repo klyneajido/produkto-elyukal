@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../../contextAuth";
 import { Review, RootStackParamList } from "../../types/types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -7,7 +7,7 @@ import { BASE_URL } from "../config/config";
 import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faCommentSlash } from "@fortawesome/free-solid-svg-icons";
 import { COLORS, FONT_SIZE, FONTS } from "../assets/constants/constant";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack/lib/typescript/src/types";
 
@@ -23,6 +23,7 @@ export default function ReviewList() {
     const route = useRoute<ProductDetailsRouteProp>();
     const { product } = route.params;
     const { user } = useAuth();
+    const reviewInputRef = useRef<TextInput>(null);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -102,7 +103,6 @@ export default function ReviewList() {
         }
     };
 
-    // date format
     const formatDate = (timestamp: string): string => {
         const date = new Date(timestamp);
         return date.toLocaleString("en-GB", {
@@ -111,11 +111,18 @@ export default function ReviewList() {
             year: "numeric",
         });
     }
+
+    const focusReviewInput = () => {
+        if (reviewInputRef.current) {
+            reviewInputRef.current.focus();
+        }
+    };
+
     return (
         <View style={styles.reviewContainer}>
             <View style={styles.topHeader}>
                 <Text style={styles.title}>Reviews</Text>
-                <TouchableOpacity onPress={() => {navigation.navigate('Reviews', {reviews: reviews})}}>
+                <TouchableOpacity onPress={() => { navigation.navigate('Reviews', { reviews: reviews }) }}>
                     <Text style={styles.subTitle}>See More</Text>
                 </TouchableOpacity>
             </View>
@@ -142,35 +149,69 @@ export default function ReviewList() {
                     </View>
                 ))
             ) : (
-                <Text>No reviews yet.</Text>
+                <View style={styles.emptyStateContainer}>
+                    <View style={styles.emptyIconContainer}>
+                        <FontAwesomeIcon
+                            icon={faCommentSlash}
+                            size={40}
+                            color={COLORS.lightgray}
+                        />
+                    </View>
+                    <Text style={styles.emptyStateTitle}>No Reviews Yet</Text>
+                    <Text style={styles.emptyStateMessage}>
+                        Be the first to share your thoughts about this product!
+                    </Text>
+                    {user && !(user as any).guest ? (
+                        <TouchableOpacity
+                            style={styles.emptyStateButton}
+                            onPress={focusReviewInput}
+                        >
+                            <Text style={styles.emptyStateButtonText}>Write a Review</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity
+                            style={styles.emptyStateButton}
+                            onPress={() => navigation.navigate('Login')}
+                        >
+                            <Text style={styles.emptyStateButtonText}>Login to Review</Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
             )}
             {user && !(user as any).guest && (
-                <View style={{ marginVertical: 16 }}>
+                <View style={styles.addReviewContainer}>
                     <Text style={styles.sectionTitle}>Add Your Review</Text>
                     <TextInput
+                        ref={reviewInputRef}
                         style={styles.input}
                         placeholder="Write your review here..."
                         value={reviewText}
                         onChangeText={setReviewText}
                         multiline
                     />
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8, marginHorizontal: 20, }}>
+                    <View style={styles.ratingContainer}>
                         <Text style={styles.text}>Rating: </Text>
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <TouchableOpacity key={star} onPress={() => setRating(star)}>
-                                <FontAwesomeIcon
-                                    icon={faStar}
-                                    size={20}
-                                    color={star <= rating ? '#FDD700' : '#ccc'}
-                                />
-                            </TouchableOpacity>
-                        ))}
+                        <View style={styles.starsRow}>
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <TouchableOpacity
+                                    key={star}
+                                    onPress={() => setRating(star)}
+                                    style={styles.starButton}
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faStar}
+                                        size={24}
+                                        color={star <= rating ? '#FDD700' : '#E0E0E0'}
+                                    />
+                                </TouchableOpacity>
+                            ))}
+                        </View>
                     </View>
                     <TouchableOpacity
                         onPress={submitReview}
                         disabled={submitting}
                         style={[styles.submitButton, submitting && styles.submitButtonDisabled]}
-                        activeOpacity={0.8} // Subtle press feedback
+                        activeOpacity={0.8}
                     >
                         <Text style={styles.submitButtonText}>
                             {submitting ? "Submitting..." : "Submit Review"}
@@ -179,12 +220,12 @@ export default function ReviewList() {
                 </View>
             )}
         </View>
-
     );
 };
+
 const styles = StyleSheet.create({
     reviewContainer: {
-
+        marginBottom: 20,
     },
     topHeader: {
         flexDirection: 'row',
@@ -201,6 +242,7 @@ const styles = StyleSheet.create({
         fontFamily: FONTS.bold,
         color: '#333',
         marginHorizontal: 20,
+        marginBottom: 10,
     },
     title: {
         fontSize: FONT_SIZE.large,
@@ -214,10 +256,12 @@ const styles = StyleSheet.create({
     },
     text: {
         color: COLORS.black,
+        fontSize: FONT_SIZE.medium,
+        fontFamily: FONTS.regular,
     },
     submitButton: {
-        marginTop: 10,
-        backgroundColor: COLORS.primary,
+        marginTop: 15,
+        backgroundColor: COLORS.secondary,
         paddingVertical: 14,
         paddingHorizontal: 20,
         borderRadius: 14,
@@ -235,7 +279,6 @@ const styles = StyleSheet.create({
     submitButtonDisabled: {
         backgroundColor: COLORS.lightgray,
         borderColor: "rgba(0, 0, 0, 0.1)",
-        marginHorizontal: 20,
     },
     submitButtonText: {
         fontSize: 16,
@@ -243,7 +286,6 @@ const styles = StyleSheet.create({
         color: "white",
         letterSpacing: 0.5,
         textTransform: "uppercase",
-        marginHorizontal: 20,
     },
     reviewCard: {
         backgroundColor: '#fefefe',
@@ -252,9 +294,11 @@ const styles = StyleSheet.create({
         shadowColor: COLORS.black,
         borderLeftColor: COLORS.primary,
         borderLeftWidth: 4,
-        marginHorizontal: 5,
+        marginHorizontal: 20,
+        marginBottom: 12,
         borderBottomColor: COLORS.lightgray,
-        borderBottomWidth: 1
+        borderBottomWidth: 1,
+        elevation: 2,
     },
     topCardContainer: {
         flexDirection: 'row',
@@ -276,25 +320,105 @@ const styles = StyleSheet.create({
         fontSize: FONT_SIZE.small + 2,
         marginVertical: 8,
         color: COLORS.black,
+        lineHeight: 20,
     },
     starContainer: {
         flexDirection: 'row',
         gap: 4,
-    },
-    noReviews: {
-        textAlign: 'center',
-        color: COLORS.gray,
-        marginTop: 16,
-        marginHorizontal: 20,
+        marginVertical: 6,
     },
     input: {
         borderWidth: 1,
         borderColor: COLORS.lightgray,
-        borderRadius: 4,
-        padding: 8,
+        borderRadius: 8,
+        padding: 12,
         marginVertical: 8,
-        minHeight: 60,
+        minHeight: 80,
         color: COLORS.black,
         marginHorizontal: 20,
+        fontFamily: FONTS.regular,
+        fontSize: FONT_SIZE.medium,
+    },
+    ratingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 10,
+        marginHorizontal: 20,
+    },
+    starsRow: {
+        flexDirection: 'row',
+        marginLeft: 8,
+    },
+    starButton: {
+        padding: 5,
+    },
+    emptyStateContainer: {
+        backgroundColor: '#FAFAFA',
+        borderRadius: 12,
+        padding: 20,
+        marginHorizontal: 20,
+        marginVertical: 10,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#EEEEEE',
+        shadowColor: COLORS.black,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 2,
+    },
+    emptyIconContainer: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: '#F5F5F5',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 15,
+        borderWidth: 1,
+        borderColor: '#EEEEEE',
+    },
+    emptyStateTitle: {
+        fontSize: FONT_SIZE.large,
+        fontFamily: FONTS.bold,
+        color: COLORS.black,
+        marginBottom: 8,
+    },
+    emptyStateMessage: {
+        fontSize: FONT_SIZE.medium,
+        fontFamily: FONTS.regular,
+        color: COLORS.gray,
+        textAlign: 'center',
+        marginBottom: 20,
+        paddingHorizontal: 10,
+        lineHeight: 20,
+    },
+    emptyStateButton: {
+        backgroundColor: COLORS.secondary,
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 25,
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 3,
+    },
+    emptyStateButtonText: {
+        color: 'white',
+        fontFamily: FONTS.semibold,
+        fontSize: FONT_SIZE.medium,
+    },
+    addReviewContainer: {
+        marginTop: 20,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        paddingVertical: 15,
+        marginHorizontal: 20,
+        shadowColor: COLORS.black,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 2,
     }
 });

@@ -8,15 +8,18 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Modal,
+  RefreshControl
 } from 'react-native';
 import styles from '../assets/style/homeStyle.js';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+
 import {
   faSearch,
- 
 } from '@fortawesome/free-solid-svg-icons';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProductList from '../components/ProductList.tsx';
 import { RootStackParamList} from '../../types/types.ts';
@@ -27,6 +30,9 @@ const Home: React.FC = () => {
   // const { user } = useAuth();
   const [searchText, setSearchText] = useState<string>('');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showCalendar, setShowCalendar] = useState(false); 
+  const [selectedDate, setSelectedDate] = useState(new Date()); 
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -37,7 +43,17 @@ const Home: React.FC = () => {
     };
     checkAuth();
   }, []);
-
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000)); 
+      console.log("Page refreshed!");
+    } catch (error) {
+      console.error("Refresh failed:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const categories = [
     { name: 'Handcraft', icon: require('../assets/img/handcraft.png') },
@@ -72,7 +88,18 @@ const Home: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#0000ff"]} // Customize the refresh indicator color
+            tintColor="#0000ff" // iOS spinner color
+          />
+        }
+      >
         <View style={styles.content}>
           {/* Top Section with Search */}
           <View style={styles.topContainer}>
@@ -136,38 +163,79 @@ const Home: React.FC = () => {
             </View>
           </View>
 
-          {/* Location Selector */}
+          {/* Enhanced Product Promotion */}
           <View style={styles.divider} />
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionHeaderTitle}>Explore by Location</Text>
+          <View style={styles.enhancedPromo}>
+            <View style={styles.promoPattern}>
+              {/* Decorative elements */}
+              <View style={[styles.patternCircle, styles.patternCircle1]} />
+              <View style={[styles.patternCircle, styles.patternCircle2]} />
+              <View style={[styles.patternCircle, styles.patternCircle3]} />
+            </View>
+
+            <View style={styles.promoTextContainer}>
+              <Text style={styles.promoTagline}>LOCALLY CRAFTED</Text>
+              <Text style={styles.promoHeadline}>Support Local Products</Text>
+              <Text style={styles.promoSubtext}>
+                Empowering La Union's skilled artisans and preserving generations of craftsmanship.
+              </Text>
+
+              <View style={styles.promoStats}>
+                <View style={styles.promoStatItem}>
+                  <Text style={styles.promoStatNumber}>85%</Text>
+                  <Text style={styles.promoStatLabel}>Hidden local gems</Text>
+                </View>
+                <View style={styles.promoStatItem}>
+                  <Text style={styles.promoStatNumber}>12+</Text>
+                  <Text style={styles.promoStatLabel}>Unique traditions</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.promoImageContainer}>
+              <Image
+                source={require('../assets/img/feature4.png')}
+                style={styles.promoMainImage}
+              />
+              <View style={styles.imageBadge}>
+                <Text style={styles.imageBadgeText}>100% Local</Text>
+              </View>
+            </View>
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.discoverContainer}
-          >
-            {locations.map((location, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => setActiveIndex(index)}
-                style={[
-                  styles.discoverText,
-                  activeIndex === index && styles.activeDiscoverText
-                ]}
-              >
-                <Text
+
+          {/* Location Selector */}
+          {/* <View style={styles.divider} />
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionHeaderTitle}>Explore by Location</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.discoverContainer}
+            >
+              {locations.map((location, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => setActiveIndex(index)}
                   style={[
                     styles.discoverText,
-                    activeIndex === index && { opacity: 1 }
+                    activeIndex === index && styles.activeDiscoverText
                   ]}
                 >
-                  {location}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+                  <Text
+                    style={[
+                      styles.discoverText,
+                      activeIndex === index && { opacity: 1 }
+                    ]}
+                  >
+                    {location}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+          </ScrollView> */}
 
           {/* Products Section */}
+          <View style={styles.divider} />
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionHeaderTitle}>Popular Products</Text>
             <TouchableOpacity onPress={() => navigation.navigate("Products")}>
@@ -183,14 +251,64 @@ const Home: React.FC = () => {
             <View style={styles.divider} />
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderTitle}>Upcoming Events</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => setShowCalendar(true)}>
                 <Text style={styles.sectionHeaderLink}>View Calendar</Text>
               </TouchableOpacity>
             </View>
-            {EventList()}
-            </View>
+            <EventList />
+          </View>
          
           </View>
+        {/* Footer Section */}
+        <View style={styles.footerContainer}>
+          <View style={styles.footerTop}>
+            <Image
+              source={require('../assets/img/logo.png')}
+              style={styles.footerLogo}
+              resizeMode="contain"
+            />
+            <Text style={styles.footerTagline}>Connecting You to La Union's Local Products</Text>
+          </View>
+
+          <View style={styles.footerDivider} />
+
+          <View style={styles.footerLinks}>
+            <TouchableOpacity style={styles.footerLinkItem}>
+              <Text style={styles.footerLinkText}>About Us</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.footerLinkItem}>
+              <Text style={styles.footerLinkText}>Contact</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.footerLinkItem}>
+              <Text style={styles.footerLinkText}>Terms</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.footerLinkItem}>
+              <Text style={styles.footerLinkText}>Privacy</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.socialLinks}>
+            <TouchableOpacity style={styles.socialIcon}>
+              <Image
+                style={styles.image}
+                source={require('../assets/img/facebook-icon.png')} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialIcon}>
+              <Image
+                style={styles.image}
+                source={require('../assets/img/instagram-icon.png')} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialIcon}>
+              <Image
+                style={styles.image}
+                source={require('../assets/img/twitter-icon.png')} 
+              />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.copyright}>© 2025 Produkto Elyukal. Amin to, gawa namin to.</Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
