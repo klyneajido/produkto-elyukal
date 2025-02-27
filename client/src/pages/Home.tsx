@@ -24,6 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProductList from '../components/ProductList.tsx';
 import { RootStackParamList} from '../../types/types.ts';
 import EventList from '../components/EventList.tsx';
+import PopularProducts from '../components/PopularList.tsx';
 
 const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -243,7 +244,7 @@ const Home: React.FC = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.productContainer}>
-            <ProductList />
+            <PopularProducts />
           </View>
 
           {/* Events Section */}

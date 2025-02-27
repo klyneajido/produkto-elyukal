@@ -14,44 +14,44 @@ const ReviewScreen: React.FC = () => {
     const [reviewText, setReviewText] = useState('');
     const [rating, setRating] = useState(0);
     const [submitting, setSubmitting] = useState(false);
-        // date format
-        const formatDate = (timestamp: string): string => {
-            const date = new Date(timestamp);
-            return date.toLocaleString("en-GB", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-            });
-        }
-        console.log(reviews)
-        return (
-            <View>
-                {reviews.length > 0 ? (
-                    reviews.map((review, index) => (
-                        <View key={index} style={styles.reviewCard}>
-                            <View style={styles.topCardContainer}>
-                                <Text style={styles.reviewUsername}>{review.full_name}</Text>
-                                <Text style={styles.reviewDate}>{formatDate(review.created_at)}</Text>
-                            </View>
-                            <View style={styles.starContainer}>
-                                {Array.from({ length: Math.floor(review.rating) }).map((_, i) => (
-                                    <FontAwesomeIcon
-                                        key={`${index}-${i}`}
-                                        icon={faStar}
-                                        size={12}
-                                        color="#FDD700"
-                                    />
-                                ))}
-                            </View>
-                            <Text style={styles.reviewComment}>{review.review_text}</Text>
+    // date format
+    const formatDate = (timestamp: string): string => {
+        const date = new Date(timestamp);
+        return date.toLocaleString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+    }
+    console.log(reviews)
+    return (
+        <View>
+            {reviews.length > 0 ? (
+                reviews.map((review, index) => (
+                    <View key={index} style={styles.reviewCard}>
+                        <View style={styles.topCardContainer}>
+                            <Text style={styles.reviewUsername}>{review.full_name}</Text>
+                            <Text style={styles.reviewDate}>{formatDate(review.created_at)}</Text>
                         </View>
-                    ))
-                ) : (
-                    <Text style={styles.noReviewsText}>No reviews available</Text>
-                )}
-            </View>
-        );
-        
+                        <View style={styles.starContainer}>
+                            {Array.from({ length: Math.floor(review.rating) }).map((_, i) => (
+                                <FontAwesomeIcon
+                                    key={`${index}-${i}`}
+                                    icon={faStar}
+                                    size={12}
+                                    color="#FDD700"
+                                />
+                            ))}
+                        </View>
+                        <Text style={styles.reviewComment}>{review.review_text}</Text>
+                    </View>
+                ))
+            ) : (
+                <Text style={styles.noReviewsText}>No reviews available</Text>
+            )}
+        </View>
+    );
+
 };
 
 const styles = StyleSheet.create({
@@ -153,13 +153,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 4,
     },
-    noReviewsText   : {
+    noReviewsText: {
         textAlign: 'center',
         color: COLORS.gray,
         marginTop: 16,
         marginHorizontal: 20,
     },
-    
+
     input: {
         borderWidth: 1,
         borderColor: COLORS.lightgray,
