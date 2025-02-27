@@ -30,8 +30,8 @@ const ProductList: React.FC<ProductListProps> = ({ products =[] }) => {
             />
             <View style={styles.starContainer}>
               <View style={styles.ratings}>
-                <FontAwesomeIcon icon={faStar} color={COLORS.secondary} size={12} />
-                <Text style={styles.starText}> {product.average_rating || 'N/A'}</Text>
+                <FontAwesomeIcon icon={faStar}  color={"#EEBC1D"} size={12} />
+                <Text style={styles.starText}> {product.average_rating || '0'}</Text>
               </View>
             </View>
             <View style={styles.cardContent}>
