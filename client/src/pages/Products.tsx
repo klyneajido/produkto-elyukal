@@ -8,8 +8,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  Image,
-  StyleSheet,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
@@ -31,6 +29,70 @@ const priceRanges = [
   { label: 'Over $100', value: 'over100', min: 100, max: Infinity },
 ];
 
+type SearchResult<T> = {
+  item: T;
+  distance: number;
+  isSubstring: boolean;
+};
+
+function fuzzySearch<T>(
+  query: string,
+  items: T[],
+  getText: (item: T) => string,
+  maxDistanceRatio: number = 0.4 // Max edit distance as a ratio of longer string length
+): SearchResult<T>[] {
+  const lowerQuery = query.toLowerCase();
+  console.log('Fuzzy search query:', lowerQuery);
+
+  const levenshteinDistance = (s1: string, s2: string): number => {
+    const m = s1.length;
+    const n = s2.length;
+    const matrix = Array(m + 1)
+      .fill(null)
+      .map(() => Array(n + 1).fill(0));
+
+    for (let i = 0; i <= m; i++) matrix[i][0] = i;
+    for (let j = 0; j <= n; j++) matrix[0][j] = j;
+
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1, // Deletion
+          matrix[i][j - 1] + 1, // Insertion
+          matrix[i - 1][j - 1] + cost // Substitution
+        );
+      }
+    }
+    return matrix[m][n];
+  };
+
+  const results = items
+    .map((item) => {
+      const text = getText(item).toLowerCase();
+      const distance = levenshteinDistance(lowerQuery, text);
+      const isSubstring = text.includes(lowerQuery);
+      const maxLength = Math.max(lowerQuery.length, text.length);
+      const normalizedDistance = distance / maxLength; // Normalize to 0-1 range
+      return { item, distance, isSubstring, normalizedDistance };
+    })
+    .filter((result) => result.isSubstring || result.normalizedDistance <= maxDistanceRatio)
+    .sort((a, b) => {
+      // Prioritize substring matches, then normalized distance
+      if (a.isSubstring && !b.isSubstring) return -1;
+      if (!a.isSubstring && b.isSubstring) return 1;
+      return a.normalizedDistance - b.normalizedDistance;
+    });
+
+  console.log('Fuzzy search results:', results.map(r => ({
+    name: getText(r.item),
+    distance: r.distance,
+    normalizedDistance: r.normalizedDistance,
+    isSubstring: r.isSubstring
+  })));
+  return results;
+}
+
 const Products: React.FC<ProductsProps> = ({ navigation }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchText, setSearchText] = useState('');
@@ -44,7 +106,8 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(`${BASE_URL}/products/fetch_products`);
-        setProducts(response.data.products);
+        setProducts(response.data.products || []);
+        console.log('Fetched products:', response.data.products);
       } catch (e) {
         setError('Error fetching products');
         console.error(e);
@@ -53,52 +116,57 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
     fetchProducts();
   }, []);
 
-  const categories = [...new Set(products.map(p => p.category))];
+  const categories = [...new Set(products.map((p) => p.category))];
 
   const applyFilters = () => {
     let filteredProducts = [...products];
+    console.log('Initial products for filtering:', filteredProducts);
 
     if (searchText) {
-      filteredProducts = filteredProducts.filter(product =>
-        product.name.toLowerCase().includes(searchText.toLowerCase())
+      const searchResults = fuzzySearch<Product>(
+        searchText,
+        filteredProducts,
+        (product) => product.name,
+        0.4 // Allow up to 40% edit distance
       );
+      filteredProducts = searchResults.map((result) => result.item);
+      console.log('After fuzzy search:', filteredProducts);
     }
 
     if (selectedCategories.length > 0) {
-      filteredProducts = filteredProducts.filter(product =>
+      filteredProducts = filteredProducts.filter((product) =>
         selectedCategories.includes(product.category)
       );
+      console.log('After category filter:', filteredProducts);
     }
 
     if (selectedPriceRange.length > 0) {
-      filteredProducts = filteredProducts.filter(product =>
-        selectedPriceRange.some(range => {
-          const rangeObj = priceRanges.find(r => r.value === range);
+      filteredProducts = filteredProducts.filter((product) =>
+        selectedPriceRange.some((range) => {
+          const rangeObj = priceRanges.find((r) => r.value === range);
           return rangeObj && product.price >= rangeObj.min && product.price <= rangeObj.max;
         })
       );
+      console.log('After price filter:', filteredProducts);
     }
 
     if (inStockOnly) {
-      filteredProducts = filteredProducts.filter(product => product.in_stock);
+      filteredProducts = filteredProducts.filter((product) => product.in_stock);
+      console.log('After stock filter:', filteredProducts);
     }
 
     return filteredProducts;
   };
 
   const toggleCategory = (category: string) => {
-    setSelectedCategories(prev =>
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
+    setSelectedCategories((prev) =>
+      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
     );
   };
 
   const togglePriceRange = (range: string) => {
-    setSelectedPriceRange(prev =>
-      prev.includes(range)
-        ? prev.filter(r => r !== range)
-        : [...prev, range]
+    setSelectedPriceRange((prev) =>
+      prev.includes(range) ? prev.filter((r) => r !== range) : [...prev, range]
     );
   };
 
@@ -110,6 +178,7 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
   };
 
   const filteredProducts = applyFilters();
+  console.log('Final filteredProducts:', filteredProducts);
 
   if (error) {
     return (
@@ -159,7 +228,7 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
               <ScrollView>
                 <View style={styles.filterSection}>
                   <Text style={styles.filterSubtitle}>Category</Text>
-                  {categories.map(category => (
+                  {categories.map((category) => (
                     <TouchableOpacity
                       key={category}
                       style={styles.filterOption}
@@ -177,7 +246,7 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
 
                 <View style={styles.filterSection}>
                   <Text style={styles.filterSubtitle}>Price Range</Text>
-                  {priceRanges.map(range => (
+                  {priceRanges.map((range) => (
                     <TouchableOpacity
                       key={range.value}
                       style={styles.filterOption}
@@ -205,7 +274,7 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
                       color="#666"
                     />
                     <Text style={styles.filterOptionText}>In Stock Only</Text>
-                  </TouchableOpacity>
+                    </TouchableOpacity>
                 </View>
               </ScrollView>
 
@@ -225,12 +294,11 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
         </Modal>
 
         <ScrollView style={styles.productContainer} showsVerticalScrollIndicator={false}>
-            <ProductList />
+          <ProductList products={filteredProducts} />
         </ScrollView>
       </View>
     </SafeAreaView>
   );
 };
-
 
 export default Products;

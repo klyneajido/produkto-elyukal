@@ -1,42 +1,20 @@
+// ProductList.tsx
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import axios from "axios";
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 import { useNavigation } from '@react-navigation/native';
 import { Product, RootStackParamList } from '../../types/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { BASE_URL } from '../config/config.ts';
 
+type ProductListProps = {
+  products: Product[];
+};
 
-
-const ProductList = () => {
+const ProductList: React.FC<ProductListProps> = ({ products =[] }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/products/fetch_products`);
-        setProducts(response.data.products);
-      } catch (e) {
-        setError("Error fetching products");
-        console.error(e);
-      }
-    };
-    fetchProducts();
-  }, []);
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
-    );
-  }
-
+  console.log('ProductList received products:', products); // Add this
   return (
     <View style={styles.container}>
       <View style={styles.productGrid}>
@@ -61,9 +39,8 @@ const ProductList = () => {
                 {product.name}
               </Text>
               <Text style={styles.locationText} numberOfLines={1}>
-                {product.address}
+                {product.address || 'Address not available'}
               </Text>
-
             </View>
           </TouchableOpacity>
         ))}
@@ -109,7 +86,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'absolute',
     top: 115,
-    right:5
+    right: 5,
   },
   ratings: {
     flexDirection: 'row',
@@ -118,7 +95,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.lightgray,
     borderRadius: 4,
     padding: 2,
-    opacity:0.9,
+    opacity: 0.9,
   },
   starText: {
     color: COLORS.gray,
@@ -135,17 +112,6 @@ const styles = StyleSheet.create({
   locationText: {
     fontSize: FONT_SIZE.small,
     color: COLORS.gray,
-    fontFamily: FONTS.regular,
-
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 16,
     fontFamily: FONTS.regular,
   },
 });
