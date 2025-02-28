@@ -89,7 +89,7 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
     };
 
     const formatRating = (rating: number | null | undefined): string => {
-        return rating ? rating.toFixed(1) : 'N/A';
+        return rating ? rating.toFixed(1) : '0';
     };
 
     const formatPrice = (price: number | null | undefined): string => {
@@ -114,7 +114,7 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
             <View style={styles.productInfo}>
                 <Text style={styles.productName}>{product.name}</Text>
                 <Text style={styles.productCategory}>
-                    {product.category || 'Uncategorized'}
+                    {(product.category).toUpperCase() || 'Uncategorized'}
                 </Text>
                 <View style={styles.productMetaContainer}>
                     <View style={styles.priceContainer}>
