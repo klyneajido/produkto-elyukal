@@ -112,34 +112,6 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
             onPress={() => navigateToProductDetails(product)}
             activeOpacity={0.8}
         >
-<<<<<<< HEAD
-            <Image
-                source={
-                    product.image_urls?.length > 0
-                        ? { uri: product.image_urls[0] }
-                        : require('../assets/img/events/culinary-arts.png')
-                }
-                style={styles.productImage}
-                defaultSource={require('../assets/img/events/culinary-arts.png')}
-            />
-            <View style={styles.productInfo}>
-                <Text style={styles.productName}>{product.name}</Text>
-                <Text style={styles.productCategory}>
-                    {(product.category).toUpperCase() || 'Uncategorized'}
-                </Text>
-                <View style={styles.productMetaContainer}>
-                    <View style={styles.priceContainer}>
-                        <FontAwesomeIcon icon={faPesoSign} size={14} color={COLORS.primary} />
-                        <Text style={styles.productPrice}>
-                            {formatPrice(product.price)}
-                        </Text>
-                    </View>
-                    <View style={styles.ratingContainer}>
-                        <FontAwesomeIcon icon={faStar} size={14} color="#FDD700" />
-                        <Text style={styles.productRating}>
-                            {formatRating(product.rating)}
-                        </Text>
-=======
             <Animatable.View
                 animation="fadeInUp"
                 style={styles.productCard}
@@ -172,7 +144,6 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                                 {product.total_reviews ? ` (${product.total_reviews} reviews)` : ''}
                             </Text>
                         </View>
->>>>>>> 04374e9d17cbbeeb1b5f17dfb9a4a1e496119b18
                     </View>
                     <Text
                         style={[

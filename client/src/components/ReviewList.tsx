@@ -122,7 +122,7 @@ export default function ReviewList() {
         <View style={styles.reviewContainer}>
             <View style={styles.topHeader}>
                 <Text style={styles.title}>Reviews</Text>
-                <TouchableOpacity onPress={() => { navigation.navigate('Reviews', { reviews: reviews }) }}>
+                <TouchableOpacity onPress={() => { navigation.navigate('Reviews', {reviews, product }) }}>
                     <Text style={styles.subTitle}>See More</Text>
                 </TouchableOpacity>
             </View>

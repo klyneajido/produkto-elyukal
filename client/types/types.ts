@@ -6,9 +6,9 @@ export type RootStackParamList = {
   Signup: undefined;
   ForgotPassword: undefined;
   Tabs: undefined;
-  ProductDetails: { product: Product };
+  ProductDetails: { product: Product; reviews?: Review[] };
   Products: undefined;
-  Reviews:{reviews: Review[]};
+  Reviews: { reviews: Review[]; product: Product };
   EventDetails: { eventId: string };
   StoreDetails: { store: Store };
   MapView: {longitude: number, latitude:number}
