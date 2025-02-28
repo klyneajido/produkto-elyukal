@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     productPrice: {
         fontSize: 16,
         fontFamily: 'OpenSans-Bold',
-        color: COLORS.primary,
+        color: COLORS.secondary,
         marginLeft: 4,
     },
     productRating: {

@@ -15,15 +15,14 @@ import {
     faTag,
     faPesoSign,
     faArrowLeft,
-    faClock, 
-    faPhone, 
+    faClock,
+    faPhone,
     faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 import * as Animatable from 'react-native-animatable';
 import { COLORS } from '../assets/constants/constant';
 import styles from '../assets/style/storeDetailsStyle';
 import { BASE_URL } from '../config/config';
-
 import axios from 'axios';
 
 interface Product {
@@ -36,6 +35,10 @@ interface Product {
     in_stock: boolean;
     rating: number | null;
     store_id: string;
+    average_rating?: string;
+    total_reviews?: number;
+    ar_asset_url?: string;
+    address?: string;
 }
 
 interface Store {
@@ -47,8 +50,8 @@ interface Store {
     rating: number | null;
     store_image: string | null;
     type: string | null;
-    operating_hours?: string; // Highlight field
-    phone?: string;          // Highlight field
+    operating_hours?: string;
+    phone?: string;
 }
 
 interface StoreDetailsProps {
@@ -78,7 +81,10 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                 const storeProducts = response.data.products.filter(
                     (product: Product) => product.store_id === store.store_id
                 );
-                setProducts(storeProducts);
+                setProducts(storeProducts.map((product: Product) => ({
+                    ...product,
+                    rating: product.average_rating ? parseFloat(product.average_rating) : null,
+                })));
             }
         } catch (err) {
             console.error('Error fetching products:', err);
@@ -96,12 +102,17 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
         return price ? price.toFixed(2) : 'N/A';
     };
 
+    const navigateToProductDetails = (product: Product) => {
+        navigation.navigate('ProductDetails', { product });
+    };
+
     const renderProductCard = (product: Product) => (
-        <Animatable.View
-            key={product.id}
-            animation="fadeInUp"
-            style={styles.productCard}
+        <TouchableOpacity
+            key={product.id} // Moved key here to the top-level element
+            onPress={() => navigateToProductDetails(product)}
+            activeOpacity={0.8}
         >
+<<<<<<< HEAD
             <Image
                 source={
                     product.image_urls?.length > 0
@@ -128,18 +139,52 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                         <Text style={styles.productRating}>
                             {formatRating(product.rating)}
                         </Text>
+=======
+            <Animatable.View
+                animation="fadeInUp"
+                style={styles.productCard}
+            >
+                <Image
+                    source={
+                        product.image_urls?.length > 0
+                            ? { uri: product.image_urls[0] }
+                            : require('../assets/img/events/culinary-arts.png')
+                    }
+                    style={styles.productImage}
+                    defaultSource={require('../assets/img/events/culinary-arts.png')}
+                />
+                <View style={styles.productInfo}>
+                    <Text style={styles.productName}>{product.name}</Text>
+                    <Text style={styles.productCategory}>
+                        {product.category || 'Uncategorized'}
+                    </Text>
+                    <View style={styles.productMetaContainer}>
+                        <View style={styles.priceContainer}>
+                            <FontAwesomeIcon icon={faPesoSign} size={14} color={COLORS.secondary} />
+                            <Text style={styles.productPrice}>
+                                {formatPrice(product.price)}
+                            </Text>
+                        </View>
+                        <View style={styles.ratingContainer}>
+                            <FontAwesomeIcon icon={faStar} size={14} color="#FDD700" />
+                            <Text style={styles.productRating}>
+                                {formatRating(product.rating)}
+                                {product.total_reviews ? ` (${product.total_reviews} reviews)` : ''}
+                            </Text>
+                        </View>
+>>>>>>> 04374e9d17cbbeeb1b5f17dfb9a4a1e496119b18
                     </View>
+                    <Text
+                        style={[
+                            styles.stockStatus,
+                            { color: product.in_stock ? COLORS.success : COLORS.error },
+                        ]}
+                    >
+                        {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                    </Text>
                 </View>
-                <Text
-                    style={[
-                        styles.stockStatus,
-                        { color: product.in_stock ? COLORS.success : COLORS.error },
-                    ]}
-                >
-                    {product.in_stock ? 'In Stock' : 'Out of Stock'}
-                </Text>
-            </View>
-        </Animatable.View>
+            </Animatable.View>
+        </TouchableOpacity>
     );
 
     return (
