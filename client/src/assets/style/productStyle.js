@@ -116,11 +116,12 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     padding: 16,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: COLORS.lightgray,
     borderRadius: 12,
     flex: 1,
     marginRight: 12,
     alignItems: 'center',
+
   },
   applyButton: {
     padding: 16,
@@ -136,13 +137,13 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   resetButtonText: {
-    color: COLORS.grayDark,
-    fontFamily: FONTS.semiBold,
+    color: COLORS.gray,
+    fontFamily: FONTS.semibold,
     fontSize: FONT_SIZE.medium,
   },
   applyButtonText: {
     color: COLORS.white,
-    fontFamily: FONTS.semiBold,
+    fontFamily: FONTS.semibold,
     fontSize: FONT_SIZE.medium,
   },
   productContainer: {

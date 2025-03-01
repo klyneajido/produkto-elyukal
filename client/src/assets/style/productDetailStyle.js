@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: "rgba(0, 0, 0, 0.4)",
     padding: 15,
+    paddingBottom:30
   },
 
   productTitle: {
@@ -53,6 +54,11 @@ const styles = StyleSheet.create({
 
   detailsContainer: {
     paddingBottom: 80,
+    bottom: 20,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    zIndex:100,
+    backgroundColor:COLORS.white
   },
 
   pricingContainer: {

@@ -3,7 +3,7 @@ export const COLORS:Record<string,string> = {
     primary: "#0c58bb",
     secondary:"#FFD700",
     gold:"#EEBC1D",
-    white:"#F5EFE7",
+    white:"#FEFEFE",
     black: "#000000",
     gray:"#727D73",
     lightgray:"#ECEBDE",

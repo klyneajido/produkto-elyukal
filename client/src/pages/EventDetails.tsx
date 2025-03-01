@@ -240,21 +240,6 @@ const EventDetails: React.FC = () => {
         <View style={styles.content}>
           <Text style={styles.title}>{event.title}</Text>
 
-          {/* <View style={styles.keyInfo}>
-            <View style={styles.infoItem}>
-              <FontAwesomeIcon icon={faCalendar} size={20} color={COLORS.primary} />
-              <Text style={styles.infoText}>{formatDate(event.date)}</Text>
-            </View>
-            <View style={styles.infoItem}>
-              <FontAwesomeIcon icon={faClock} size={20} color={COLORS.primary} />
-              <Text style={styles.infoText}>{timeDisplay}</Text>
-            </View>
-            <View style={styles.infoItem}>
-              <FontAwesomeIcon icon={faMapMarkerAlt} size={20} color={COLORS.primary} />
-              <Text style={styles.infoText}>{event.location}</Text>
-            </View>
-          </View> */}
-
           <View style={styles.keyInfo}>
             <View style={styles.detailContainer}>
               <View style={[styles.left, styles.date]}>
