@@ -51,17 +51,26 @@ const getIconByName = (iconName: string): IconDefinition => {
 };
 
 const formatTime = (time: string | null): string => {
-  if (!time) return '';
-  return time.slice(0, 5);
+  if(!time){
+    return "Invalid Time";
+  }
+try{
+  let[hours, minutes] =time.split(":").map(Number);
+  let period = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+  return `${hours}:${minutes.toString().padStart(2, "0")} ${period}`;
+} catch(error){
+  console.error('Time formatting error:', error);
+  return time;
+}
 };
 
-const formatDate = (dateString: string): string => {
+const formatDateMonth = (dateString: string): string => {
   try {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+      month: 'long',
+      timeZone: 'UTC'
     });
   } catch (error) {
     console.error('Date formatting error:', error);
@@ -69,6 +78,30 @@ const formatDate = (dateString: string): string => {
   }
 };
 
+const formatDateDay = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      day: 'numeric',
+    });
+  } catch (error) {
+    console.error('Date formatting error:', error);
+    return dateString;
+  }
+};
+const formatDate = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month:'long',
+      day: 'numeric',
+      year:'numeric',
+    });
+  } catch (error) {
+    console.error('Date formatting error:', error);
+    return dateString;
+  }
+};
 const EventDetails: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const route = useRoute<RouteProp<RootStackParamList, 'EventDetails'>>();
@@ -80,7 +113,7 @@ const EventDetails: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  
+
   useEffect(() => {
     const loadEventData = async () => {
       if (!eventId) {
@@ -176,10 +209,6 @@ const EventDetails: React.FC = () => {
     );
   }
 
-  const startTime = formatTime(event.start_time);
-  const endTime = formatTime(event.end_time);
-  const timeDisplay = startTime && endTime ? `${startTime} - ${endTime}` : 'Time TBA';
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -211,7 +240,7 @@ const EventDetails: React.FC = () => {
         <View style={styles.content}>
           <Text style={styles.title}>{event.title}</Text>
 
-          <View style={styles.keyInfo}>
+          {/* <View style={styles.keyInfo}>
             <View style={styles.infoItem}>
               <FontAwesomeIcon icon={faCalendar} size={20} color={COLORS.primary} />
               <Text style={styles.infoText}>{formatDate(event.date)}</Text>
@@ -223,6 +252,28 @@ const EventDetails: React.FC = () => {
             <View style={styles.infoItem}>
               <FontAwesomeIcon icon={faMapMarkerAlt} size={20} color={COLORS.primary} />
               <Text style={styles.infoText}>{event.location}</Text>
+            </View>
+          </View> */}
+
+          <View style={styles.keyInfo}>
+            <View style={styles.detailContainer}>
+              <View style={[styles.left, styles.date]}>
+                <Text style={styles.topCalendar}>{formatDateMonth(event.date)}</Text>
+                <Text style={styles.bottomCalendar}>{formatDateDay(event.date)}</Text>
+              </View>
+              <View style={styles.right}>
+                  <Text style={styles.topDetails}>Sunday, Sep 25</Text>
+                  <Text style={styles.bottomDetails}>{formatTime(event.start_time)} to {formatTime(event.end_time)}</Text>
+              </View>
+            </View>
+            <View style={styles.detailContainer}>
+              <View style={styles.left}>
+              <FontAwesomeIcon icon={faMapMarkerAlt} size={30} color={COLORS.primary} />
+              </View>
+              <View style={styles.right}>
+              <Text style={styles.topDetails}>Location</Text>
+                <Text style={styles.bottomDetails}>{event.location}</Text>
+              </View>
             </View>
           </View>
 
@@ -260,7 +311,7 @@ const EventDetails: React.FC = () => {
 
           <View style={styles.communitySection}>
             <Text style={styles.sectionTitle}>Join the Community</Text>
-            <TouchableOpacity style={styles.communityButton} onPress={() => {}}>
+            <TouchableOpacity style={styles.communityButton} onPress={() => { }}>
               <FontAwesomeIcon icon={faPeopleGroup} size={20} color="#fff" />
               <Text style={styles.communityButtonText}>Join Festival Group</Text>
             </TouchableOpacity>

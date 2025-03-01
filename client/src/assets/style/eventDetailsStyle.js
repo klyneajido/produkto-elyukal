@@ -1,7 +1,7 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { COLORS, FONTS, FONT_SIZE } from '../constants/constant';
+import { StyleSheet, Dimensions } from "react-native";
+import { COLORS, FONTS, FONT_SIZE } from "../constants/constant";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 export default StyleSheet.create({
   container: {
@@ -13,41 +13,41 @@ export default StyleSheet.create({
   },
   imageContainer: {
     height: 350,
-    position: 'relative',
+    position: "relative",
   },
   headerImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: "rgba(0,0,0,0.3)",
   },
   navbar: {
-    position: 'absolute',
+    position: "absolute",
     top: 20,
     left: 0,
     right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     zIndex: 1,
   },
   navButton: {
     width: 40,
     height: 40,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: "rgba(0,0,0,0.3)",
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginLeft: 10,
   },
   navRight: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   categoryBadge: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 40,
     left: 20,
     backgroundColor: COLORS.secondary,
@@ -76,20 +76,18 @@ export default StyleSheet.create({
     marginBottom: 20,
   },
   keyInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     backgroundColor: COLORS.container,
     padding: 15,
     borderRadius: 15,
     marginBottom: 25,
-    shadowColor: COLORS.accent, 
+    shadowColor: COLORS.accent,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2, 
-    shadowRadius: 6, 
-    elevation: 5, 
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
   },
   infoItem: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
   },
   infoText: {
@@ -97,8 +95,67 @@ export default StyleSheet.create({
     color: COLORS.black,
     fontSize: FONT_SIZE.medium,
     fontFamily: FONTS.regular,
+  },
+  detailContainer: {
+    flexDirection: "row",
+    marginBottom:10,
+  },
+  left: {
+    width: 60,
+    margin: 1,
+    borderRadius: 5,
+    flex:1 ,
+    overflow:'hidden',
+    alignItems:'center',
+    justifyContent:'center'
+  },
+  date:{
+    borderWidth: 0.5,
+  },
+  topCalendar: {
+    width:'100%',
+    borderBottomWidth: 1,
+    textAlign: "center",
+    color: COLORS.white,
+    height: 20,
+    fontFamily:FONTS.semibold,
+    backgroundColor:COLORS.primary
 
   },
+  bottomCalendar: {
+    width:'100%',
+    flexDirection:'row',
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    color: COLORS.black,
+    fontSize: FONT_SIZE.large,
+    height: 40,
+    fontFamily:FONTS.regular,
+  },
+  right: {
+    marginLeft:30,
+    flex:3
+  },
+  topDetails: {
+    color:COLORS.black,
+    fontSize:FONT_SIZE.large-2,
+    fontFamily:FONTS.semibold,
+  },
+  bottomDetails: {
+    color:COLORS.gray,
+    fontFamily:FONTS.regular,
+  },
+
+  locationIconContainer:{
+    width:40,
+    height: 40,
+    borderWidth:1
+  },
+
+
+
+
   highlightsSection: {
     marginBottom: 25,
   },
@@ -109,9 +166,9 @@ export default StyleSheet.create({
     marginBottom: 15,
   },
   highlightsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     marginHorizontal: -5,
   },
   highlightCard: {
@@ -119,14 +176,14 @@ export default StyleSheet.create({
     backgroundColor: COLORS.container,
     borderRadius: 15,
     padding: 15,
-    alignItems: 'center',
+    alignItems: "center",
     marginHorizontal: 5,
     marginBottom: 10,
-    shadowColor: COLORS.accent, 
+    shadowColor: COLORS.accent,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2, 
-    shadowRadius: 6, 
-    elevation: 5, 
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
   },
   highlightTitle: {
     fontSize: FONT_SIZE.medium,
@@ -134,13 +191,13 @@ export default StyleSheet.create({
     color: COLORS.black,
     marginTop: 10,
     marginBottom: 5,
-    textAlign: 'center',
+    textAlign: "center",
   },
   highlightDescription: {
     fontSize: FONT_SIZE.small,
     fontFamily: FONTS.regular,
     color: COLORS.black,
-    textAlign: 'center',
+    textAlign: "center",
   },
   descriptionSection: {
     marginBottom: 25,
@@ -153,12 +210,12 @@ export default StyleSheet.create({
   },
   communitySection: {
     marginBottom: 30,
-    alignItems: 'center',
+    alignItems: "center",
   },
   communityButton: {
     backgroundColor: COLORS.primary,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
@@ -170,12 +227,12 @@ export default StyleSheet.create({
     fontFamily: FONTS.semibold,
     marginLeft: 10,
   },
-    emptyHighlightsContainer: {
+  emptyHighlightsContainer: {
     backgroundColor: COLORS.container,
     borderRadius: 15,
     padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginVertical: 10,
     shadowColor: COLORS.accent,
     shadowOffset: { width: 0, height: 4 },
@@ -185,19 +242,19 @@ export default StyleSheet.create({
     height: 120,
   },
   emptyHighlightsText: {
-    fontFamily: FONTS.medium,
+    fontFamily: FONTS.regular,
     fontSize: FONT_SIZE.medium,
-    color: COLORS.text,
-    textAlign: 'center',
+    color: COLORS.gray,
+    textAlign: "center",
     marginTop: 10,
   },
   emptyIconContainer: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: 'rgba(128, 128, 128, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(128, 128, 128, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 10,
   },
 });
