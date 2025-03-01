@@ -109,9 +109,17 @@ export default StyleSheet.create({
     alignItems:'center',
     justifyContent:'center'
   },
-  date:{
-    borderWidth: 0.5,
+  date: {
+
+    backgroundColor: "white",
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3, 
+    borderRadius: 5,
   },
+  
   topCalendar: {
     width:'100%',
     borderBottomWidth: 1,

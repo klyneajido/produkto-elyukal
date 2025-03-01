@@ -182,12 +182,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   eventsContainer: {
-    marginHorizontal: 20,
+   
     marginBottom: 20,
   },
   sectionHeader: {
     flexDirection: "row",
-
     marginHorizontal: 20,
     marginBottom: 16,
   },
@@ -419,6 +418,7 @@ imageBadgeText: {
   fontSize: 12,
   color: COLORS.primary,
 },
+
 footerContainer: {
   backgroundColor: COLORS.white,
   paddingHorizontal: 20,

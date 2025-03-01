@@ -115,7 +115,7 @@ const Home: React.FC = () => {
                 style={styles.searchBar}
                 onChangeText={setSearchText}
                 value={searchText}
-                placeholder="Explore your deepest darkest desires >;)"
+                placeholder="Search here..."
                 placeholderTextColor="#888"
               />
             </View>

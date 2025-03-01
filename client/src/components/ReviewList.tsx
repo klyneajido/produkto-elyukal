@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faStar, faCommentSlash } from "@fortawesome/free-solid-svg-icons";
 import { COLORS, FONT_SIZE, FONTS } from "../assets/constants/constant";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack/lib/typescript/src/types";
+import { Image } from "react-native-animatable";
 
 type ProductDetailsRouteProp = RouteProp<RootStackParamList, 'ProductDetails'>;
 
@@ -132,7 +133,10 @@ export default function ReviewList() {
                 reviews.slice(0, 2).map((review, index) => (
                     <View key={index} style={styles.reviewCard}>
                         <View style={styles.topCardContainer}>
+                            <View style={styles.subTopCardContainer}>
+                            <Image style={styles.avatar} source={require('../assets/img/avatartion.png')}/>
                             <Text style={styles.reviewUsername}>{review.full_name}</Text>
+                            </View>
                             <Text style={styles.reviewDate}>{formatDate(review.created_at)}</Text>
                         </View>
                         <View style={styles.starContainer}>
@@ -188,6 +192,7 @@ export default function ReviewList() {
                         value={reviewText}
                         onChangeText={setReviewText}
                         multiline
+                        placeholderTextColor={COLORS.gray}
                     />
                     <View style={styles.ratingContainer}>
                         <Text style={styles.text}>Rating: </Text>
@@ -288,7 +293,7 @@ const styles = StyleSheet.create({
         textTransform: "uppercase",
     },
     reviewCard: {
-        backgroundColor: '#fefefe',
+        backgroundColor: COLORS.white,
         padding: 16,
         borderRadius: 8,
         shadowColor: COLORS.black,
@@ -303,7 +308,19 @@ const styles = StyleSheet.create({
     topCardContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+       justifyContent:'space-between'
+    },
+    subTopCardContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+       
+    },
+    avatar:{
+        width:40,
+        height:40,
+        borderRadius:20,
+        borderWidth:2,
+        marginRight:5,
     },
     reviewUsername: {
         fontSize: FONT_SIZE.medium,
@@ -328,16 +345,15 @@ const styles = StyleSheet.create({
         marginVertical: 6,
     },
     input: {
-        borderWidth: 1,
-        borderColor: COLORS.lightgray,
         borderRadius: 8,
-        padding: 12,
-        marginVertical: 8,
-        minHeight: 80,
+        padding: 10,
+        minHeight: 40,
         color: COLORS.black,
         marginHorizontal: 20,
         fontFamily: FONTS.regular,
         fontSize: FONT_SIZE.medium,
+        backgroundColor:COLORS.white,
+        letterSpacing:0.1
     },
     ratingContainer: {
         flexDirection: 'row',
@@ -411,7 +427,7 @@ const styles = StyleSheet.create({
     },
     addReviewContainer: {
         marginTop: 20,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: COLORS.container,
         borderRadius: 12,
         paddingVertical: 15,
         marginHorizontal: 20,

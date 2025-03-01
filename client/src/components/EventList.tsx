@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     eventCardLarge: {
         width: 280,
         height: 400,
-        marginRight: 16,
+        marginRight: 20,
         marginBottom: 16,
         borderRadius: 20,
         backgroundColor: COLORS.white,

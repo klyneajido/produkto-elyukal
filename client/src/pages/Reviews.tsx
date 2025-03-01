@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Review, RootStackParamList } from "../../types/types";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator } from "react-native-paper";
@@ -123,7 +123,7 @@ const ReviewScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView style={styles.reviewContainer}>
       {loading ? (
         <ActivityIndicator size="small" color="#FDD700" />
       ) : error ? (
@@ -132,7 +132,10 @@ const ReviewScreen: React.FC = () => {
         reviews.map((review, index) => (
           <View key={index} style={styles.reviewCard}>
             <View style={styles.topCardContainer}>
-              <Text style={styles.reviewUsername}>{review.full_name}</Text>
+              <View style={styles.subTopCardContainer}>
+                <Image style={styles.avatar} source={require('../assets/img/avatartion.png')} />
+                <Text style={styles.reviewUsername}>{review.full_name}</Text>
+              </View>
               <Text style={styles.reviewDate}>{formatDate(review.created_at)}</Text>
             </View>
             <View style={styles.starContainer}>
@@ -158,6 +161,7 @@ const ReviewScreen: React.FC = () => {
             ref={reviewInputRef}
             style={styles.input}
             placeholder="Write your review here..."
+            placeholderTextColor={COLORS.gray}
             value={reviewText}
             onChangeText={setReviewText}
             multiline
@@ -197,152 +201,166 @@ const ReviewScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-    reviewContainer: {
+  reviewContainer: {
+    backgroundColor:COLORS.white,
+    paddingVertical:10
+  },
+  topHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.secondary,
+    paddingBottom: 5,
+    marginBottom: 10,
+    marginHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: FONT_SIZE.large,
+    fontFamily: FONTS.bold,
+    color: '#333',
+    marginHorizontal: 20,
+  },
+  title: {
+    fontSize: FONT_SIZE.large,
+    fontFamily: FONTS.bold,
+    color: '#333',
+  },
+  subTitle: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.regular,
+    color: COLORS.primary,
+  },
+  text: {
+    color: COLORS.black,
+  },
+  submitButton: {
+    marginTop: 10,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+    marginHorizontal: 20,
+  },
+  submitButtonDisabled: {
+    backgroundColor: COLORS.lightgray,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+    marginHorizontal: 20,
+  },
+  submitButtonText: {
+    fontSize: 16,
+    fontFamily: FONTS.semibold,
+    color: "white",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    marginHorizontal: 20,
+  },
+  reviewCard: {
+    backgroundColor: COLORS.white,
+    padding: 16,
+    borderRadius: 8,
+    shadowColor: COLORS.black,
+    borderLeftColor: COLORS.primary,
+    borderLeftWidth: 4,
+    marginHorizontal: 5,
+    borderBottomColor: COLORS.lightgray,
+    borderBottomWidth: 1,
+    marginTop:5,
+  },
+  topCardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  subTopCardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+   
+},
+avatar:{
+    width:40,
+    height:40,
+    borderRadius:20,
+    borderWidth:2,
+    marginRight:5,
+},
+  reviewUsername: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.semibold,
+    marginBottom: 2,
+    color: COLORS.black,
+  },
+  reviewDate: {
+    fontSize: FONT_SIZE.medium - 2,
+    fontFamily: FONTS.regular,
+    color: COLORS.gray,
+  },
+  reviewComment: {
+    fontSize: FONT_SIZE.small + 2,
+    marginVertical: 8,
+    color: COLORS.black,
+  },
+  starContainer: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+  noReviewsText: {
+    textAlign: 'center',
+    color: COLORS.gray,
+    marginTop: 16,
+    marginHorizontal: 20,
+  },
 
-    },
-    topHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderBottomWidth: 2,
-        borderBottomColor: COLORS.secondary,
-        paddingBottom: 5,
-        marginBottom: 10,
-        marginHorizontal: 20,
-    },
-    sectionTitle: {
-        fontSize: FONT_SIZE.large,
-        fontFamily: FONTS.bold,
-        color: '#333',
-        marginHorizontal: 20,
-    },
-    title: {
-        fontSize: FONT_SIZE.large,
-        fontFamily: FONTS.bold,
-        color: '#333',
-    },
-    subTitle: {
-        fontSize: FONT_SIZE.medium,
-        fontFamily: FONTS.regular,
-        color: COLORS.primary,
-    },
-    text: {
-        color: COLORS.black,
-    },
-    submitButton: {
-        marginTop: 10,
-        backgroundColor: COLORS.primary,
-        paddingVertical: 14,
-        paddingHorizontal: 20,
-        borderRadius: 14,
-        alignItems: "center",
-        justifyContent: "center",
-        shadowColor: COLORS.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 6,
-        elevation: 5,
-        borderWidth: 1,
-        borderColor: "rgba(255, 255, 255, 0.2)",
-        marginHorizontal: 20,
-    },
-    submitButtonDisabled: {
-        backgroundColor: COLORS.lightgray,
-        borderColor: "rgba(0, 0, 0, 0.1)",
-        marginHorizontal: 20,
-    },
-    submitButtonText: {
-        fontSize: 16,
-        fontFamily: FONTS.semibold,
-        color: "white",
-        letterSpacing: 0.5,
-        textTransform: "uppercase",
-        marginHorizontal: 20,
-    },
-    reviewCard: {
-        backgroundColor: '#fefefe',
-        padding: 16,
-        borderRadius: 8,
-        shadowColor: COLORS.black,
-        borderLeftColor: COLORS.primary,
-        borderLeftWidth: 4,
-        marginHorizontal: 5,
-        borderBottomColor: COLORS.lightgray,
-        borderBottomWidth: 1
-    },
-    topCardContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    reviewUsername: {
-        fontSize: FONT_SIZE.medium,
-        fontFamily: FONTS.semibold,
-        marginBottom: 2,
-        color: COLORS.black,
-    },
-    reviewDate: {
-        fontSize: FONT_SIZE.medium - 2,
-        fontFamily: FONTS.regular,
-        color: COLORS.gray,
-    },
-    reviewComment: {
-        fontSize: FONT_SIZE.small + 2,
-        marginVertical: 8,
-        color: COLORS.black,
-    },
-    starContainer: {
-        flexDirection: 'row',
-        gap: 4,
-    },
-    noReviewsText: {
-        textAlign: 'center',
-        color: COLORS.gray,
-        marginTop: 16,
-        marginHorizontal: 20,
-    },
-
-    input: {
-        borderWidth: 1,
-        borderColor: COLORS.lightgray,
-        borderRadius: 4,
-        padding: 8,
-        marginVertical: 8,
-        minHeight: 60,
-        color: COLORS.black,
-        marginHorizontal: 20,
-    },
-    addReviewContainer: {
-        marginTop: 20,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        paddingVertical: 15,
-        marginHorizontal: 20,
-        shadowColor: COLORS.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
-    },
-    ratingContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 10,
-        marginHorizontal: 20,
-    },
-    starsRow: {
-        flexDirection: 'row',
-        marginLeft: 8,
-    },
-    starButton: {
-        padding: 5,
-    },
-    errorText: {
-        textAlign: 'center',
-        color: COLORS.red,
-        marginTop: 16,
-        marginHorizontal: 20,
-        fontSize: FONT_SIZE.medium,
-      },
+  input: {
+    fontFamily:FONTS.regular,
+    borderRadius: 4,
+    padding: 10,
+    minHeight: 40,
+    color: COLORS.black,
+    marginHorizontal: 20,
+    backgroundColor:COLORS.white,
+    letterSpacing:0.1
+  },
+  addReviewContainer: {
+    marginVertical: 20,
+    backgroundColor: COLORS.container,
+    borderRadius: 12,
+    paddingVertical: 15,
+    marginHorizontal: 5,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 3, height: 5 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+    marginHorizontal: 20,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    marginLeft: 8,
+  },
+  starButton: {
+    padding: 5,
+  },
+  errorText: {
+    textAlign: 'center',
+    color: COLORS.red,
+    marginTop: 16,
+    marginHorizontal: 20,
+    fontSize: FONT_SIZE.medium,
+  },
 });
 export default ReviewScreen;
