@@ -313,13 +313,13 @@ const ProductDetails: React.FC = () => {
                                         {storeData.type || 'Store'}
                                     </Text>
                                 </View>
-                                <Text style={styles.viewStoreText}>View Store Details</Text>
+                               
                             </View>
                             <FontAwesomeIcon icon={faStore} color="#FDD700" size={24} />
                         </TouchableOpacity>
                     )}
 
-                   <ReviewList/>
+                    <ReviewList />
                 </View>
             </ScrollView>
         </SafeAreaView>

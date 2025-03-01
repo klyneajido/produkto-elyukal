@@ -96,8 +96,8 @@ const Home: React.FC = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#0000ff"]} // Customize the refresh indicator color
-            tintColor="#0000ff" // iOS spinner color
+            colors={["#0000ff"]}
+            tintColor="#0000ff"
           />
         }
       >
@@ -204,36 +204,7 @@ const Home: React.FC = () => {
             </View>
           </View>
 
-          {/* Location Selector */}
-          {/* <View style={styles.divider} />
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionHeaderTitle}>Explore by Location</Text>
-            </View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.discoverContainer}
-            >
-              {locations.map((location, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => setActiveIndex(index)}
-                  style={[
-                    styles.discoverText,
-                    activeIndex === index && styles.activeDiscoverText
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.discoverText,
-                      activeIndex === index && { opacity: 1 }
-                    ]}
-                  >
-                    {location}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-          </ScrollView> */}
+        
 
           {/* Products Section */}
           <View style={styles.divider} />

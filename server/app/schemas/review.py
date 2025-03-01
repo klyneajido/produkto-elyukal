@@ -14,4 +14,4 @@ class ReviewResponse(BaseModel):
     full_name: str  # Replace username with full_name
 
     class Config:
-        orm_mode = True
+        from_attributes = True

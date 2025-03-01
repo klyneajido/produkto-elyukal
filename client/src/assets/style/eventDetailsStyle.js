@@ -97,7 +97,7 @@ export default StyleSheet.create({
     color: COLORS.black,
     fontSize: FONT_SIZE.medium,
     fontFamily: FONTS.regular,
-    textAlign: 'center',
+
   },
   highlightsSection: {
     marginBottom: 25,

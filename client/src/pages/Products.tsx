@@ -22,6 +22,7 @@ import { BASE_URL } from '../config/config.ts';
 import { Product, ProductsProps } from '../../types/types';
 import styles from '../assets/style/productStyle.js';
 import ProductList from '../components/ProductList.tsx';
+import { COLORS } from '../assets/constants/constant.ts';
 
 const priceRanges = [
   { label: 'Under $50', value: 'under50', min: 0, max: 50 },
@@ -211,7 +212,7 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
             style={styles.filterButton}
             onPress={() => setShowFilters(true)}
           >
-            <FontAwesomeIcon icon={faSliders} size={20} color="#fff" />
+            <FontAwesomeIcon icon={faSliders} size={20} color={COLORS.secondary} />
           </TouchableOpacity>
         </View>
 
@@ -274,7 +275,7 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
                       color="#666"
                     />
                     <Text style={styles.filterOptionText}>In Stock Only</Text>
-                    </TouchableOpacity>
+                  </TouchableOpacity>
                 </View>
               </ScrollView>
 
