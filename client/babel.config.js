@@ -9,6 +9,6 @@ module.exports = {
         "blocklist": null,
         "allowlist": null,
         "verbose": false
-      }]
+      }],
    ]
 };

@@ -23,34 +23,15 @@ import styles from '../assets/style/mapStyle';
 import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
 import { BASE_URL } from '../config/config';
 import axios from 'axios';
+import { Store, RootStackParamList, RouteInfo } from '../../types/types';
+import { MAPBOX_ACCESS_TOKEN } from '@env'
 
-const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoia2x5bmVhamlkbyIsImEiOiJjbTYzb2J0cmsxNWR5MmxyMHFzdHJkazl1In0.zxp6GI9_XeY0s1gxpwB4lg';
 MapboxGL.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
 const directionsClient = MapboxDirections({ accessToken: MAPBOX_ACCESS_TOKEN });
 
-interface Store {
-    store_id: string;
-    name: string;
-    description: string;
-    latitude: number;
-    longitude: number;
-    rating: number;
-    store_image: string | null;
-    type: string | null;
-    coordinate?: [number, number];
-}
-type RootStackParamList = {
-    StoreDetails: { store: Store };
-};
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'StoreDetails'>;
-
-interface RouteInfo {
-    geometry: any;
-    duration: number;
-    distance: number;
-}
 
 const MapView = () => {
     const [stores, setStores] = useState<Store[]>([]);
@@ -79,7 +60,7 @@ const MapView = () => {
     const locationRef = useRef<MapboxGL.Location | null>(null);
 
     const initialCamera = {
-        centerCoordinate: [120.33591510283381, 16.668377634915878], // Default center
+        centerCoordinate: [120.33591510283381, 16.668377634915878], 
         zoomLevel: 10,
         pitch: 0,
         heading: 0
@@ -195,7 +176,7 @@ const MapView = () => {
         setSelectedStore(store);
         setRouteInfo(null);
 
-        const verticalOffset = -0.003; // Adjust this value as needed for your specific map scale
+        const verticalOffset = -0.003; 
 
         if (store.coordinate) {
             cameraRef.current?.setCamera({
@@ -328,7 +309,7 @@ const MapView = () => {
     };
 
     const renderAnnotations = () => (
-        filteredStores.map((store: Store) => { // Explicitly typed store as Store
+        filteredStores.map((store: Store) => {
             // Determine coordinate for marker
             const coordinate = store.coordinate || [store.longitude, store.latitude];
 
@@ -427,62 +408,64 @@ const MapView = () => {
 
     const renderStoreOverlay = () => {
         if (!selectedStore) return null;
-
-        // Default image placeholder if store_image is null
         const imageSource = selectedStore.store_image
             ? { uri: selectedStore.store_image }
-            : require('../assets/img/events/culinary-arts.png'); // Make sure you have this placeholder image
+            : require('../assets/img/events/culinary-arts.png'); 
 
         return (
             <View style={styles.overlay}>
-                <TouchableOpacity
-                    style={styles.closeButton}
-                    onPress={handleCloseOverlay}
-                >
-                    <Text style={styles.closeButtonText}>×</Text>
-                </TouchableOpacity>
-                <Image
-                    source={imageSource}
-                    style={styles.overlayImage}
-                    resizeMode="cover"
-                />
-                <Text style={styles.overlayTitle}>{selectedStore.name}</Text>
-                <Text style={styles.overlayType}>{selectedStore.type || 'General Store'}</Text>
-                <Text style={styles.overlayRating}>
-                    Rating: {selectedStore.rating.toFixed(1)} ★
-                </Text>
-                {routeInfo && (
-                    <View style={styles.routeInfoContainer}>
-                        <View style={styles.routeInfoItem}>
-                            <FontAwesomeIcon icon={faClock} size={20} color="#333" />
-                            <Text style={styles.routeInfoText}>
-                                {`${Math.round(routeInfo.duration / 60)} mins`}
-                            </Text>
-                        </View>
-                        <View style={styles.routeInfoItem}>
-                            <FontAwesomeIcon icon={faRoad} size={20} color="#333" />
-                            <Text style={styles.routeInfoText}>
-                                {`${(routeInfo.distance / 1000).toFixed(1)} km`}
-                            </Text>
-                        </View>
-                    </View>
-                )}
-                <TouchableOpacity
-                    style={styles.viewDetailsButton}
-                    onPress={() => {
-                        navigation.navigate('StoreDetails', { store: selectedStore });
-                    }}
-                >
-                    <Text style={styles.viewDetailsButtonText}>View Store Details</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.navigateButton}
-                    onPress={handleNavigatePress}
-                >
-                    <FontAwesomeIcon icon={faDirections} size={24} color="#fff" />
-                    <Text style={styles.navigateButtonText}>Navigate</Text>
-                </TouchableOpacity>
+            <TouchableOpacity style={styles.closeButton} onPress={handleCloseOverlay}>
+              <Text style={styles.closeButtonText}>×</Text>
+            </TouchableOpacity>
+            
+            <Image
+              source={imageSource}
+              style={styles.overlayImage}
+              resizeMode="cover"
+            />
+            
+            <Text style={styles.overlayTitle}>{selectedStore.name}</Text>
+          
+            
+            <View style={styles.infoContainer}>
+            <Text style={styles.overlaySubtitle}>{selectedStore.type || 'General Store'}</Text>
+              <Text style={styles.ratingText}>
+                {selectedStore.rating.toFixed(1)} ★
+              </Text>
+              {routeInfo && (
+                <View style={styles.routeInfoContainer}>
+                  <View style={styles.routeInfoItem}>
+                    <FontAwesomeIcon icon={faClock} size={16} color="#666666" />
+                    <Text style={styles.routeInfoText}>
+                      {`${Math.round(routeInfo.duration / 60)} min`}
+                    </Text>
+                  </View>
+                  <View style={styles.routeInfoItem}>
+                    <FontAwesomeIcon icon={faRoad} size={16} color="#666666" />
+                    <Text style={styles.routeInfoText}>
+                      {`${(routeInfo.distance / 1000).toFixed(1)} km`}
+                    </Text>
+                  </View>
+                </View>
+              )}
             </View>
+            
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.viewDetailsButton}
+                onPress={() => navigation.navigate('StoreDetails', { store: selectedStore })}
+              >
+                <Text style={styles.viewDetailsButtonText}>Details</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.navigateButton}
+                onPress={handleNavigatePress}
+              >
+                <FontAwesomeIcon icon={faDirections} size={20} color="#fff" />
+                <Text style={styles.navigateButtonText}>Navigate</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         );
     };
 
@@ -589,7 +572,7 @@ const MapView = () => {
                 {/* Clear Route Button - only show when route is visible */}
                 {routeInfo && (
                     <TouchableOpacity
-                        style={[styles.controlButton, styles.clearRouteButton, { marginTop: 10 }]}
+                        style={[styles.controlButton, styles.clearRouteButton]}
                         onPress={clearRoute}>
                         <FontAwesomeIcon icon={faTimes} size={16} color="#fff" />
                     </TouchableOpacity>

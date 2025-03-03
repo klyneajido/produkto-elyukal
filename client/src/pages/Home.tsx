@@ -279,7 +279,7 @@ const Home: React.FC = () => {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.copyright}>© 2025 Produkto Elyukal. Amin to, gawa namin to.</Text>
+          <Text style={styles.copyright}>© 2025 Produkto Elyukal.</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
