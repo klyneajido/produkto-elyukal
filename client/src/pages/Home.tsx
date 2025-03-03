@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
-  RefreshControl
+  RefreshControl,
+  Animated
 } from 'react-native';
 import styles from '../assets/style/homeStyle.js';
 import { useNavigation } from '@react-navigation/native';
@@ -22,17 +23,17 @@ import {
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProductList from '../components/ProductList.tsx';
-import { RootStackParamList} from '../../types/types.ts';
+import { RootStackParamList, TabProps } from '../../types/types.ts';
 import EventList from '../components/EventList.tsx';
 import PopularProducts from '../components/PopularList.tsx';
 
-const Home: React.FC = () => {
+const Home: React.FC<TabProps> = ({ onScroll }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   // const { user } = useAuth();
   const [searchText, setSearchText] = useState<string>('');
   const [activeIndex, setActiveIndex] = useState(0);
-  const [showCalendar, setShowCalendar] = useState(false); 
-  const [selectedDate, setSelectedDate] = useState(new Date()); 
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -47,7 +48,7 @@ const Home: React.FC = () => {
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000)); 
+      await new Promise(resolve => setTimeout(resolve, 2000));
       console.log("Page refreshed!");
     } catch (error) {
       console.error("Refresh failed:", error);
@@ -89,8 +90,9 @@ const Home: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      
-      <ScrollView
+      <Animated.ScrollView
+        onScroll={onScroll}
+        scrollEventThrottle={16} 
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -204,7 +206,7 @@ const Home: React.FC = () => {
             </View>
           </View>
 
-        
+
 
           {/* Products Section */}
           <View style={styles.divider} />
@@ -229,8 +231,8 @@ const Home: React.FC = () => {
             </View>
             <EventList />
           </View>
-         
-          </View>
+
+        </View>
         {/* Footer Section */}
         <View style={styles.footerContainer}>
           <View style={styles.footerTop}>
@@ -262,26 +264,26 @@ const Home: React.FC = () => {
             <TouchableOpacity style={styles.socialIcon}>
               <Image
                 style={styles.image}
-                source={require('../assets/img/facebook-icon.png')} 
+                source={require('../assets/img/facebook-icon.png')}
               />
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialIcon}>
               <Image
                 style={styles.image}
-                source={require('../assets/img/instagram-icon.png')} 
+                source={require('../assets/img/instagram-icon.png')}
               />
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialIcon}>
               <Image
                 style={styles.image}
-                source={require('../assets/img/twitter-icon.png')} 
+                source={require('../assets/img/twitter-icon.png')}
               />
             </TouchableOpacity>
           </View>
 
           <Text style={styles.copyright}>© 2025 Produkto Elyukal.</Text>
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 };

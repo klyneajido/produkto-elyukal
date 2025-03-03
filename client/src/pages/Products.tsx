@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
+  Animated,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
@@ -94,7 +95,7 @@ function fuzzySearch<T>(
   return results;
 }
 
-const Products: React.FC<ProductsProps> = ({ navigation }) => {
+const Products: React.FC<ProductsProps> = ({ navigation, onScroll}) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchText, setSearchText] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -294,9 +295,10 @@ const Products: React.FC<ProductsProps> = ({ navigation }) => {
           </View>
         </Modal>
 
-        <ScrollView style={styles.productContainer} showsVerticalScrollIndicator={false}>
+        <Animated.ScrollView style={styles.productContainer} showsVerticalScrollIndicator={false} onScroll={onScroll}
+        scrollEventThrottle={16} >
           <ProductList products={filteredProducts} />
-        </ScrollView>
+        </Animated.ScrollView>
       </View>
     </SafeAreaView>
   );

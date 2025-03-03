@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, StyleSheet, TouchableOpacity, Dimensions, Animated } from 'react-native';
+import { View, StyleSheet, Dimensions, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHome, faCog, faMap, faBox, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faCog, faMap, faBox } from '@fortawesome/free-solid-svg-icons';
 import Home from '../pages/Home';
 import Products from '../pages/Products';
 import Map from '../pages/Map';
@@ -12,36 +12,45 @@ const Tab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
 
 const TabNavigator: React.FC = () => {
-  const [isNavVisible, setIsNavVisible] = useState(true);
-  const tabBarAnim = useRef(new Animated.Value(0)).current; // Tab bar position
-  const toggleAnim = useRef(new Animated.Value(100)).current; // Toggle button position (starts hidden)
+  const scrollY = useRef(new Animated.Value(0)).current; // Tracks scroll position
+  const tabBarAnim = useRef(new Animated.Value(0)).current; // Controls tab bar animation
+  const [lastScrollY, setLastScrollY] = useState(0); // Tracks previous scroll position
+  const [isNavVisible, setIsNavVisible] = useState(true); // Tracks visibility state
 
-  const toggleNavigation = () => {
-    const tabBarToValue = isNavVisible ? 100 : 0; // Down to hide, up to show
-    const toggleToValue = isNavVisible ? 0 : 100; // Up to show, down to hide
+  // Listen to scrollY changes to detect direction
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+    {
+      useNativeDriver: true,
+      listener: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const currentScrollY = event.nativeEvent.contentOffset.y;
+        const diff = currentScrollY - lastScrollY;
 
-    Animated.parallel([
-      Animated.timing(tabBarAnim, {
-        toValue: tabBarToValue,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(toggleAnim, {
-        toValue: toggleToValue,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start(() => setIsNavVisible(!isNavVisible));
-  };
+        if (diff > 1 && isNavVisible) {
+          // Scrolling down more than 2px, hide navbar
+          Animated.timing(tabBarAnim, {
+            toValue: 100,
+            duration: 100,
+            useNativeDriver: true,
+          }).start(() => setIsNavVisible(false));
+        } else if (diff < -1 && !isNavVisible) {
+          // Scrolling up more than 2px, show navbar
+          Animated.timing(tabBarAnim, {
+            toValue: 0,
+            duration: 100,
+            useNativeDriver: true,
+          }).start(() => setIsNavVisible(true));
+        }
+
+        setLastScrollY(currentScrollY);
+      },
+    }
+  );
 
   const tabBarTranslateY = tabBarAnim.interpolate({
     inputRange: [0, 100],
-    outputRange: [0, 100], // Slide down to hide
-  });
-
-  const toggleTranslateY = toggleAnim.interpolate({
-    inputRange: [0, 100],
-    outputRange: [0, 100], // Slide down to hide
+    outputRange: [0, 100], 
+    extrapolate: 'clamp',
   });
 
   return (
@@ -84,7 +93,7 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Home"
-          component={Home}
+          children={() => <Home onScroll={handleScroll} />}
         />
         <Tab.Screen
           options={{
@@ -100,7 +109,7 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Products"
-          component={Products}
+          children={() => <Products onScroll={handleScroll} />}
         />
         <Tab.Screen
           options={{
@@ -116,7 +125,7 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Maps"
-          component={Map}
+          children={() => <Map/>}
         />
         <Tab.Screen
           options={{
@@ -132,38 +141,9 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Settings"
-          component={Settings}
-        />
-        <Tab.Screen
-          options={{
-            tabBarIcon: () => (
-              <TouchableOpacity
-                style={styles.iconContainer}
-                onPress={toggleNavigation}
-              >
-                <FontAwesomeIcon
-                  icon={faMinus}
-                  size={24}
-                  color="#ffa726"
-                />
-              </TouchableOpacity>
-            ),
-          }}
-          name="Toggle"
-          component={View} // Placeholder, not rendered
+          children={() => <Settings/>}
         />
       </Tab.Navigator>
-
-      <Animated.View
-        style={[
-          styles.floatingToggleButton,
-          { transform: [{ translateY: toggleTranslateY }] },
-        ]}
-      >
-        <TouchableOpacity onPress={toggleNavigation}>
-          <FontAwesomeIcon icon={faPlus} size={24} color="#ffa726" />
-        </TouchableOpacity>
-      </Animated.View>
     </View>
   );
 };
@@ -179,22 +159,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: '100%',
-  },
-  floatingToggleButton: {
-    position: 'absolute',
-    bottom: 30,
-    right: 20,
-    backgroundColor: 'white',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 10 },
-    shadowRadius: 10,
-    elevation: 5,
   },
 });
 

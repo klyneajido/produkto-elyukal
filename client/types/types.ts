@@ -1,5 +1,9 @@
 import { RouteProp } from "@react-navigation/native";
+import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
+export type TabProps ={
+  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+}
 export type RootStackParamList = {
   Welcome: undefined;
   Login: undefined;
@@ -84,6 +88,7 @@ export interface ProductsProps {
   navigation: {
     navigate: (screen: string, params?: any) => void;
   };
+  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 }
 
 export interface Store {
