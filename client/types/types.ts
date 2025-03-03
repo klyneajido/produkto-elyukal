@@ -1,4 +1,5 @@
 import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
 export type TabProps ={
@@ -85,9 +86,7 @@ export interface ProductARSceneProps {
 
 
 export interface ProductsProps {
-  navigation: {
-    navigate: (screen: string, params?: any) => void;
-  };
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Products'>;
   onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 }
 

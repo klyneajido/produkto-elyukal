@@ -95,7 +95,7 @@ function fuzzySearch<T>(
   return results;
 }
 
-const Products: React.FC<ProductsProps> = ({ navigation, onScroll}) => {
+const Products: React.FC<ProductsProps> = ({ onScroll}) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchText, setSearchText] = useState('');
   const [showFilters, setShowFilters] = useState(false);
