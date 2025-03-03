@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, StyleSheet, Dimensions, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -18,12 +18,68 @@ const TabNavigator: React.FC = () => {
   // Track visibility state
   const [isNavVisible, setIsNavVisible] = useState(true);
   
-  // Track scroll direction with refs to avoid re-renders
+  // Track scroll related variables with refs
   const lastScrollY = useRef(0);
   const isScrollingDown = useRef(false);
   const scrollTimer = useRef<NodeJS.Timeout | null>(null);
+  const isTouching = useRef(false);
+
+  // Clear timer on component unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimer.current) {
+        clearTimeout(scrollTimer.current);
+      }
+    };
+  }, []);
+
+  // Function to show navbar
+  const showNavbar = useCallback(() => {
+    Animated.spring(tabBarTranslate, {
+      toValue: 0,
+      useNativeDriver: true,
+      tension: 80,
+      friction: 12
+    }).start(() => setIsNavVisible(true));
+  }, [tabBarTranslate]);
+
+  // Function to hide navbar
+  const hideNavbar = useCallback(() => {
+    Animated.spring(tabBarTranslate, {
+      toValue: 100,
+      useNativeDriver: true,
+      tension: 80,
+      friction: 12
+    }).start(() => setIsNavVisible(false));
+  }, [tabBarTranslate]);
+
+  // Setup touch handlers
+  const handleTouchStart = useCallback(() => {
+    isTouching.current = true;
+    
+    // Clear any pending timers when touch starts
+    if (scrollTimer.current) {
+      clearTimeout(scrollTimer.current);
+      scrollTimer.current = null;
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    isTouching.current = false;
+    
+    // Set timer to show navbar after touch ends
+    if (scrollTimer.current) {
+      clearTimeout(scrollTimer.current);
+    }
+    
+    scrollTimer.current = setTimeout(() => {
+      if (!isNavVisible) {
+        showNavbar();
+      }
+    }, 1500);
+  }, [isNavVisible, showNavbar]);
   
-  // Throttle scroll handling with useCallback to prevent excessive calculations
+  // Main scroll handler
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const currentScrollY = event.nativeEvent.contentOffset.y;
     const diff = currentScrollY - lastScrollY.current;
@@ -36,49 +92,35 @@ const TabNavigator: React.FC = () => {
     
     const newIsScrollingDown = diff > 0;
     
-    // Only trigger animation when direction changes
-    if (newIsScrollingDown !== isScrollingDown.current) {
-      isScrollingDown.current = newIsScrollingDown;
-      
-      // Clear any pending timers
+    // Only trigger animation when scrolling down and navbar is visible,
+    // or scrolling up and navbar is hidden
+    if (newIsScrollingDown && isNavVisible) {
+      hideNavbar();
+      // Clear any pending show timers when actively scrolling down
+      if (scrollTimer.current) {
+        clearTimeout(scrollTimer.current);
+        scrollTimer.current = null;
+      }
+    } else if (!newIsScrollingDown && !isNavVisible) {
+      showNavbar();
+    }
+    
+    isScrollingDown.current = newIsScrollingDown;
+    
+    // When scrolling without touching (momentum scrolling),
+    // set a timer to show the navbar when scrolling stops
+    if (!isTouching.current) {
       if (scrollTimer.current) {
         clearTimeout(scrollTimer.current);
       }
       
-      // Start animation
-      if (newIsScrollingDown && isNavVisible) {
-        Animated.spring(tabBarTranslate, {
-          toValue: 100,
-          useNativeDriver: true,
-          tension: 80,
-          friction: 12
-        }).start(() => setIsNavVisible(false));
-      } else if (!newIsScrollingDown && !isNavVisible) {
-        Animated.spring(tabBarTranslate, {
-          toValue: 0,
-          useNativeDriver: true,
-          tension: 80,
-          friction: 12
-        }).start(() => setIsNavVisible(true));
-      }
+      scrollTimer.current = setTimeout(() => {
+        if (!isNavVisible) {
+          showNavbar();
+        }
+      }, 1500);
     }
-    
-    // Debounce showing nav when scrolling stops
-    if (scrollTimer.current) {
-      clearTimeout(scrollTimer.current);
-    }
-    
-    scrollTimer.current = setTimeout(() => {
-      if (!isNavVisible) {
-        Animated.spring(tabBarTranslate, {
-          toValue: 0,
-          useNativeDriver: true,
-          tension: 80,
-          friction: 12
-        }).start(() => setIsNavVisible(true));
-      }
-    }, 500); // Show nav bar after 1.5 seconds of no scrolling
-  }, [isNavVisible]);
+  }, [isNavVisible, hideNavbar, showNavbar]);
 
   return (
     <View style={styles.container}>
@@ -120,7 +162,21 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Home"
-          children={() => <Home onScroll={handleScroll} />}
+          children={() => (
+            <Home 
+              onScroll={handleScroll}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              onMomentumScrollEnd={() => {
+                if (!isNavVisible) {
+                  if (scrollTimer.current) {
+                    clearTimeout(scrollTimer.current);
+                  }
+                  scrollTimer.current = setTimeout(showNavbar, 1500);
+                }
+              }}
+            />
+          )}
         />
         <Tab.Screen
           options={{
@@ -136,7 +192,21 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Products"
-          children={() => <Products onScroll={handleScroll} />}
+          children={() => (
+            <Products 
+              onScroll={handleScroll}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              onMomentumScrollEnd={() => {
+                if (!isNavVisible) {
+                  if (scrollTimer.current) {
+                    clearTimeout(scrollTimer.current);
+                  }
+                  scrollTimer.current = setTimeout(showNavbar, 1500);
+                }
+              }}
+            />
+          )}
         />
         <Tab.Screen
           options={{
