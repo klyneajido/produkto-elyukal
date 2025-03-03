@@ -1,23 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Dimensions, Animated } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome, faCog, faMap, faBox, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 import Home from '../pages/Home';
 import Products from '../pages/Products';
 import Map from '../pages/Map';
 import Settings from '../pages/Settings';
-import ProductDetails from '../pages/ProductDetails';
 
 const Tab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
 
 const TabNavigator: React.FC = () => {
   const [isNavVisible, setIsNavVisible] = useState(true);
+  const tabBarAnim = useRef(new Animated.Value(0)).current; // Tab bar position
+  const toggleAnim = useRef(new Animated.Value(100)).current; // Toggle button position (starts hidden)
 
   const toggleNavigation = () => {
-    setIsNavVisible(!isNavVisible);
+    const tabBarToValue = isNavVisible ? 100 : 0; // Down to hide, up to show
+    const toggleToValue = isNavVisible ? 0 : 100; // Up to show, down to hide
+
+    Animated.parallel([
+      Animated.timing(tabBarAnim, {
+        toValue: tabBarToValue,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(toggleAnim, {
+        toValue: toggleToValue,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setIsNavVisible(!isNavVisible));
   };
+
+  const tabBarTranslateY = tabBarAnim.interpolate({
+    inputRange: [0, 100],
+    outputRange: [0, 100], // Slide down to hide
+  });
+
+  const toggleTranslateY = toggleAnim.interpolate({
+    inputRange: [0, 100],
+    outputRange: [0, 100], // Slide down to hide
+  });
 
   return (
     <View style={styles.container}>
@@ -34,15 +59,12 @@ const TabNavigator: React.FC = () => {
               borderRadius: 30,
               shadowColor: '#000',
               shadowOpacity: 0.1,
-              shadowOffset: {
-                width: 0,
-                height: 10,
-              },
+              shadowOffset: { width: 0, height: 10 },
               shadowRadius: 10,
               elevation: 5,
               width: width - 40,
+              transform: [{ translateY: tabBarTranslateY }],
             },
-            !isNavVisible && { display: 'none' }
           ],
           tabBarActiveBackgroundColor: 'transparent',
           tabBarInactiveBackgroundColor: 'transparent',
@@ -120,7 +142,7 @@ const TabNavigator: React.FC = () => {
                 onPress={toggleNavigation}
               >
                 <FontAwesomeIcon
-                  icon={isNavVisible ? faMinus : faPlus}
+                  icon={faMinus}
                   size={24}
                   color="#ffa726"
                 />
@@ -128,22 +150,20 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Toggle"
-          component={View}
+          component={View} // Placeholder, not rendered
         />
       </Tab.Navigator>
 
-      {!isNavVisible && (
-        <TouchableOpacity
-          style={styles.floatingToggleButton}
-          onPress={toggleNavigation}
-        >
-          <FontAwesomeIcon
-            icon={faPlus}
-            size={24}
-            color="#ffa726"
-          />
+      <Animated.View
+        style={[
+          styles.floatingToggleButton,
+          { transform: [{ translateY: toggleTranslateY }] },
+        ]}
+      >
+        <TouchableOpacity onPress={toggleNavigation}>
+          <FontAwesomeIcon icon={faPlus} size={24} color="#ffa726" />
         </TouchableOpacity>
-      )}
+      </Animated.View>
     </View>
   );
 };
@@ -152,16 +172,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-  },
-  screen: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    color: 'black',
-    fontSize: 40,
-    fontWeight: 'bold',
   },
   iconContainer: {
     flex: 1,
@@ -182,10 +192,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
+    shadowOffset: { width: 0, height: 10 },
     shadowRadius: 10,
     elevation: 5,
   },
