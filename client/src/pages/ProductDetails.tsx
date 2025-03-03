@@ -274,7 +274,6 @@ const ProductDetails: React.FC = () => {
                         <FontAwesomeIcon icon={faCameraRetro} color="white" size={24} />
                         <Text style={styles.arButtonText}>View in AR</Text>
                     </TouchableOpacity>
-
                     <Text style={styles.sectionTitle}>Description</Text>
                     <Text style={styles.productDescription}>{product.description}</Text>
 
@@ -298,14 +297,13 @@ const ProductDetails: React.FC = () => {
                             onPress={() => navigateToStoreDetails(storeData)}
                         >
                             <Image
-                                source={{ uri: storeData.store_image || 'https://via.placeholder.com/50' }}
+                                source={{ uri: storeData.store_image || 'https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg' }}
                                 style={styles.storeImage}
-                                defaultSource={require('../assets/img/product-images/basi-wine.jpg')}
                             />
                             <View style={styles.storeInfoContainer}>
                                 <Text style={styles.storeNameText}>{storeData.name}</Text>
                                 <View style={styles.storeDetailsRow}>
-                                    <FontAwesomeIcon icon={faStar} color="#FDD700" size={14} />
+                                    <FontAwesomeIcon icon={faStar} color="#FDD700"/>
                                     <Text style={styles.storeRatingText}>
                                         {storeData.rating || 'N/A'}
                                     </Text>
@@ -315,7 +313,7 @@ const ProductDetails: React.FC = () => {
                                 </View>
                                
                             </View>
-                            <FontAwesomeIcon icon={faStore} color="#FDD700" size={24} />
+                            <FontAwesomeIcon icon={faStore} color="#FDD700" />
                         </TouchableOpacity>
                     )}
 

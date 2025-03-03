@@ -33,11 +33,7 @@ const loginSignupStyles = StyleSheet.create({
     fontFamily: FONTS.regular,
     color: COLORS.lightgray,
   },
-  logo: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
+
   appTitle: {
     fontFamily: FONTS.bold,
     fontSize: 22,
@@ -65,29 +61,32 @@ const loginSignupStyles = StyleSheet.create({
   forgotPasswordContainer: {
     alignSelf: "flex-end",
     marginBottom: 20,
+      marginHorizontal: 15,
   },
   forgotPasswordText: {
     fontFamily: FONTS.regular,
-    color: COLORS.lightgray,
+    color: COLORS.gray,
   },
   loginButton: {
     backgroundColor: COLORS.secondary,
     height: 50,
-    borderRadius: 25,
+    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
+    marginHorizontal: 15,
   },
 
   continueGuestButton: {
     backgroundColor: COLORS.white, 
     height: 50,
-    borderRadius: 25,
+    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
     borderWidth: 2, 
-    borderColor: COLORS.secondary, 
+    borderColor: COLORS.secondary,
+    marginHorizontal: 15,
   },
   loginButtonText: {
     fontFamily: FONTS.regular,

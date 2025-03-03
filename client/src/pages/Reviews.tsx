@@ -124,6 +124,9 @@ const ReviewScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.reviewContainer}>
+      <View>
+        <Text>See what other tourists have to say</Text>
+      </View>
       {loading ? (
         <ActivityIndicator size="small" color="#FDD700" />
       ) : error ? (

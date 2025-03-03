@@ -20,7 +20,7 @@ const loginSignupStyles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor:COLORS.primary,
     marginBottom:30,
-    borderBottomLeftRadius:50,
+    borderBottomLeftRadius: 20,
     overflow:'hidden',
   },
   bgImg:{
@@ -53,6 +53,7 @@ const loginSignupStyles = StyleSheet.create({
   },
   formContainer: {
     paddingHorizontal: 20,
+    marginHorizontal:15,
   },
   taglineText:{
     color: COLORS.black,
@@ -104,7 +105,7 @@ const loginSignupStyles = StyleSheet.create({
   signupButton: {
     backgroundColor: '#ffd700',
     height: 50,
-    borderRadius: 25,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop:20,
