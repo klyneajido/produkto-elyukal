@@ -165,3 +165,5 @@ const loginSignupStyles = StyleSheet.create({
 });
 
 export default loginSignupStyles;
+
+//mejo kinabahan ako sa merge, pero safe safe
