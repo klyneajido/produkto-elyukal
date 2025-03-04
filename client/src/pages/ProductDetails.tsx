@@ -20,6 +20,9 @@ import {
     Viro3DObject,
     ViroAmbientLight,
     ViroNode,
+    ViroText,
+    ViroQuad,
+    ViroAnimations,
 } from '@viro-community/react-viro';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCameraRetro, faStore, faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
@@ -32,6 +35,11 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import ReviewList from '../components/ReviewList';
 import axios from 'axios';
 import { BASE_URL } from '../config/config';
+
+ViroAnimations.registerAnimations({
+    fadeIn: { properties: { opacity: 1 }, duration: 500 },
+    fadeOut: { properties: { opacity: 0 }, duration: 500 },
+});
 
 type ProductDetailsRouteProp = RouteProp<RootStackParamList, 'ProductDetails'>;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'StoreDetails'>;
@@ -52,9 +60,14 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
     const [position] = useState<[number, number, number]>([0, 0, 0]);
     const [scale] = useState<[number, number, number]>([0.21, 0.21, 0.21]);
     const [rotation] = useState<[number, number, number]>([0, 0, 0]);
+    const [showText, setShowText] = useState(false);
 
     const onInitialized = (state: ViroTrackingState) => {
         setIsTracking(state === ViroTrackingStateConstants.TRACKING_NORMAL);
+    };
+
+    const onProductTap = () => {
+        setShowText(!showText); 
     };
 
     return (
@@ -67,8 +80,28 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                     position={[0, -0.19, -0.2]}
                     scale={scale}
                     rotation={rotation}
+                    onClick={onProductTap} // Add tap handler
                     onError={(event) => console.error("3D Object Loading Error:", event)}
                 />
+                {/* Text that appears when tapped */}
+                {showText && (
+                    <ViroText
+                        text="Buy me now!"
+                        position={[0, 0, -0.2]}
+                        scale={[0.1, 0.1, 0.1]}
+                        width={1}
+                        style={{
+                            fontSize: 25,
+                            color: '#00ffff', // Cyan
+                            fontFamily: 'Arial',
+                            textAlign: 'center',
+                            shadowsEnabled: true,
+                        }}
+                        outerStroke={{ type: 'Outline', width: 2, color: '#000000' }}
+                        animation={{ name: 'fadeIn', run: true, loop: false }}
+                    />
+                )}
+
             </ViroNode>
         </ViroARScene>
     );
