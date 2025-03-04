@@ -11,7 +11,7 @@ async def fetch_products():
     try:
         # Fetch products with store details
         response = supabase_client.table("products").select(
-            "id, name, description, category, price, ar_asset_url, image_urls, address, in_stock, store_id, stores(name, store_id, latitude, longitude, store_image, type, rating)"
+            "id, name, description, category, price, ar_asset_url, image_urls, address, in_stock, store_id, stores(name, store_id, latitude, longitude, store_image, type, rating, town)"
         ).execute()
 
         if not response.data:

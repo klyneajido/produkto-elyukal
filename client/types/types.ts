@@ -31,7 +31,16 @@ export interface Review {
 }
 export interface Product {
   store_id: any;
-  stores(stores: any): unknown;
+  stores?: { // Optional to handle missing data
+    name: string;
+    store_id: number;
+    latitude: number;
+    longitude: number;
+    store_image: string;
+    type: string;
+    rating: number;
+    town: string;
+  };
   id: number;
   name: string;
   description: string;

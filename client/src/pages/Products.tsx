@@ -40,10 +40,10 @@ type SearchResult<T> = {
 function fuzzySearch<T>(
   query: string,
   items: T[],
-  getText: (item: T) => string,
-  maxDistanceRatio: number = 0.4 // Max edit distance as a ratio of longer string length
+  getFields: (item: T) => string[],
+  maxDistanceRatio: number = 0.4
 ): SearchResult<T>[] {
-  const lowerQuery = query.toLowerCase();
+  const lowerQuery = query.toLowerCase().trim();
   console.log('Fuzzy search query:', lowerQuery);
 
   const levenshteinDistance = (s1: string, s2: string): number => {
@@ -60,42 +60,65 @@ function fuzzySearch<T>(
       for (let j = 1; j <= n; j++) {
         const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
         matrix[i][j] = Math.min(
-          matrix[i - 1][j] + 1, // Deletion
-          matrix[i][j - 1] + 1, // Insertion
-          matrix[i - 1][j - 1] + cost // Substitution
+          matrix[i - 1][j] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j - 1] + cost
         );
       }
     }
     return matrix[m][n];
   };
 
-  const results = items
-    .map((item) => {
-      const text = getText(item).toLowerCase();
-      const distance = levenshteinDistance(lowerQuery, text);
-      const isSubstring = text.includes(lowerQuery);
-      const maxLength = Math.max(lowerQuery.length, text.length);
-      const normalizedDistance = distance / maxLength; // Normalize to 0-1 range
-      return { item, distance, isSubstring, normalizedDistance };
-    })
-    .filter((result) => result.isSubstring || result.normalizedDistance <= maxDistanceRatio)
-    .sort((a, b) => {
-      // Prioritize substring matches, then normalized distance
-      if (a.isSubstring && !b.isSubstring) return -1;
-      if (!a.isSubstring && b.isSubstring) return 1;
-      return a.normalizedDistance - b.normalizedDistance;
+  const results: SearchResult<T>[] = [];
+  items.forEach((item) => {
+    const fields = getFields(item)
+      .filter((field) => field !== null && field !== undefined)
+      .map((field) => field.toLowerCase().trim());
+
+    let bestDistance = Infinity;
+    let isSubstring = false;
+
+    const isShortQuery = lowerQuery.length < 3;
+
+    fields.forEach((field) => {
+      if (field) {
+        if (isShortQuery) {
+          isSubstring = field.startsWith(lowerQuery);
+        } else {
+          const distance = levenshteinDistance(lowerQuery, field);
+          const maxLength = Math.max(lowerQuery.length, field.length);
+          const normalizedDistance = maxLength ? distance / maxLength : 1;
+          const fieldIsSubstring = field.includes(lowerQuery);
+
+          if (fieldIsSubstring) {
+            isSubstring = true;
+            bestDistance = 0;
+          } else if (normalizedDistance < bestDistance) {
+            bestDistance = normalizedDistance;
+          }
+        }
+      }
     });
 
-  console.log('Fuzzy search results:', results.map(r => ({
-    name: getText(r.item),
-    distance: r.distance,
-    normalizedDistance: r.normalizedDistance,
-    isSubstring: r.isSubstring
-  })));
+    if (isSubstring || (!isShortQuery && bestDistance <= maxDistanceRatio)) {
+      results.push({
+        item,
+        distance: bestDistance,
+        isSubstring,
+      });
+    }
+  });
+
+  results.sort((a, b) => {
+    if (a.isSubstring && !b.isSubstring) return -1;
+    if (!a.isSubstring && b.isSubstring) return 1;
+    return a.distance - b.distance;
+  });
+
   return results;
 }
 
-const Products: React.FC<ProductsProps> = ({ onScroll}) => {
+const Products: React.FC<ProductsProps> = ({ onScroll }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchText, setSearchText] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -128,8 +151,20 @@ const Products: React.FC<ProductsProps> = ({ onScroll}) => {
       const searchResults = fuzzySearch<Product>(
         searchText,
         filteredProducts,
-        (product) => product.name,
-        0.4 // Allow up to 40% edit distance
+        (product) => {
+          const fields = [
+            product.name || '',
+            product.stores?.name || '', // Changed from store to stores
+            product.stores?.town || ''  // Changed from store to stores
+          ];
+          console.log('Search fields for product:', {
+            name: product.name,
+            storeName: product.stores?.name,
+            storeTown: product.stores?.town,
+          });
+          return fields;
+        },
+        0.4
       );
       filteredProducts = searchResults.map((result) => result.item);
       console.log('After fuzzy search:', filteredProducts);
@@ -205,7 +240,7 @@ const Products: React.FC<ProductsProps> = ({ onScroll}) => {
               style={styles.searchBar}
               onChangeText={setSearchText}
               value={searchText}
-              placeholder="Search by product name"
+              placeholder="Search by name, store, or town"
               placeholderTextColor="#888"
             />
           </View>
@@ -295,8 +330,12 @@ const Products: React.FC<ProductsProps> = ({ onScroll}) => {
           </View>
         </Modal>
 
-        <Animated.ScrollView style={styles.productContainer} showsVerticalScrollIndicator={false} onScroll={onScroll}
-        scrollEventThrottle={16} >
+        <Animated.ScrollView
+          style={styles.productContainer}
+          showsVerticalScrollIndicator={false}
+          onScroll={onScroll}
+          scrollEventThrottle={16}
+        >
           <ProductList products={filteredProducts} />
         </Animated.ScrollView>
       </View>
