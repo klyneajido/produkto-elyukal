@@ -5,7 +5,7 @@ const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFF',
+        backgroundColor:COLORS.white,
     },
     headerContainer: {
         position: 'relative',
@@ -31,8 +31,8 @@ const styles = StyleSheet.create({
     },
     storeTitle: {
         fontSize: 24,
-        fontFamily: 'OpenSans-Bold',
-        color: '#FFF',
+        fontFamily: FONTS.bold,
+        color:COLORS.white,
         marginBottom: 5,
     },
     storeMetaContainer: {
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     ratingText: {
         marginLeft: 5,
         fontSize: 14,
-        color: '#FFF',
+        color:COLORS.white,
     },
     typeContainer: {
         flexDirection: 'row',
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     typeText: {
         marginLeft: 5,
         fontSize: 14,
-        color: '#FFF',
+        color:COLORS.white,
     },
     detailsContainer: {
         padding: 20,
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     actionButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFF',
+        backgroundColor:COLORS.white,
         padding: 15,
         borderRadius: 10,
         shadowColor: '#000',
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         fontSize: 20,
-        fontFamily: 'OpenSans-Bold',
+        fontFamily: FONTS.bold,
         color: '#333',
         marginBottom: 10,
         borderBottomWidth: 2,
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     productCard: {
-        backgroundColor: '#FFF',
+        backgroundColor:COLORS.white,
         borderRadius: 12,
         marginBottom: 15,
         shadowColor: '#000',
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     },
     productImage: {
         width: 130,
-        height: 130,
+        height: '100%',
         resizeMode: 'cover',
     },
     productInfo: {
@@ -151,39 +151,52 @@ const styles = StyleSheet.create({
     },
     productName: {
         fontSize: 16,
-        fontFamily: 'OpenSans-Bold',
+        fontFamily: FONTS.bold,
         color: '#333',
         marginBottom: 4,
+        letterSpacing: 0.2
     },
     productCategory: {
-        fontSize: 14,
+        fontSize: FONT_SIZE.medium,
         color: '#666',
         marginBottom: 8,
+        backgroundColor:COLORS.lightgray,
+        borderRadius:16,
+        alignSelf: 'flex-start',
+        paddingHorizontal: 5,
+        paddingVertical:2,
+        letterSpacing:0.1
     },
     productMetaContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'space-between',
-        alignItems: 'center',
         marginBottom: 8,
     },
     priceContainer: {
         flexDirection: 'row',
+    
         alignItems: 'center',
     },
     productPrice: {
-        fontSize: 16,
-        fontFamily: 'OpenSans-Bold',
+        fontSize: FONT_SIZE.medium,
+        fontFamily: FONTS.bold,
         color: COLORS.secondary,
-        marginLeft: 4,
     },
     productRating: {
-        fontSize: 14,
+        fontSize:FONT_SIZE.medium,
         color: '#666',
-        marginLeft: 4,
+ 
+    },
+    bottomContainer:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'space-between',
+    
     },
     stockStatus: {
         fontSize: 14,
-        fontFamily: 'OpenSans-SemiBold',
+        fontFamily: FONTS.semibold,
+        color:COLORS.black
     },
     errorText: {
         color: COLORS.error,

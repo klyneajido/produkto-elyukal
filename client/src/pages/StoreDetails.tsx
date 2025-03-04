@@ -131,28 +131,32 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                         {product.category || 'Uncategorized'}
                     </Text>
                     <View style={styles.productMetaContainer}>
+
+                        <View style={styles.bottomContainer}>
                         <View style={styles.priceContainer}>
                             <FontAwesomeIcon icon={faPesoSign} size={14} color={COLORS.secondary} />
                             <Text style={styles.productPrice}>
                                 {formatPrice(product.price)}
                             </Text>
                         </View>
-                        <View style={styles.ratingContainer}>
-                            <FontAwesomeIcon icon={faStar} size={14} color="#FDD700" />
-                            <Text style={styles.productRating}>
-                                {formatRating(product.rating)}
-                                {product.total_reviews ? ` (${product.total_reviews} reviews)` : ''}
+                            <View style={styles.ratingContainer}>
+                                <FontAwesomeIcon icon={faStar} size={14} color="#FDD700" />
+                                <Text style={styles.productRating}>
+                                    {formatRating(product.rating)}
+                                    {/* {product.total_reviews ? ` (${product.total_reviews} reviews)` : ''} */}
+                                </Text>
+                            </View>
+                            <Text
+                                style={[
+                                    styles.stockStatus,
+                                    { color: product.in_stock ? COLORS.success : COLORS.error },
+                                ]}
+                            >
+                                {product.in_stock ? 'In Stock' : 'Out of Stock'}
                             </Text>
                         </View>
+
                     </View>
-                    <Text
-                        style={[
-                            styles.stockStatus,
-                            { color: product.in_stock ? COLORS.success : COLORS.error },
-                        ]}
-                    >
-                        {product.in_stock ? 'In Stock' : 'Out of Stock'}
-                    </Text>
                 </View>
             </Animatable.View>
         </TouchableOpacity>
