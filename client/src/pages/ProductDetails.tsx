@@ -23,6 +23,7 @@ import {
     ViroText,
     ViroQuad,
     ViroAnimations,
+    ViroMaterials
 } from '@viro-community/react-viro';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCameraRetro, faStore, faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
@@ -36,9 +37,23 @@ import ReviewList from '../components/ReviewList';
 import axios from 'axios';
 import { BASE_URL } from '../config/config';
 
+
 ViroAnimations.registerAnimations({
-    fadeIn: { properties: { opacity: 1 }, duration: 500 },
-    fadeOut: { properties: { opacity: 0 }, duration: 500 },
+    fadeIn: {
+        properties: {
+            opacity: 1
+        },
+        duration: 1000,
+        delay: 500,
+        easing: 'easeInOutQuad'
+    }
+});
+
+ViroMaterials.createMaterials({
+    backgroundMaterial: {
+        diffuseColor: 'rgba(0, 0, 0, 0.7)', 
+        shininess: 1.0,
+    },
 });
 
 type ProductDetailsRouteProp = RouteProp<RootStackParamList, 'ProductDetails'>;
@@ -67,8 +82,12 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
     };
 
     const onProductTap = () => {
-        setShowText(!showText); 
+        setShowText(!showText);
     };
+
+    // Create the display text with product details
+    const productInfoText = `${product.description}\n${product.in_stock ? 'In Stock' : 'Out of Stock'
+        }\n₱${product.price?.toFixed(2)}`;
 
     return (
         <ViroARScene onTrackingUpdated={onInitialized}>
@@ -80,28 +99,62 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                     position={[0, -0.19, -0.2]}
                     scale={scale}
                     rotation={rotation}
-                    onClick={onProductTap} // Add tap handler
+                    onClick={onProductTap}
                     onError={(event) => console.error("3D Object Loading Error:", event)}
                 />
-                {/* Text that appears when tapped */}
-                {showText && (
+                {/* Initial instructional text */}
+                {!showText && (
                     <ViroText
-                        text="Buy me now!"
-                        position={[0, 0, -0.2]}
-                        scale={[0.1, 0.1, 0.1]}
-                        width={1}
+                        text="Tap the product to view details"
+                        position={[0, -0.1, -0.2]}
+                        scale={[0.15, 0.15, 0.15]}
+                        width={2}
+                        height={2}
                         style={{
-                            fontSize: 25,
-                            color: '#00ffff', // Cyan
-                            fontFamily: 'Arial',
+                            fontSize: 12,
+                            color: '#FFFFFF',
+                            fontFamily: 'Open Sans',
                             textAlign: 'center',
-                            shadowsEnabled: true,
+                            fontWeight: 'bold',
+                            shadowOpacity: 0.7,
+                            shadowOffset: { width: 2, height: 2 }
                         }}
-                        outerStroke={{ type: 'Outline', width: 2, color: '#000000' }}
-                        animation={{ name: 'fadeIn', run: true, loop: false }}
+                        transformBehaviors={['billboard']}
+                        renderingOrder={1}
+                        extrusionDepth={0}
+                        textLineBreakMode="WordWrap"
                     />
                 )}
-
+                {/* Product details text */}
+                {showText && (
+                    <ViroText
+                        text={productInfoText}
+                        position={[0, -0.1, -0.2]}
+                        scale={[0.15, 0.15, 0.15]}
+                        width={2}
+                        height={2}
+                        style={{
+                            fontSize: 10,
+                            color: '#00ffff',
+                            fontFamily: 'Open Sans',
+                            textAlign: 'center',
+                            fontWeight: 'bold',
+                            shadowOpacity: 0.7,
+                            shadowOffset: { width: 2, height: 2 },
+                            opacity: 0
+                        }}
+                        animation={{
+                            name: 'fadeIn',
+                            run: true,
+                            loop: false
+                        }}
+                        onClick={() => setShowText(false)}
+                        transformBehaviors={['billboard']}
+                        renderingOrder={1}
+                        extrusionDepth={0}
+                        textLineBreakMode="WordWrap"
+                    />
+                )}
             </ViroNode>
         </ViroARScene>
     );
