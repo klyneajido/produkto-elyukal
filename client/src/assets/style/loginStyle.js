@@ -156,6 +156,14 @@ const loginSignupStyles = StyleSheet.create({
     right: 10,
     padding: 5,
   },
+  logo: {
+    width: 150,
+    height: 150,
+    marginTop: 20,
+    marginBottom: 20,
+  }
 });
 
 export default loginSignupStyles;
+
+//mejo kinabahan ako sa merge, pero safe safe

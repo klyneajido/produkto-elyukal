@@ -86,8 +86,7 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
     };
 
     // Create the display text with product details
-    const productInfoText = `${product.description}\n${product.in_stock ? 'In Stock' : 'Out of Stock'
-        }\n₱${product.price?.toFixed(2)}`;
+    const productInfoText = `${product.description}\n${product.in_stock ? 'Stock Available' : 'Sorry, Out of Stock'}\n₱${product.price?.toFixed(2)}`;
 
     return (
         <ViroARScene onTrackingUpdated={onInitialized}>
