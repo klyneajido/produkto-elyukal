@@ -11,3 +11,5 @@ class Event(BaseModel):
     category: str
     description: str
     image_url: str
+    entrance_fee: float
+    ticket_availability: bool

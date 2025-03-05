@@ -29,7 +29,8 @@ import {
   faPalette,
   faShoppingBag,
   faGamepad,
-  IconDefinition
+  IconDefinition,
+  faTicket
 } from '@fortawesome/free-solid-svg-icons';
 import styles from '../assets/style/eventDetailsStyle';
 import { COLORS } from '../assets/constants/constant';
@@ -51,18 +52,18 @@ const getIconByName = (iconName: string): IconDefinition => {
 };
 
 const formatTime = (time: string | null): string => {
-  if(!time){
+  if (!time) {
     return "Invalid Time";
   }
-try{
-  let[hours, minutes] =time.split(":").map(Number);
-  let period = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12 || 12;
-  return `${hours}:${minutes.toString().padStart(2, "0")} ${period}`;
-} catch(error){
-  console.error('Time formatting error:', error);
-  return time;
-}
+  try {
+    let [hours, minutes] = time.split(":").map(Number);
+    let period = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes.toString().padStart(2, "0")} ${period}`;
+  } catch (error) {
+    console.error('Time formatting error:', error);
+    return time;
+  }
 };
 
 const formatDateMonth = (dateString: string): string => {
@@ -93,9 +94,9 @@ const formatDate = (dateString: string): string => {
   try {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
-      month:'long',
+      weekday: 'long',
+      month: 'short',
       day: 'numeric',
-      year:'numeric',
     });
   } catch (error) {
     console.error('Date formatting error:', error);
@@ -242,21 +243,30 @@ const EventDetails: React.FC = () => {
 
           <View style={styles.keyInfo}>
             <View style={styles.detailContainer}>
+              <View style={styles.left}>
+                <FontAwesomeIcon icon={faTicket} size={30} color={COLORS.primary} />
+              </View>
+              <View style={styles.right}>
+              <Text style={styles.topDetails}>Entrance Fee</Text>
+                <Text style={styles.bottomDetails}>₱{event.entrance_fee}</Text>
+              </View>
+            </View>
+            <View style={styles.detailContainer}>
               <View style={[styles.left, styles.date]}>
                 <Text style={styles.topCalendar}>{formatDateMonth(event.date)}</Text>
                 <Text style={styles.bottomCalendar}>{formatDateDay(event.date)}</Text>
               </View>
               <View style={styles.right}>
-                  <Text style={styles.topDetails}>Sunday, Sep 25</Text>
-                  <Text style={styles.bottomDetails}>{formatTime(event.start_time)} to {formatTime(event.end_time)}</Text>
+                <Text style={styles.topDetails}>{formatDate(event.date)}</Text>
+                <Text style={styles.bottomDetails}>{formatTime(event.start_time)} to {formatTime(event.end_time)}</Text>
               </View>
             </View>
             <View style={styles.detailContainer}>
               <View style={styles.left}>
-              <FontAwesomeIcon icon={faMapMarkerAlt} size={30} color={COLORS.primary} />
+                <FontAwesomeIcon icon={faMapMarkerAlt} size={30} color={COLORS.primary} />
               </View>
               <View style={styles.right}>
-              <Text style={styles.topDetails}>Location</Text>
+                <Text style={styles.topDetails}>Location</Text>
                 <Text style={styles.bottomDetails}>{event.location}</Text>
               </View>
             </View>

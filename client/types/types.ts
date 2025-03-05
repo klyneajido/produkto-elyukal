@@ -69,6 +69,7 @@ export interface Event {
   category: string;
   description: string;
   image_url: string;
+  entrance_fee: number;
 }
 
 export interface User {
