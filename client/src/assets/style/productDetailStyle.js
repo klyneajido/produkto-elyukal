@@ -331,6 +331,10 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
     fontWeight: "500",
   },
+
+  similarContainer:{
+    
+  }
 });
 
 export default styles;

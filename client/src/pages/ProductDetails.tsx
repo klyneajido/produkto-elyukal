@@ -36,6 +36,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import ReviewList from '../components/ReviewList';
 import axios from 'axios';
 import { BASE_URL } from '../config/config';
+import SimilarProducts from '../components/SimilarProducts';
 
 
 ViroAnimations.registerAnimations({
@@ -51,7 +52,7 @@ ViroAnimations.registerAnimations({
 
 ViroMaterials.createMaterials({
     backgroundMaterial: {
-        diffuseColor: 'rgba(0, 0, 0, 0.7)', 
+        diffuseColor: 'rgba(0, 0, 0, 0.7)',
         shininess: 1.0,
     },
 });
@@ -388,7 +389,7 @@ const ProductDetails: React.FC = () => {
                             <View style={styles.storeInfoContainer}>
                                 <Text style={styles.storeNameText}>{storeData.name}</Text>
                                 <View style={styles.storeDetailsRow}>
-                                    <FontAwesomeIcon icon={faStar} color="#FDD700"/>
+                                    <FontAwesomeIcon icon={faStar} color="#FDD700" />
                                     <Text style={styles.storeRatingText}>
                                         {storeData.rating || 'N/A'}
                                     </Text>
@@ -396,13 +397,17 @@ const ProductDetails: React.FC = () => {
                                         {storeData.type || 'Store'}
                                     </Text>
                                 </View>
-                               
+
                             </View>
                             <FontAwesomeIcon icon={faStore} color="#FDD700" />
                         </TouchableOpacity>
                     )}
 
                     <ReviewList />
+                    <View style={styles.similarContainer}>
+                        <Text style={styles.sectionTitle}>Similar Products</Text>
+                        <SimilarProducts currentProduct={product} limit={5} />
+                    </View>
                 </View>
             </ScrollView>
         </SafeAreaView>

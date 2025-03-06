@@ -132,7 +132,7 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
       try {
         const response = await axios.get(`${BASE_URL}/products/fetch_products`);
         setProducts(response.data.products || []);
-        console.log('Fetched products:', response.data.products);
+        // console.log('Fetched products:', response.data.products);
       } catch (e) {
         setError('Error fetching products');
         console.error(e);

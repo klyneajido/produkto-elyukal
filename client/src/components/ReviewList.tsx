@@ -182,7 +182,7 @@ export default function ReviewList() {
                     )}
                 </View>
             )}
-            {user && !(user as any).guest && (
+            {/* {user && !(user as any).guest && (
                 <View style={styles.addReviewContainer}>
                     <Text style={styles.sectionTitle}>Add Your Review</Text>
                     <TextInput
@@ -223,7 +223,7 @@ export default function ReviewList() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            )}
+            )} */}
         </View>
     );
 };
