@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
     faSearch,
     faMapMarkerAlt,
+    faMapPin
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { BASE_URL } from '../config/config.ts';
@@ -96,7 +97,8 @@ const Municipalities: React.FC<MunicipalityProps> = ({
     const handleMunicipalityPress = (municipalityId: string, municipalityName: string) => {
         navigation.navigate('MunicipalityDetail', {
             id: municipalityId,
-            name: municipalityName
+            name: municipalityName,
+            image_url: municipalities.find(m => m.id === municipalityId)?.image_url 
         });
     };
 
@@ -114,13 +116,12 @@ const Municipalities: React.FC<MunicipalityProps> = ({
             />
             <View style={styles.modernCardOverlay} />
             <View style={styles.modernCardContent}>
-                <View style={styles.modernLocationBadge}>
+                <View style={styles.modernBadge}>
                     <FontAwesomeIcon
-                        icon={faMapMarkerAlt}
+                        icon={faMapPin} 
                         size={12}
-                        color={COLORS.white}
+                        color={COLORS.secondary}
                     />
-                    <Text style={styles.locationText}>La Union</Text>
                 </View>
                 <Text style={styles.modernMunicipalityName}>{item.name}</Text>
             </View>

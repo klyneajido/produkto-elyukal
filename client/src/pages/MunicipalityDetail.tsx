@@ -1,0 +1,311 @@
+// MunicipalityDetail.tsx
+import React, { useState, useEffect } from 'react';
+import {
+    View,
+    Text,
+    SafeAreaView,
+    ScrollView,
+    Image,
+    TouchableOpacity,
+    Share,
+    ActivityIndicator,
+    Alert,
+    Dimensions,
+} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import {
+    faArrowLeft,
+    faShare,
+    faHeart,
+    faShoppingBag,
+    faInfoCircle,
+    faStar,
+} from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+import { BASE_URL } from '../config/config.ts';
+import styles from '../assets/style/municipalityDetails.js';
+import { COLORS } from '../assets/constants/constant.ts';
+
+// Interface for municipality data
+interface Municipality {
+    id: string;
+    name: string;
+    description: string;
+    image_url: string;
+    created_at?: string;
+}
+
+// Interface for product data
+interface Product {
+    id?: string;
+    name: string;
+    description: string;
+    category: string;
+    price?: number;
+    location_name: string;
+    address: string;
+    latitude: string;
+    longitude: string;
+    ar_asset_url: string;
+    image_urls: string[];
+    in_stock: boolean;
+    store_id: string;
+    town?: string;
+    average_rating?: number | null | string;
+    total_reviews?: number | null | string;
+}
+
+const MunicipalityDetail: React.FC = () => {
+    const navigation = useNavigation<any>();
+    const route = useRoute<any>();
+    const { id: municipalityId, name: municipalityName, image_url: municipalityImage } = route.params;
+
+    const [municipality, setMunicipality] = useState<Municipality | null>(null);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            if (!municipalityId) {
+                setError('No municipality ID provided');
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                // Fetch municipality details
+                const municipalityResponse = await axios.get(
+                    `${BASE_URL}/municipalities/${municipalityId}`
+                );
+                setMunicipality(municipalityResponse.data);
+
+                // Fetch products
+                const productsResponse = await axios.get(
+                    `${BASE_URL}/products/fetch_products_by_municipality/${municipalityId}`
+                );
+                const fetchedProducts = productsResponse.data.products || [];
+                setProducts(fetchedProducts);
+            } catch (err) {
+                console.error('Error loading data:', err);
+                setError('Failed to load data');
+                Alert.alert(
+                    'Error',
+                    'Unable to load municipality data. Please check your connection and try again.',
+                    [{ text: 'OK' }]
+                );
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadData();
+    }, [municipalityId]);
+
+    const handleShare = async () => {
+        try {
+            await Share.share({
+                message: `Check out the amazing products from ${municipalityName} in our app!`,
+            });
+        } catch (err) {
+            console.error('Share error:', err);
+            Alert.alert('Error', 'Failed to share municipality products');
+        }
+    };
+
+    const toggleFavorite = () => {
+        setIsFavorite(!isFavorite);
+    };
+
+    // Helper function to safely parse numeric values
+    const parseNumericValue = (value: any): number => {
+        if (value === null || value === undefined) return 0;
+        if (typeof value === 'number') return value;
+        if (typeof value === 'string') {
+            const parsed = parseFloat(value);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+        return 0;
+    };
+
+    // Navigate to product detail
+    const navigateToProductDetail = (product: Product) => {
+        // Implement navigation to product detail screen
+        console.log('Navigating to product:', product.name);
+        // navigation.navigate('ProductDetail', { product });
+    };
+
+    if (error) {
+        return (
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text>
+                <TouchableOpacity
+                    style={{ marginTop: 20, padding: 10, backgroundColor: COLORS.primary, borderRadius: 5 }}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Text style={{ color: 'white' }}>Go Back</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <ActivityIndicator size="large" color={COLORS.primary} />
+            </View>
+        );
+    }
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+                {/* Header Image Section */}
+                <View style={styles.imageContainer}>
+                    <Image
+                        source={
+                            municipalityImage
+                                ? { uri: municipalityImage }
+                                : require('../assets/img/events/culinary-arts.png')
+                        }
+                        style={styles.headerImage}
+                        defaultSource={require('../assets/img/events/culinary-arts.png')}
+                    />
+                    <View style={styles.overlay} />
+                    <View style={styles.navbar}>
+                        <TouchableOpacity
+                            onPress={() => navigation.goBack()}
+                            style={styles.navButton}
+                        >
+                            <FontAwesomeIcon icon={faArrowLeft} size={20} color="#fff" />
+                        </TouchableOpacity>
+                        <View style={styles.navRight}>
+                            <TouchableOpacity
+                                style={styles.navButton}
+                                onPress={handleShare}
+                            >
+                                <FontAwesomeIcon icon={faShare} size={20} color="#fff" />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.navButton}
+                                onPress={toggleFavorite}
+                            >
+                                <FontAwesomeIcon
+                                    icon={faHeart}
+                                    size={20}
+                                    color={isFavorite ? COLORS.secondary : "#fff"}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View style={styles.categoryBadge}>
+                        <Text style={styles.categoryText}>Municipality</Text>
+                    </View>
+                </View>
+
+                {/* Content Section */}
+                <View style={styles.content}>
+                    <Text style={styles.title}>{municipalityName}</Text>
+
+                    {/* Description Section (Improved) */}
+                    {municipality && municipality.description && (
+                        <View style={styles.descriptionContainer}>
+                            <Text style={styles.descriptionTitle}>About {municipalityName}</Text>
+                            <Text style={styles.descriptionText}>{municipality.description}</Text>
+                        </View>
+                    )}
+
+                    {/* Products Section (Responsive 2 columns) */}
+                    <View style={styles.productsContainer}>
+                        <Text style={styles.sectionTitle}>Local Products</Text>
+
+                        {products.length > 0 ? (
+                            <View style={styles.productsGrid}>
+                                {products.map((product, index) => {
+                                    const averageRating = parseNumericValue(product.average_rating);
+                                    const totalReviews = parseNumericValue(product.total_reviews);
+
+                                    return (
+                                        <TouchableOpacity
+                                            key={product.id || `${product.store_id}-${index}`}
+                                            style={styles.productCard}
+                                            onPress={() => navigateToProductDetail(product)}
+                                            activeOpacity={0.9}
+                                        >
+                                            {/* Product Image */}
+                                            {product.image_urls && product.image_urls.length > 0 ? (
+                                                <Image
+                                                    source={{ uri: product.image_urls[0] }}
+                                                    style={styles.productImage}
+                                                    resizeMode="cover"
+                                                />
+                                            ) : (
+                                                <View style={styles.productImagePlaceholder}>
+                                                    <FontAwesomeIcon icon={faShoppingBag} size={24} color={COLORS.gray} />
+                                                    <Text style={styles.productImagePlaceholderText}>No Image</Text>
+                                                </View>
+                                            )}
+
+                                            {/* Product Content */}
+                                            <View style={styles.productContent}>
+                                                <Text style={styles.productTitle} numberOfLines={1} ellipsizeMode="tail">
+                                                    {product.name}
+                                                </Text>
+
+                                                <Text style={styles.productDescription} numberOfLines={2} ellipsizeMode="tail">
+                                                    {product.description}
+                                                </Text>
+
+                                                {/* Price and Stock */}
+                                                <View style={styles.productInfoRow}>
+                                                    <Text style={styles.productPrice}>
+                                                        ₱{product.price != null ? product.price.toFixed(2) : 'N/A'}
+                                                    </Text>
+
+                                                    <View style={styles.stockBadge}>
+                                                        <Text
+                                                            style={product.in_stock ? styles.inStockText : styles.outOfStockText}
+                                                        >
+                                                            {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                                                        </Text>
+                                                    </View>
+                                                </View>
+
+                                                {/* Rating */}
+                                                <View style={styles.ratingContainer}>
+                                                    <FontAwesomeIcon
+                                                        icon={faStar}
+                                                        size={14}
+                                                        color={averageRating > 0 ? "#FFD700" : COLORS.gray}
+                                                    />
+                                                    <Text style={styles.ratingText}>
+                                                        {averageRating > 0
+                                                            ? `${averageRating.toFixed(1)} (${totalReviews})`
+                                                            : 'No ratings yet'}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
+                        ) : (
+                            <View style={styles.emptyProductsContainer}>
+                                <View style={styles.emptyIconContainer}>
+                                    <FontAwesomeIcon icon={faShoppingBag} size={24} color={COLORS.primary} />
+                                </View>
+                                <Text style={styles.emptyProductsText}>
+                                    No products available for {municipalityName} yet!
+                                </Text>
+                            </View>
+                        )}
+                    </View>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    );
+};
+
+export default MunicipalityDetail;

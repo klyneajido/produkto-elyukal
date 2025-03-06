@@ -1,7 +1,7 @@
-# fetch_products.py
+# app/routes/fetch_products.py
 from fastapi import APIRouter, HTTPException
 from app.db.database import supabase_client
-from app.schemas.product import Products
+from app.schemas.product import Products  # Assuming this is your schema
 from typing import List
 
 router = APIRouter()
@@ -35,4 +35,35 @@ async def fetch_products():
 
     except Exception as e:
         print(f"Error fetching products: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+@router.get("/fetch_products_by_municipality/{municipality_id}")
+async def fetch_products_by_municipality(municipality_id: str):
+    try:
+        # Fetch products for a specific municipality (filter by town) with store details
+        response = supabase_client.table("products").select(
+            "id, name, description, category, price, ar_asset_url, image_urls, address, in_stock, store_id, stores(name, store_id, latitude, longitude, store_image, type, rating, town)"
+        ).eq("town", municipality_id).execute()
+
+        if not response.data:
+            return {"products": []}  # Return empty list if no products found
+
+        products = response.data
+
+        # Fetch ratings for each product
+        for product in products:
+            ratings_response = (
+                supabase_client.table("reviews")
+                .select("rating")
+                .eq("product_id", product["id"])
+                .execute()
+            )
+            ratings = [r["rating"] for r in ratings_response.data]
+            product["average_rating"] = "{:.1f}".format(round(sum(ratings) / len(ratings), 1)) if ratings else "0"
+            product["total_reviews"] = len(ratings)
+
+        return {"products": products}
+
+    except Exception as e:
+        print(f"Error fetching products by municipality: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")

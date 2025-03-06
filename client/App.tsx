@@ -16,6 +16,7 @@ import EventDetails from './src/pages/EventDetails';
 import StoreDetails  from './src/pages/StoreDetails';
 import { ActivityIndicator, View } from 'react-native';
 import ReviewScreen from './src/pages/Reviews';
+import MunicipalityDetail from './src/pages/MunicipalityDetail';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +48,7 @@ const AppNavigator = () => {
       <Stack.Screen name="EventDetails" component={EventDetails} options={{ headerShown: false }} />
       <Stack.Screen name="TestEnv" component={TestEnv} options={{ headerShown: false }} />
       <Stack.Screen name="StoreDetails" component={StoreDetails}  options={{ headerShown: false }} />
+      <Stack.Screen name="MunicipalityDetail" component={MunicipalityDetail} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };

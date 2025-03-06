@@ -1,5 +1,6 @@
 import { StyleSheet, Dimensions } from "react-native";
 import { COLORS, FONTS, FONT_SIZE } from '../constants/constant';
+import { transparent } from "react-native-paper/lib/typescript/styles/themes/v2/colors";
 
 const { width } = Dimensions.get('window');
 const cardWidth = width * 0.88;
@@ -159,6 +160,13 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignSelf: 'flex-start',
   },
+  decorativeLine: {
+    width: 4,
+    height: 20,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 2,
+    marginRight: 8,
+},
   locationText: {
     fontFamily: FONTS.medium,
     fontSize: FONT_SIZE.small,
@@ -286,6 +294,12 @@ const styles = StyleSheet.create({
     color: COLORS.grayDark,
     marginBottom: 8,
     textAlign: 'center',
+  },
+  modernBadge: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
   },
   noResultsSubtext: {
     fontSize: FONT_SIZE.medium,
