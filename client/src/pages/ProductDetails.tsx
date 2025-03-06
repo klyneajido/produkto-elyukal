@@ -136,13 +136,14 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                 {showText && (
                     <ViroText
                         text={productInfoText}
-                        position={[0, 0.1, 0]} // Slightly above the object
+                        position={[0, 0.2, 0]} // Slightly above the object
                         scale={[0.15, 0.15, 0.15]}
                         width={2}
                         height={2}
                         style={{
                             fontSize: 10,
-                            color: '#00ffff',
+                            color: '#FFFFFF',
+                            borderColor: '#000000',
                             fontFamily: 'Arial',
                             textAlign: 'center',
                             fontWeight: 'bold',
