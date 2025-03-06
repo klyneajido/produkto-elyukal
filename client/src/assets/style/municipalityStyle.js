@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   // Modern card styles
   municipalityCard: {
     height: 180,
-    borderRadius: 20,
+    borderRadius: 15,
     marginBottom: 15,
     overflow: 'hidden',
     elevation: 6,

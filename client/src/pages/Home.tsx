@@ -65,9 +65,9 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
   ];
 
   const stats = [
-    { number: '1,200+', label: 'Artisans' },
-    { number: '50+', label: 'Communities' },
-    { number: '5,000+', label: 'Products' },
+    { number: '1', label: 'City' },
+    { number: '19', label: 'Municipalities' },
+    { number: '45+', label: 'Local Stores' },
   ];
 
   const locations = [
