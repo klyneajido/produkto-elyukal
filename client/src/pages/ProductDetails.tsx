@@ -82,7 +82,7 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
     const initialPosition: [number, number, number] = [0, -0.15, -0.2];
     const [position] = useState<[number, number, number]>(initialPosition);
     const [scale] = useState<[number, number, number]>([0.21, 0.21, 0.21]);
-    const [rotation] = useState<[number, number, number]>([0, 0, 0]);
+    const [rotation] = useState<[number, number, number]>([0, 45, 0]);
 
     const onInitialized = (state: ViroTrackingState) => {
         setIsTracking(state === ViroTrackingStateConstants.TRACKING_NORMAL);
