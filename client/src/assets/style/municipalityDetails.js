@@ -224,5 +224,32 @@ export default StyleSheet.create({
     fontSize: FONT_SIZE.medium,
     color: COLORS.gray,
     textAlign: "center",
-  }
+  },
+    eventsContainer: {
+        marginBottom: 20,
+    },
+    sectionHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginHorizontal: 20,
+        marginBottom: 16,
+    },
+    sectionHeaderTitle: {
+        fontSize: 22,
+        fontFamily: FONTS.semibold,
+        color: COLORS.black,
+    },
+    sectionHeaderLink: {
+        fontSize: 14,
+        fontFamily: FONTS.medium,
+        color: COLORS.primary,
+    },
+    divider: {
+        height: 1,
+        backgroundColor: COLORS.gray,
+        marginHorizontal: 20,
+        marginVertical: 24,
+        opacity: 0.2,
+    },
 });

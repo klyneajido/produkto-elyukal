@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import date, time
+from typing import Optional
 
 class Event(BaseModel):
     id: str
@@ -13,3 +14,4 @@ class Event(BaseModel):
     image_url: str
     entrance_fee: float
     ticket_availability: bool
+    town: Optional[str] = None

@@ -26,6 +26,7 @@ import axios from 'axios';
 import { BASE_URL } from '../config/config.ts';
 import styles from '../assets/style/municipalityDetails.js';
 import { COLORS } from '../assets/constants/constant.ts';
+import EventListTown from '../components/EventListTown.tsx';
 
 // Interface for municipality data
 interface Municipality {
@@ -301,6 +302,16 @@ const MunicipalityDetail: React.FC = () => {
                                 </Text>
                             </View>
                         )}
+                    </View>
+                    <View style={styles.eventsContainer}>
+                        <View style={styles.divider} />
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionHeaderTitle}>Featured Events</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                                <Text style={styles.sectionHeaderLink}>View All</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <EventListTown municipalityId={municipalityId} />
                     </View>
                 </View>
             </ScrollView>

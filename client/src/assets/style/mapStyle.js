@@ -143,13 +143,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   searchButton: {
-    backgroundColor: "#4A90E2", // Blue
+    backgroundColor: COLORS.primary, // Blue
   },
   satelliteButton: {
-    backgroundColor: "#50C878", // Emerald Green
+    backgroundColor: COLORS.secondary, // Emerald Green
   },
   filterButton: {
-    backgroundColor: "#9B59B6",
+    backgroundColor: COLORS.accent,
   },
   clearRouteButton: {
     backgroundColor: "#E74C3C", // Red
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingVertical: 12,
     borderRadius: 10,
-    backgroundColor: "#0066FF",
+    backgroundColor: COLORS.primary,
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
