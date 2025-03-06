@@ -24,7 +24,7 @@ import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
 import { BASE_URL } from '../config/config';
 import axios from 'axios';
 import { Store, RootStackParamList, RouteInfo } from '../../types/types';
-import { MAPBOX_ACCESS_TOKEN } from '@env'
+const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN || '';
 
 MapboxGL.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
