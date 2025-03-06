@@ -15,6 +15,7 @@ import { faStar, faTag } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { BASE_URL } from '../config/config';
 import { RootStackParamList, Product } from '../../types/types';
+import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'ProductDetails'>;
 
@@ -108,13 +109,13 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProduct, limit
                 <Text style={styles.productName} numberOfLines={1}>{item.name}</Text>
                 <View style={styles.productMeta}>
                     <View style={styles.ratingContainer}>
-                        <FontAwesomeIcon icon={faStar} color="#FDD700" size={12} />
+                        <FontAwesomeIcon icon={faStar} color={COLORS.secondary} size={12} />
                         <Text style={styles.ratingText}>
                             {item.average_rating || 'N/A'}
                         </Text>
                     </View>
                     <View style={styles.priceContainer}>
-                        <FontAwesomeIcon icon={faTag} color="#FDD700" size={12} />
+                        
                         <Text style={styles.priceText}>₱{item.price?.toFixed(2)}</Text>
                     </View>
                 </View>
@@ -125,7 +126,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProduct, limit
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="small" color="#FDD700" />
+                <ActivityIndicator size="small" color={COLORS.secondary} />
                 <Text style={styles.loadingText}>Loading similar products...</Text>
             </View>
         );
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
         width: 150,
         marginRight: 15,
         borderRadius: 10,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: COLORS.container,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -192,9 +193,9 @@ const styles = StyleSheet.create({
     },
     productName: {
         fontSize: 14,
-        fontWeight: '600',
+        fontFamily:FONTS.semibold,
         marginBottom: 5,
-        color: '#333',
+        color: COLORS.black,
     },
     productMeta: {
         flexDirection: 'row',
@@ -213,11 +214,12 @@ const styles = StyleSheet.create({
     priceContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginTop:5,
     },
     priceText: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        color: '#333',
+        fontFamily:FONTS.bold,
+        fontSize:FONT_SIZE.medium-1,
+        color: COLORS.black,
         marginLeft: 4,
     },
     loadingContainer: {
@@ -226,7 +228,7 @@ const styles = StyleSheet.create({
     },
     loadingText: {
         marginTop: 10,
-        color: '#666',
+        color: COLORS.lightgray,
         fontSize: 14,
     },
     errorContainer: {
@@ -242,7 +244,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     emptyText: {
-        color: '#666',
+        color: COLORS.gray,
         fontSize: 14,
     },
 });

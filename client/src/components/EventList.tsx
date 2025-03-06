@@ -10,7 +10,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { COLORS, FONTS } from "../assets/constants/constant";
+import { COLORS, FONT_SIZE, FONTS } from "../assets/constants/constant";
 import { Image } from "react-native-animatable";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
@@ -19,6 +19,34 @@ import {
     faMapMarkedAlt,
     faRedo, // Icon for refresh
 } from "@fortawesome/free-solid-svg-icons";
+
+const formatDate = (dateString :string) =>{
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+          month: 'numeric',
+          day: 'numeric',
+          year:'numeric',
+        });
+      } catch (error) {
+        console.error('Date formatting error:', error);
+        return dateString;
+      }
+}
+const formatTime = (time: string | null): string => {
+    if (!time) {
+      return "Invalid Time";
+    }
+    try {
+      let [hours, minutes] = time.split(":").map(Number);
+      let period = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
+      return `${hours}:${minutes.toString().padStart(2, "0")} ${period}`;
+    } catch (error) {
+      console.error('Time formatting error:', error);
+      return time;
+    }
+  };
 
 const EventList = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -141,32 +169,27 @@ const EventList = () => {
                         </View>
                         <View style={styles.eventMetaContainer}>
                             <View style={styles.eventMetaItem}>
-                                <FontAwesomeIcon icon={faCalendar} size={16} color="#666" />
+                                <FontAwesomeIcon icon={faCalendar} size={16} color={COLORS.gold} />
                                 <Text
                                     style={styles.eventMetaText}
                                     numberOfLines={1}
                                     ellipsizeMode="tail"
                                 >
-                                    {new Date(event.date).toLocaleDateString()}
+                                    {formatDate(event.date)}
                                 </Text>
                             </View>
                             <View style={styles.eventMetaItem}>
-                                <FontAwesomeIcon icon={faClock} size={16} color="#666" />
+                                <FontAwesomeIcon icon={faClock} size={16} color={COLORS.gold} />
                                 <Text
                                     style={styles.eventMetaText}
                                     numberOfLines={1}
                                     ellipsizeMode="tail"
                                 >
-                                    {event.start_time && event.end_time
-                                        ? `${event.start_time.slice(0, 5)} - ${event.end_time.slice(
-                                            0,
-                                            5
-                                        )}`
-                                        : "Time TBA"}
+                                    {formatTime(event.start_time)} - {formatTime(event.end_time)}
                                 </Text>
                             </View>
                             <View style={styles.eventMetaItem}>
-                                <FontAwesomeIcon icon={faMapMarkedAlt} size={16} color="#666" />
+                                <FontAwesomeIcon icon={faMapMarkedAlt} size={16} color={COLORS.gold} />
                                 <Text
                                     style={styles.eventMetaText}
                                     numberOfLines={1}
@@ -224,11 +247,10 @@ const styles = StyleSheet.create({
     },
     eventCategory: {
         color: COLORS.white,
-        fontSize: 12,
-        fontFamily: FONTS.semibold,
-        textShadowColor: "rgba(0, 0, 0, 0.3)",
-        textShadowOffset: { width: 1, height: 1 },
-        textShadowRadius: 2,
+        fontSize: FONT_SIZE.small,
+        fontFamily: FONTS.bold,
+        textTransform:'uppercase',
+        letterSpacing: 0.2,
     },
     eventDetailsLarge: {
         padding: 16,

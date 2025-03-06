@@ -1,16 +1,17 @@
 //COLORS
-export const COLORS:Record<string,string> = {
-    primary: "#622677",
-    secondary:"#FFD700",
-    gold:"#EEBC1D",
-    white:"#FEFEFE",
-    black: "#000000",
-    gray:"#727D73",
-    lightgray:"#ECEBDE",
-    container: "#F1F5F9", 
-    accent: "#1E293B",   
-    highlight: "#3498DB" 
-}as const;
+export const COLORS: Record<string, string> = {
+    primary: "#622677", 
+    secondary: "#FFC107", 
+    gold: "#E0A800", 
+    white: "#FFFFFF", 
+    black: "#121212", 
+    gray: "#6B7280",
+    lightgray: "#E5E7EB",
+    container: "#F3F4F6",
+    accent: "#374151", 
+    highlight: "#3B82F6" 
+} as const;
+
 
 //FONT SIZES
 export const FONT_SIZE:Record<string,number> ={
