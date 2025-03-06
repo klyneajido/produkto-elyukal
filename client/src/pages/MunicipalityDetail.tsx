@@ -232,7 +232,7 @@ const MunicipalityDetail: React.FC = () => {
                                         <TouchableOpacity
                                             key={product.id || `${product.store_id}-${index}`}
                                             style={styles.productCard}
-                                            onPress={() => navigateToProductDetail(product)}
+                                            onPress={() => navigation.navigate('ProductDetails', { product })}
                                             activeOpacity={0.9}
                                         >
                                             {/* Product Image */}
