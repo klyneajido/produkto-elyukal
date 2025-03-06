@@ -23,7 +23,9 @@ import {
     ViroText,
     ViroQuad,
     ViroAnimations,
-    ViroMaterials
+    ViroMaterials,
+    ViroARPlane,
+    ViroARPlaneSelector,
 } from '@viro-community/react-viro';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCameraRetro, faStore, faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
@@ -73,10 +75,14 @@ interface Store {
 
 const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTakePhoto }) => {
     const [isTracking, setIsTracking] = useState(false);
-    const [position] = useState<[number, number, number]>([0, 0, 0]);
+    const [showText, setShowText] = useState(false);
+
+    // Fixed initial position: [x, y, z]
+    // [0, 0, -1] places the object 1 meter in front of the camera
+    const initialPosition: [number, number, number] = [0, -0.15, -0.2];
+    const [position] = useState<[number, number, number]>(initialPosition);
     const [scale] = useState<[number, number, number]>([0.21, 0.21, 0.21]);
     const [rotation] = useState<[number, number, number]>([0, 0, 0]);
-    const [showText, setShowText] = useState(false);
 
     const onInitialized = (state: ViroTrackingState) => {
         setIsTracking(state === ViroTrackingStateConstants.TRACKING_NORMAL);
@@ -86,17 +92,18 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
         setShowText(!showText);
     };
 
-    // Create the display text with product details
     const productInfoText = `${product.description}\n${product.in_stock ? 'Stock Available' : 'Sorry, Out of Stock'}\n₱${product.price?.toFixed(2)}`;
 
     return (
         <ViroARScene onTrackingUpdated={onInitialized}>
             <ViroAmbientLight color="#FFFFFF" intensity={1000} />
+
+            {/* Anchor the object in a fixed position relative to the camera */}
             <ViroNode position={position}>
                 <Viro3DObject
                     source={{ uri: product.ar_asset_url }}
                     type="GLB"
-                    position={[0, -0.19, -0.2]}
+                    position={[0, 0, 0]} // Position relative to the ViroNode
                     scale={scale}
                     rotation={rotation}
                     onClick={onProductTap}
@@ -106,14 +113,14 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                 {!showText && (
                     <ViroText
                         text="Tap the product to view details"
-                        position={[0, -0.1, -0.2]}
+                        position={[0, 0.1, 0]} // Slightly above the object
                         scale={[0.15, 0.15, 0.15]}
                         width={2}
                         height={2}
                         style={{
                             fontSize: 12,
                             color: '#FFFFFF',
-                            fontFamily: 'Open Sans',
+                            fontFamily: 'Arial',
                             textAlign: 'center',
                             fontWeight: 'bold',
                             shadowOpacity: 0.7,
@@ -129,14 +136,14 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                 {showText && (
                     <ViroText
                         text={productInfoText}
-                        position={[0, -0.1, -0.2]}
+                        position={[0, 0.1, 0]} // Slightly above the object
                         scale={[0.15, 0.15, 0.15]}
                         width={2}
                         height={2}
                         style={{
                             fontSize: 10,
                             color: '#00ffff',
-                            fontFamily: 'Open Sans',
+                            fontFamily: 'Arial',
                             textAlign: 'center',
                             fontWeight: 'bold',
                             shadowOpacity: 0.7,
@@ -156,6 +163,23 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                     />
                 )}
             </ViroNode>
+
+            {/* Optional: Show a message if tracking isn't working */}
+            {!isTracking && (
+                <ViroText
+                    text="Tracking not initialized. Move your device slowly."
+                    position={[0, 0, -1]}
+                    scale={[0.5, 0.5, 0.5]}
+                    style={{
+                        fontSize: 12,
+                        color: '#FFFFFF',
+                        fontFamily: 'Arial',
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                    }}
+                    transformBehaviors={['billboard']}
+                />
+            )}
         </ViroARScene>
     );
 };
