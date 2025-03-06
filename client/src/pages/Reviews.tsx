@@ -27,12 +27,6 @@ const ReviewScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialReviews.length > 0) {
-      setLoading(false);
-      setError(null);
-      return;
-    }
-    // Optionally fetch reviews if none provided
     const abortController = new AbortController();
     const fetchReviews = async () => {
       try {
@@ -55,7 +49,7 @@ const ReviewScreen: React.FC = () => {
     };
     fetchReviews();
     return () => abortController.abort();
-  }, [initialReviews, product.id]);
+  }, [product.id]); 
 
   const formatDate = (timestamp: string): string => {
     const date = new Date(timestamp);
