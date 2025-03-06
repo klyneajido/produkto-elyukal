@@ -57,7 +57,7 @@ export interface Product {
   ar_asset_url: string;
   image_urls: string[];
   in_stock: boolean;
-  rating: number;
+  rating: number | null;
   average_rating: number;
   total_reviews: number;
   reviews?: Review[];
@@ -120,6 +120,16 @@ export interface Store {
   store_image: string | null;
   type: string | null;
   coordinate?: [number, number];
+  operating_hours?: string;
+  phone?: string;
+}
+export interface StoreDetailsProps {
+  route: {
+      params: {
+          store: Store;
+      };
+  };
+  navigation: any;
 }
 export interface RouteInfo {
   geometry: any;

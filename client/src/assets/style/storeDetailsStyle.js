@@ -94,7 +94,8 @@ const styles = StyleSheet.create({
         paddingBottom: 5,
     },
     storeDescription: {
-        fontSize: 16,
+        fontFamily:FONTS.regular,
+        fontSize: FONT_SIZE.medium+2,
         color: '#444',
         lineHeight: 24,
         textAlign: 'justify',
@@ -165,7 +166,8 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         paddingHorizontal: 5,
         paddingVertical:2,
-        letterSpacing:0.1
+        letterSpacing:0.1,
+        textTransform:'capitalize'
     },
     productMetaContainer: {
         flexDirection: 'column',

@@ -52,8 +52,8 @@ const PopularList = () => {
             />
             <View style={styles.starContainer}>
               <View style={styles.ratings}>
-                <FontAwesomeIcon icon={faStar} color={"#EEBC1D"} size={12} />
-                <Text style={styles.starText}> {product.average_rating || 'N/A'}</Text>
+                <FontAwesomeIcon icon={faStar} color={"#FFD700"} size={12} />
+                <Text style={styles.starText}> {product.average_rating || 'N/A'} ({product.total_reviews})</Text>
               </View>
             </View>
             <View style={styles.cardContent}>
@@ -115,14 +115,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.lightgray,
-    borderRadius: 4,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 8,
     padding: 2,
     opacity:0.9,
   },
   starText: {
     color: COLORS.gray,
-    fontSize: 12,
+    fontSize: FONT_SIZE.small,
     marginLeft: 4,
   },
   cardText: {

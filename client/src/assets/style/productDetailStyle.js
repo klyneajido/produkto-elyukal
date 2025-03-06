@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
-import { COLORS, FONTS } from "../constants/constant";
+import { COLORS, FONTS, FONT_SIZE } from "../constants/constant";
 
 const { width, height } = Dimensions.get("window");
 
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: "rgba(0, 0, 0, 0.4)",
     padding: 15,
-    paddingBottom:30
+    paddingBottom: 30,
   },
 
   productTitle: {
@@ -57,8 +57,8 @@ const styles = StyleSheet.create({
     bottom: 20,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    zIndex:100,
-    backgroundColor:COLORS.white
+    zIndex: 100,
+    backgroundColor: COLORS.white,
   },
 
   pricingContainer: {
@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
   },
 
   productDescription: {
-    fontSize: 16,
+    fontFamily: FONTS.regular,
+    fontSize: FONT_SIZE.medium + 2,
     color: "#444",
     lineHeight: 24,
     textAlign: "justify",
@@ -143,7 +144,8 @@ const styles = StyleSheet.create({
   },
 
   disclaimerText: {
-    fontSize: 14,
+    fontFamily:FONTS.regular,
+    fontSize: FONT_SIZE.medium,
     color: COLORS.gray,
     textAlign: "center",
   },
@@ -332,9 +334,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
-  similarContainer:{
-    
-  }
+  similarContainer: {},
 });
 
 export default styles;

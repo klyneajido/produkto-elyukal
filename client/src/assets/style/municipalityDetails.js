@@ -152,7 +152,7 @@ export default StyleSheet.create({
   },
   productTitle: {
     fontSize: FONT_SIZE.medium,
-    fontFamily: FONTS.semibold,
+    fontFamily: FONTS.bold,
     color: COLORS.black,
     marginBottom: 5,
   },
@@ -172,7 +172,7 @@ export default StyleSheet.create({
   productPrice: {
     fontSize: FONT_SIZE.medium,
     fontFamily: FONTS.bold,
-    color: COLORS.primary,
+    color: COLORS.secondary,
   },
   stockBadge: {
     paddingHorizontal: 8,
@@ -191,9 +191,15 @@ export default StyleSheet.create({
     color: "#C62828", // Red
   },
   ratingContainer: {
+    position: 'absolute',
+    right:4,
+    top:-25,
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 8,
+    backgroundColor:COLORS.secondary,
+    opacity: 0.8,
+    padding:2,
+    borderRadius:8,
   },
   ratingText: {
     fontSize: FONT_SIZE.small,

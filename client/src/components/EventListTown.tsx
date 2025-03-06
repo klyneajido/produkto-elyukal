@@ -55,7 +55,20 @@ const EventList: React.FC<EventListProps> = ({ municipalityId }) => {
 
         fetchEvents();
     }, [municipalityId]);
-
+    const formatDate = (dateString:string)=>{
+        try{
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US',{
+                month: 'numeric',
+                day: '2-digit',
+                year:'numeric'
+            })
+        }
+        catch(error){
+            console.error('Date formatting error:', error);
+            return dateString;
+        }
+    }
     // Format time from API format to readable format
     const formatTime = (time: string) => {
         if (!time) return '';
@@ -108,14 +121,14 @@ const EventList: React.FC<EventListProps> = ({ municipalityId }) => {
 
                 {/* Date and Time */}
                 <View style={styles.infoRow}>
-                    <FontAwesomeIcon icon={faCalendarAlt} size={12} color={COLORS.secondary} style={styles.icon} />
-                    <Text style={styles.infoText}>{item.date}</Text>
+                    <FontAwesomeIcon icon={faCalendarAlt} size={12} color={COLORS.gold} style={styles.icon} />
+                    <Text style={styles.infoText}>{formatDate(item.date)}</Text>
                 </View>
 
                 {/* Time */}
                 {(item.start_time || item.end_time) && (
                     <View style={styles.infoRow}>
-                        <FontAwesomeIcon icon={faClock} size={12} color={COLORS.secondary} style={styles.icon} />
+                        <FontAwesomeIcon icon={faClock} size={12} color={COLORS.gold} style={styles.icon} />
                         <Text style={styles.infoText}>
                             {item.start_time ? formatTime(item.start_time) : ''}
                             {item.start_time && item.end_time ? ' - ' : ''}
@@ -126,7 +139,7 @@ const EventList: React.FC<EventListProps> = ({ municipalityId }) => {
 
                 {/* Location/Town */}
                 <View style={styles.infoRow}>
-                    <FontAwesomeIcon icon={faMapMarkerAlt} size={12} color={COLORS.secondary} style={styles.icon} />
+                    <FontAwesomeIcon icon={faMapMarkerAlt} size={12} color={COLORS.gold} style={styles.icon} />
                     <Text style={styles.infoText} numberOfLines={1} ellipsizeMode="tail">
                         {item.location}
                         {item.town ? `, ${item.town}` : ''}
@@ -222,7 +235,7 @@ const styles = StyleSheet.create({
     highlightBadge: {
         position: "absolute",
         top: 12,
-        right: 12,
+        left: 12,
         backgroundColor: COLORS.secondary,
         paddingVertical: 4,
         paddingHorizontal: 8,
@@ -258,7 +271,7 @@ const styles = StyleSheet.create({
     },
     infoText: {
         fontFamily: FONTS.regular,
-        fontSize: 13,
+        fontSize: FONT_SIZE.small+1,
         color: COLORS.black,
         opacity: 0.8,
         flex: 1,

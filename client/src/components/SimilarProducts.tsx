@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
         width: 150,
         marginRight: 15,
         borderRadius: 10,
-        backgroundColor: COLORS.container,
+        backgroundColor: COLORS.white,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     priceText: {
         fontFamily:FONTS.bold,
         fontSize:FONT_SIZE.medium-1,
-        color: COLORS.black,
+        color: COLORS.secondary,
         marginLeft: 4,
     },
     loadingContainer: {

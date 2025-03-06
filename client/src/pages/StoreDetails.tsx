@@ -133,12 +133,12 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                     <View style={styles.productMetaContainer}>
 
                         <View style={styles.bottomContainer}>
-                        <View style={styles.priceContainer}>
-                            <FontAwesomeIcon icon={faPesoSign} size={14} color={COLORS.secondary} />
-                            <Text style={styles.productPrice}>
-                                {formatPrice(product.price)}
-                            </Text>
-                        </View>
+                            <View style={styles.priceContainer}>
+                                <FontAwesomeIcon icon={faPesoSign} size={14} color={COLORS.secondary} />
+                                <Text style={styles.productPrice}>
+                                    {formatPrice(product.price)}
+                                </Text>
+                            </View>
                             <View style={styles.ratingContainer}>
                                 <FontAwesomeIcon icon={faStar} size={14} color="#FDD700" />
                                 <Text style={styles.productRating}>

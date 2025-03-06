@@ -237,7 +237,7 @@ const MunicipalityDetail: React.FC = () => {
                                         >
                                             {/* Product Image */}
                                             {product.image_urls && product.image_urls.length > 0 ? (
-                                                <Image
+                                                <Image  
                                                     source={{ uri: product.image_urls[0] }}
                                                     style={styles.productImage}
                                                     resizeMode="cover"
@@ -254,10 +254,23 @@ const MunicipalityDetail: React.FC = () => {
                                                 <Text style={styles.productTitle} numberOfLines={1} ellipsizeMode="tail">
                                                     {product.name}
                                                 </Text>
+                                                {/* Rating */}
+                                                <View style={styles.ratingContainer}>
+                                                    <FontAwesomeIcon
+                                                        icon={faStar}
+                                                        size={14}
+                                                        color={averageRating > 0 ? "#FFD700" : COLORS.gray}
+                                                    />
+                                                    <Text style={styles.ratingText}>
+                                                        {averageRating > 0
+                                                            ? `${averageRating.toFixed(1)} (${totalReviews})`
+                                                            : 'No ratings yet'}
+                                                    </Text>
+                                                </View>
 
-                                                <Text style={styles.productDescription} numberOfLines={2} ellipsizeMode="tail">
+                                                {/* <Text style={styles.productDescription} numberOfLines={2} ellipsizeMode="tail">
                                                     {product.description}
-                                                </Text>
+                                                </Text> */}
 
                                                 {/* Price and Stock */}
                                                 <View style={styles.productInfoRow}>
@@ -274,19 +287,7 @@ const MunicipalityDetail: React.FC = () => {
                                                     </View>
                                                 </View>
 
-                                                {/* Rating */}
-                                                <View style={styles.ratingContainer}>
-                                                    <FontAwesomeIcon
-                                                        icon={faStar}
-                                                        size={14}
-                                                        color={averageRating > 0 ? "#FFD700" : COLORS.gray}
-                                                    />
-                                                    <Text style={styles.ratingText}>
-                                                        {averageRating > 0
-                                                            ? `${averageRating.toFixed(1)} (${totalReviews})`
-                                                            : 'No ratings yet'}
-                                                    </Text>
-                                                </View>
+
                                             </View>
                                         </TouchableOpacity>
                                     );
