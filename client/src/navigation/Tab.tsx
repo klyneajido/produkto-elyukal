@@ -2,12 +2,12 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, StyleSheet, Dimensions, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHome, faCog, faMap, faBox, faObjectGroup, faBuilding } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faCog, faMap, faBox, faCity, faTreeCity } from '@fortawesome/free-solid-svg-icons';
 import Home from '../pages/Home';
 import Products from '../pages/Products';
 import Map from '../pages/Map';
 import Settings from '../pages/Settings';
-import Municipality from '../pages/Municipality';
+import Municipalities from '../pages/Municipality';
 
 const Tab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
@@ -15,10 +15,10 @@ const { width } = Dimensions.get('window');
 const TabNavigator: React.FC = () => {
   // Use a single Animated.Value for tab bar translation
   const tabBarTranslate = useRef(new Animated.Value(0)).current;
-  
+
   // Track visibility state
   const [isNavVisible, setIsNavVisible] = useState(true);
-  
+
   // Track scroll related variables with refs
   const lastScrollY = useRef(0);
   const isScrollingDown = useRef(false);
@@ -57,7 +57,7 @@ const TabNavigator: React.FC = () => {
   // Setup touch handlers
   const handleTouchStart = useCallback(() => {
     isTouching.current = true;
-    
+
     // Clear any pending timers when touch starts
     if (scrollTimer.current) {
       clearTimeout(scrollTimer.current);
@@ -67,32 +67,32 @@ const TabNavigator: React.FC = () => {
 
   const handleTouchEnd = useCallback(() => {
     isTouching.current = false;
-    
+
     // Set timer to show navbar after touch ends
     if (scrollTimer.current) {
       clearTimeout(scrollTimer.current);
     }
-    
+
     scrollTimer.current = setTimeout(() => {
       if (!isNavVisible) {
         showNavbar();
       }
     }, 1500);
   }, [isNavVisible, showNavbar]);
-  
+
   // Main scroll handler
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const currentScrollY = event.nativeEvent.contentOffset.y;
     const diff = currentScrollY - lastScrollY.current;
-    
+
     // Update last scroll position
     lastScrollY.current = currentScrollY;
-    
+
     // Determine scroll direction with sufficient threshold to avoid jitter
     if (Math.abs(diff) < 3) return; // Ignore small movements
-    
+
     const newIsScrollingDown = diff > 0;
-    
+
     // Only trigger animation when scrolling down and navbar is visible,
     // or scrolling up and navbar is hidden
     if (newIsScrollingDown && isNavVisible) {
@@ -105,16 +105,16 @@ const TabNavigator: React.FC = () => {
     } else if (!newIsScrollingDown && !isNavVisible) {
       showNavbar();
     }
-    
+
     isScrollingDown.current = newIsScrollingDown;
-    
+
     // When scrolling without touching (momentum scrolling),
     // set a timer to show the navbar when scrolling stops
     if (!isTouching.current) {
       if (scrollTimer.current) {
         clearTimeout(scrollTimer.current);
       }
-      
+
       scrollTimer.current = setTimeout(() => {
         if (!isNavVisible) {
           showNavbar();
@@ -164,7 +164,7 @@ const TabNavigator: React.FC = () => {
           }}
           name="Home"
           children={() => (
-            <Home 
+            <Home
               onScroll={handleScroll}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
@@ -193,8 +193,9 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Products"
-          children={() => (
-            <Products 
+          children={({ navigation }) => (
+            <Products
+              navigation={navigation}
               onScroll={handleScroll}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
@@ -223,7 +224,7 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Maps"
-          children={() => <Map/>}
+          children={() => <Map />}
         />
         <Tab.Screen
           options={{
@@ -231,16 +232,16 @@ const TabNavigator: React.FC = () => {
             tabBarIcon: ({ focused }) => (
               <View style={styles.iconContainer}>
                 <FontAwesomeIcon
-                  icon={faBuilding}
+                  icon={faCity}
                   size={24}
                   color={focused ? '#ffa726' : '#bdbdbd'}
                 />
               </View>
             ),
           }}
-          name="Municipality"
+          name="Municipalities"
           children={() => (
-            <Municipality
+            <Municipalities
               onScroll={handleScroll}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
@@ -249,7 +250,7 @@ const TabNavigator: React.FC = () => {
                   if (scrollTimer.current) {
                     clearTimeout(scrollTimer.current);
                   }
-                  scrollTimer.current = setTimeout(showNavbar, 1000);
+                  scrollTimer.current = setTimeout(showNavbar, 1500);
                 }
               }}
             />
@@ -269,8 +270,7 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Settings"
-          children={() => <Settings
-          />}
+          children={() => <Settings />}
         />
       </Tab.Navigator>
     </View>

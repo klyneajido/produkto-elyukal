@@ -2,9 +2,12 @@ import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
-export type TabProps ={
+export type TabProps = {
   onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-}
+  onTouchStart?: () => void;
+  onTouchEnd?: () => void;
+  onMomentumScrollEnd?: () => void;
+};
 export type RootStackParamList = {
   Welcome: undefined;
   Login: undefined;
@@ -13,10 +16,11 @@ export type RootStackParamList = {
   Tabs: undefined;
   ProductDetails: { product: Product; reviews?: Review[] };
   Products: undefined;
+  Municipalities: undefined;
   Reviews: { reviews: Review[]; product: Product };
   EventDetails: { eventId: string };
   StoreDetails: { store: Store };
-  MapView: {longitude: number, latitude:number}
+  MapView: { longitude: number, latitude: number }
 };
 export interface Review {
   id: number;
@@ -26,12 +30,12 @@ export interface Review {
   created_at: string;
   product_id: number;
   user_id: string;
-  full_name:string;
-  review_text:string;
+  full_name: string;
+  review_text: string;
 }
 export interface Product {
   store_id: any;
-  stores?: { // Optional to handle missing data
+  stores?: {
     name: string;
     store_id: number;
     latitude: number;
@@ -55,10 +59,16 @@ export interface Product {
   in_stock: boolean;
   rating: number;
   average_rating: number;
-  total_reviews:number;
+  total_reviews: number;
   reviews?: Review[];
 }
-
+export interface ProductsProps {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Products'>;
+  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onTouchStart?: () => void;
+  onTouchEnd?: () => void;
+  onMomentumScrollEnd?: () => void;
+}
 export interface Event {
   id: string;
   title: string;
@@ -101,18 +111,31 @@ export interface ProductsProps {
 }
 
 export interface Store {
-    store_id: string;
-    name: string;
-    description: string;
-    latitude: number;
-    longitude: number;
-    rating: number;
-    store_image: string | null;
-    type: string | null;
-    coordinate?: [number, number]; 
+  store_id: string;
+  name: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  rating: number;
+  store_image: string | null;
+  type: string | null;
+  coordinate?: [number, number];
 }
 export interface RouteInfo {
   geometry: any;
   duration: number;
   distance: number;
+}
+
+export interface Municipality {
+  id: string;
+  name: string;
+  image_url: string;
+}
+
+export interface MunicipalityProps {
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onTouchStart?: () => void;
+  onTouchEnd?: () => void;
+  onMomentumScrollEnd?: () => void;
 }

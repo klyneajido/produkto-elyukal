@@ -37,6 +37,7 @@ type SearchResult<T> = {
   isSubstring: boolean;
 };
 
+
 function fuzzySearch<T>(
   query: string,
   items: T[],
@@ -118,7 +119,7 @@ function fuzzySearch<T>(
   return results;
 }
 
-const Products: React.FC<ProductsProps> = ({ onScroll }) => {
+const Products: React.FC<ProductsProps> = ({onScroll }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchText, setSearchText] = useState('');
   const [showFilters, setShowFilters] = useState(false);

@@ -23,27 +23,13 @@ import { BASE_URL } from '../config/config.ts';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../assets/style/municipalityStyle.js';
 import { COLORS } from '../assets/constants/constant.ts';
+import { Animated } from '@rnmapbox/maps';
+import { Municipality, MunicipalityProps } from '../../types/types.ts';
 
-// Interface for municipality data
-interface Municipality {
-    id: string;
-    name: string;
-    image_url: string;
-}
 
-// Interface for props, including scroll-related handlers
-interface MunicipalityProps {
-    onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-    onTouchStart?: () => void;
-    onTouchEnd?: () => void;
-    onMomentumScrollEnd?: () => void;
-}
 
 const Municipalities: React.FC<MunicipalityProps> = ({
-    onScroll,
-    onTouchStart,
-    onTouchEnd,
-    onMomentumScrollEnd,
+    onScroll
 }) => {
     const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
     const [filteredMunicipalities, setFilteredMunicipalities] = useState<Municipality[]>([]);
@@ -120,7 +106,7 @@ const Municipalities: React.FC<MunicipalityProps> = ({
                     <FontAwesomeIcon
                         icon={faMapPin} 
                         size={12}
-                        color={COLORS.secondary}
+                        color={COLORS.gold}
                     />
                 </View>
                 <Text style={styles.modernMunicipalityName}>{item.name}</Text>
@@ -150,7 +136,7 @@ const Municipalities: React.FC<MunicipalityProps> = ({
                         style={styles.searchBar}
                         onChangeText={setSearchText}
                         value={searchText}
-                        placeholder="Search municipalities"
+                        placeholder="Search Municipalities"
                         placeholderTextColor="#888"
                     />
                 </View>
@@ -171,9 +157,6 @@ const Municipalities: React.FC<MunicipalityProps> = ({
                     columnWrapperStyle={styles.modernRow}
                     showsVerticalScrollIndicator={false}
                     onScroll={onScroll}
-                    onTouchStart={onTouchStart}
-                    onTouchEnd={onTouchEnd}
-                    onMomentumScrollEnd={onMomentumScrollEnd}
                     scrollEventThrottle={16} // Ensures smooth scroll handling
                 />
             ) : (
