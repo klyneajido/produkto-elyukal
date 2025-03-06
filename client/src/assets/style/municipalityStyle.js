@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 25,
     borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
     elevation: 8,
     shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 6 },
@@ -38,11 +37,11 @@ const styles = StyleSheet.create({
   },
   // Updated search bar with modern style
   modernSearchBarContainer: {
-    height: 54,
+    height: 40,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.97)',
-    borderRadius: 15,
+    borderRadius: 8,
     paddingHorizontal: 18,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
@@ -55,7 +54,7 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     flex: 1,
-    height: "100%",
+    height: 40,
     color: COLORS.black,
     fontFamily: FONTS.medium,
     fontSize: FONT_SIZE.medium,
