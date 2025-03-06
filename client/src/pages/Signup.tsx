@@ -28,16 +28,75 @@ const SignupScreen: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error] = useState(false);
+  const [errors, setErrors] = useState<{
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
 
   const apiURL = `${BASE_URL}/auth/register`;
 
+  // Validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email format
+  const nameRegex = /^[A-Za-z\s]+$/; // Letters and spaces only
+
+  // Validation function
+  const validateForm = (): boolean => {
+    const newErrors: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      password?: string;
+      confirmPassword?: string;
+    } = {};
+
+    // Validate firstName
+    if (!firstName.trim()) {
+      newErrors.firstName = "First Name is required";
+    } else if (!nameRegex.test(firstName)) {
+      newErrors.firstName = "First Name should only contain letters and spaces";
+    }
+
+    // Validate lastName
+    if (!lastName.trim()) {
+      newErrors.lastName = "Last Name is required";
+    } else if (!nameRegex.test(lastName)) {
+      newErrors.lastName = "Last Name should only contain letters and spaces";
+    }
+
+    // Validate email
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Validate password
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters long";
+    }
+
+    // Validate confirmPassword
+    if (!confirmPassword.trim()) {
+      newErrors.confirmPassword = "Confirm Password is required";
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Return true if no errors
+  };
+
   const handleSignup = async () => {
     console.log("handleSignup from Signup.tsx");
-    if (password !== confirmPassword) {
-      Alert.alert("Passwords do not match!");
-      return;
+    if (!validateForm()) {
+      return; // Stop if validation fails
     }
+
     setIsLoading(true);
     try {
       console.log("Sending request to: ", apiURL);
@@ -73,25 +132,20 @@ const SignupScreen: React.FC = () => {
       }
     } catch (error: any) {
       console.error("Signup Error:", error);
-
-      // Improved error handling with specific messages based on error type
       if (error.response) {
-        // Handle errors from the FastAPI backend
         const errorMessage =
           error.response?.data?.detail || "Error during registration";
         Alert.alert("Error", errorMessage);
       } else if (error.request) {
-        // Network or connection issues
         Alert.alert(
           "Error",
           "Network Error. Please check your internet connection."
         );
       } else {
-        // Unexpected errors
         Alert.alert("Error", `Unexpected error: ${error.message}`);
       }
     } finally {
-      setIsLoading(false); // Set loading state to false after the process completes
+      setIsLoading(false);
     }
   };
 
@@ -117,7 +171,7 @@ const SignupScreen: React.FC = () => {
               </TouchableOpacity>
               <Text style={styles.text}>Sign up</Text>
               <Text style={styles.subText}>
-                & discover the hidden gems of La union!
+                & discover the hidden gems of La Union!
               </Text>
             </ImageBackground>
           </View>
@@ -128,54 +182,68 @@ const SignupScreen: React.FC = () => {
               placeholder="Enter first name..."
               placeholderTextColor={COLORS.gray}
               value={firstName}
-              onChangeText={setFirstName}
-              error={error && !firstName}
-              errorText="First Name is required"
+              onChangeText={(text) => {
+                setFirstName(text);
+                setErrors((prev) => ({ ...prev, firstName: undefined }));
+              }}
+              error={!!errors.firstName}
+              errorText={errors.firstName}
             />
             <InputText
               labelName="Last Name"
               placeholder="Enter last name..."
               placeholderTextColor={COLORS.gray}
               value={lastName}
-              onChangeText={setLastName}
-              error={error && !lastName}
-              errorText="Last Name is required"
+              onChangeText={(text) => {
+                setLastName(text);
+                setErrors((prev) => ({ ...prev, lastName: undefined }));
+              }}
+              error={!!errors.lastName}
+              errorText={errors.lastName}
             />
             <InputText
               labelName="Email"
               placeholder="Enter email..."
               placeholderTextColor={COLORS.gray}
               value={email}
-              onChangeText={setEmail}
-              error={error && !email}
-              errorText="Email is required"
+              onChangeText={(text) => {
+                setEmail(text);
+                setErrors((prev) => ({ ...prev, email: undefined }));
+              }}
+              error={!!errors.email}
+              errorText={errors.email}
             />
             <InputText
               labelName="Password"
               placeholder="Password"
               placeholderTextColor={COLORS.gray}
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(text) => {
+                setPassword(text);
+                setErrors((prev) => ({ ...prev, password: undefined }));
+              }}
               secureTextEntry
-              error={error && !password}
-              errorText="Password is required"
+              error={!!errors.password}
+              errorText={errors.password}
             />
-
             <InputText
-              labelName="RePassword"
+              labelName="Confirm Password"
               placeholder="Re-enter password"
               placeholderTextColor={COLORS.gray}
               value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              onChangeText={(text) => {
+                setConfirmPassword(text);
+                setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+              }}
               secureTextEntry
-              error={error && !password}
-              errorText="Password is required"
+              error={!!errors.confirmPassword}
+              errorText={errors.confirmPassword}
             />
 
             <TouchableOpacity
-              style={styles.signupButton}
+              style={[styles.signupButton, isLoading && styles.signupButtonDisabled]}
               onPress={handleSignup}
-              disabled={isLoading} // Disable button while loading
+              disabled={isLoading}
             >
               <Text style={styles.signupButtonText}>
                 {isLoading ? "Signing Up..." : "Sign Up"}

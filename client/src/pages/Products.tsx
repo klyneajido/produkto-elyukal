@@ -26,9 +26,9 @@ import ProductList from '../components/ProductList.tsx';
 import { COLORS } from '../assets/constants/constant.ts';
 
 const priceRanges = [
-  { label: 'Under $50', value: 'under50', min: 0, max: 50 },
-  { label: '$50 - $100', value: '50to100', min: 50, max: 100 },
-  { label: 'Over $100', value: 'over100', min: 100, max: Infinity },
+  { label: 'Under ₱50', value: 'under50', min: 0, max: 50 },
+  { label: '₱50 - ₱100', value: '50to100', min: 50, max: 100 },
+  { label: 'Over ₱100', value: 'over100', min: 100, max: Infinity },
 ];
 
 type SearchResult<T> = {

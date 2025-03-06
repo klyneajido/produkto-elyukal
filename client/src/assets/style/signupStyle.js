@@ -10,7 +10,10 @@ const loginSignupStyles = StyleSheet.create({
     backgroundColor: COLORS.white,
     justifyContent: 'center',
   },
-
+signupButtonDisabled: {
+    backgroundColor: COLORS.gray, // Dimmed color when disabled
+    opacity: 0.6,
+},
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',

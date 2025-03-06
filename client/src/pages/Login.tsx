@@ -7,7 +7,7 @@ import {
     SafeAreaView,
     KeyboardAvoidingView,
     Platform,
-    Alert
+    Alert,
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -21,10 +21,35 @@ import { BASE_URL } from '../config/config.ts';
 
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-    const { setUser, user } = useAuth();
-    const [email, setEmail] = useState('1@gmail.com'); // hardcoded
-    const [password, setPassword] = useState('123456'); // hardcoded
-    const [error, setError] = useState(false);
+    const { setUser, loginAsGuest } = useAuth();
+    const [email, setEmail] = useState('1@gmail.com'); // Hardcoded for testing
+    const [password, setPassword] = useState('123456'); // Hardcoded for testing
+    const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+    // Email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Validation function
+    const validateForm = (): boolean => {
+        const newErrors: { email?: string; password?: string } = {};
+
+        // Validate email
+        if (!email.trim()) {
+            newErrors.email = 'Email is required';
+        } else if (!emailRegex.test(email)) {
+            newErrors.email = 'Please enter a valid email address';
+        }
+
+        // Validate password
+        if (!password.trim()) {
+            newErrors.password = 'Password is required';
+        } else if (password.length < 6) {
+            newErrors.password = 'Password must be at least 6 characters long';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0; // Return true if no errors
+    };
 
     const loginUser = async (email: string, password: string) => {
         try {
@@ -62,6 +87,10 @@ const LoginScreen: React.FC = () => {
     };
 
     const handleLogin = async () => {
+        if (!validateForm()) {
+            return; // Stop if validation fails
+        }
+
         const token = await loginUser(email, password);
         if (token) {
             const profile = await getUserProfile();
@@ -73,11 +102,10 @@ const LoginScreen: React.FC = () => {
         }
     };
 
-    const { loginAsGuest } = useAuth();
     const handleGuest = async () => {
         loginAsGuest();
         navigation.navigate("Tabs");
-        console.log(loginAsGuest());
+        console.log("Logged in as guest");
     };
 
     const handleSignup = () => {
@@ -111,9 +139,12 @@ const LoginScreen: React.FC = () => {
                             placeholder="Enter email..."
                             placeholderTextColor={COLORS.gray}
                             value={email}
-                            onChangeText={setEmail}
-                            error={error && !email}
-                            errorText="Email is required"
+                            onChangeText={(text) => {
+                                setEmail(text);
+                                setErrors((prev) => ({ ...prev, email: undefined })); // Clear error on change
+                            }}
+                            error={!!errors.email}
+                            errorText={errors.email}
                         />
                     </View>
 
@@ -123,9 +154,12 @@ const LoginScreen: React.FC = () => {
                             placeholder="Enter password..."
                             placeholderTextColor={COLORS.gray}
                             value={password}
-                            onChangeText={setPassword}
-                            error={error && !password}
-                            errorText="Password is required"
+                            onChangeText={(text) => {
+                                setPassword(text);
+                                setErrors((prev) => ({ ...prev, password: undefined })); // Clear error on change
+                            }}
+                            error={!!errors.password}
+                            errorText={errors.password}
                             secureTextEntry={true}
                         />
                     </View>
@@ -138,7 +172,6 @@ const LoginScreen: React.FC = () => {
                         <Text style={styles.loginButtonText}>Login</Text>
                     </TouchableOpacity>
 
-                    {/* Updated Continue as Guest button with new style */}
                     <TouchableOpacity style={styles.continueGuestButton} onPress={handleGuest}>
                         <Text style={styles.continueGuestButtonText}>Continue as Guest</Text>
                     </TouchableOpacity>
