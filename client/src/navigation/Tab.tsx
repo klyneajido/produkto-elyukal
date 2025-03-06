@@ -2,11 +2,12 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, StyleSheet, Dimensions, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHome, faCog, faMap, faBox } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faCog, faMap, faBox, faObjectGroup, faBuilding } from '@fortawesome/free-solid-svg-icons';
 import Home from '../pages/Home';
 import Products from '../pages/Products';
 import Map from '../pages/Map';
 import Settings from '../pages/Settings';
+import Municipality from '../pages/Municipality';
 
 const Tab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
@@ -230,6 +231,36 @@ const TabNavigator: React.FC = () => {
             tabBarIcon: ({ focused }) => (
               <View style={styles.iconContainer}>
                 <FontAwesomeIcon
+                  icon={faBuilding}
+                  size={24}
+                  color={focused ? '#ffa726' : '#bdbdbd'}
+                />
+              </View>
+            ),
+          }}
+          name="Municipality"
+          children={() => (
+            <Municipality
+              onScroll={handleScroll}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              onMomentumScrollEnd={() => {
+                if (!isNavVisible) {
+                  if (scrollTimer.current) {
+                    clearTimeout(scrollTimer.current);
+                  }
+                  scrollTimer.current = setTimeout(showNavbar, 1000);
+                }
+              }}
+            />
+          )}
+        />
+        <Tab.Screen
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ focused }) => (
+              <View style={styles.iconContainer}>
+                <FontAwesomeIcon
                   icon={faCog}
                   size={24}
                   color={focused ? '#ffa726' : '#bdbdbd'}
@@ -238,7 +269,8 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Settings"
-          children={() => <Settings/>}
+          children={() => <Settings
+          />}
         />
       </Tab.Navigator>
     </View>
