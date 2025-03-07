@@ -26,8 +26,9 @@ import {
     ViroAnimations,
     ViroMaterials,
 } from '@viro-community/react-viro';
+import { COLORS } from '../assets/constants/constant';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCameraRetro, faStore, faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
+import { faCameraRetro, faStore, faStar, faTag, faBox, faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import * as Animatable from 'react-native-animatable';
@@ -412,18 +413,32 @@ const ProductDetails: React.FC = () => {
                         </TouchableOpacity>
                     )}
 
-                    <Text style={styles.sectionTitle}>Compare Prices at Other Stores</Text>
-                    {loadingSimilar ? (
-                        <ActivityIndicator size="small" color="#FDD700" />
-                    ) : similarProducts.length === 0 ? (
-                        <Text style={{ fontSize: 16, color: '#666', textAlign: 'center', marginHorizontal: 20 }}>
-                            No other stores offer "{product.name}".
-                        </Text>
-                    ) : (
-                        <TouchableOpacity style={styles.compareButton} onPress={handleComparePrices}>
-                            <Text style={styles.compareButtonText}>Compare Prices ({similarProducts.length + 1} stores)</Text>
-                        </TouchableOpacity>
-                    )}
+                    <View style={styles.comparePricesSection}>
+                        <Text style={styles.sectionTitle}>Compare Prices at Other Stores</Text>
+
+                        {loadingSimilar ? (
+                            <View style={styles.loadingContainer}>
+                                <ActivityIndicator size="small" color={COLORS.primary} />
+                            </View>
+                        ) : similarProducts.length === 0 ? (
+                            <View style={styles.noStoresContainer}>
+                                <Text style={styles.noStoresText}>
+                                    No other stores offer "{product.name}".
+                                </Text>
+                            </View>
+                        ) : (
+                            <TouchableOpacity
+                                style={styles.compareButton}
+                                onPress={handleComparePrices}
+                                activeOpacity={0.8}
+                            >
+                                <FontAwesomeIcon icon={faExchangeAlt} size={16} color={COLORS.white} style={styles.compareButtonIcon} />
+                                <Text style={styles.compareButtonText}>
+                                    Compare Prices ({similarProducts.length + 1} stores)
+                                </Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
                     <ReviewList />
                     <View style={styles.similarContainer}>
                         <Text style={styles.sectionTitle}>Similar Products</Text>

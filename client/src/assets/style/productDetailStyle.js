@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     similarContainer: {},
-    
+
     compareButton: {
       backgroundColor: '#FDD700',
       padding: 12,
@@ -298,6 +298,53 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: '600',
       color: '#333',
+  },
+    noStoresContainer: {
+    backgroundColor: COLORS.container,
+    padding: 14,
+    borderRadius: 6,
+  },
+
+  noStoresText: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.regular,
+    color: COLORS.gray,
+    textAlign: 'center',
+  },
+
+  compareButton: {
+    backgroundColor: COLORS.secondary,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 24,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  compareButtonIcon: {
+    marginRight: 8,
+  },
+
+  compareButtonText: {
+    color: COLORS.white,
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.semibold,
+  },
+  comparePricesSection: {
+    marginVertical: 12,
+    padding: 16,
+    backgroundColor: COLORS.white,
+    borderRadius: 8,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    padding: 10,
   },
 });
 

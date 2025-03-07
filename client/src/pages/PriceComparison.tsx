@@ -11,8 +11,9 @@ import {
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faStar, faTag, faBox, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faTag, faBox, faArrowLeft, faCheckCircle, faShoppingCart, faPercent } from '@fortawesome/free-solid-svg-icons';
 import { RootStackParamList } from '../../types/types';
+import { styles } from '../assets/style/priceComparisonStyle';
 
 type PriceComparisonRouteProp = RouteProp<RootStackParamList, 'PriceComparison'>;
 
@@ -70,134 +71,195 @@ const PriceComparison: React.FC = () => {
         navigation.goBack();
     };
 
+    const calculateSavings = (product: any) => {
+        if (!bestDeal || !product.price || bestDeal.id === product.id) return null;
+        const savings = product.price - bestDeal.price;
+        const savingsPercentage = (savings / product.price) * 100;
+        return {
+            amount: savings.toFixed(2),
+            percentage: savingsPercentage.toFixed(0)
+        };
+    };
+
     if (loading) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#FDD700" />
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={styles.loadingIndicator.color} />
             </View>
         );
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#EEEEEE' }}>
-                <TouchableOpacity onPress={goBack} style={{ marginRight: 16 }}>
-                    <FontAwesomeIcon icon={faArrowLeft} size={20} />
+        <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={goBack} style={styles.backButton}>
+                    <FontAwesomeIcon icon={faArrowLeft} size={20} color={styles.backButtonIcon.color} />
                 </TouchableOpacity>
-                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Price Comparison</Text>
+                <Text style={styles.headerTitle}>Price Comparison</Text>
             </View>
 
-            <ScrollView style={{ padding: 16 }}>
-                <View style={{ marginBottom: 20 }}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 6 }}>
-                        {product.name}
-                    </Text>
-                    <Text style={{ fontSize: 14, color: '#666' }}>
-                        Compare prices across {allProducts.length} stores
-                    </Text>
+            <ScrollView style={styles.scrollView}>
+                <View style={styles.productInfoContainer}>
+                    {product.image_urls && product.image_urls.length > 0 && (
+                        <Image
+                            source={{ uri: product.image_urls[0] }}
+                            style={styles.productImage}
+                        />
+                    )}
+                    <View style={styles.productNameContainer}>
+                        <Text style={styles.productName}>
+                            {product.name}
+                        </Text>
+                        <Text style={styles.comparisonText}>
+                            Compare prices across {allProducts.length} stores
+                        </Text>
+                    </View>
                 </View>
 
                 {allProducts.length === 0 ? (
-                    <Text style={{ fontSize: 16, color: '#666', textAlign: 'center' }}>
-                        No comparison data available
-                    </Text>
+                    <View style={styles.noDataContainer}>
+                        <Text style={styles.noDataText}>
+                            No comparison data available
+                        </Text>
+                    </View>
                 ) : (
                     <>
                         {bestDeal && (
-                            <View style={{ padding: 16, backgroundColor: '#FFF9C4', borderRadius: 8, marginBottom: 20 }}>
-                                <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 4 }}>
-                                    Best Deal
-                                </Text>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#4CAF50' }}>
-                                    ₱{bestDeal.price?.toFixed(2)}
-                                </Text>
-                                <Text style={{ fontSize: 14, marginTop: 4 }}>
-                                    at {bestDeal.store_name}
-                                </Text>
+                            <View style={styles.bestDealContainer}>
+                                <View style={styles.bestDealHeader}>
+                                    <FontAwesomeIcon icon={faTag} size={16} color={styles.bestDealIcon.color} />
+                                    <Text style={styles.bestDealHeaderText}>BEST DEAL</Text>
+                                </View>
+                                <View style={styles.bestDealContent}>
+                                    <View style={styles.bestDealStoreInfo}>
+                                        {bestDeal.image_urls && bestDeal.image_urls.length > 0 && (
+                                            <Image
+                                                source={{ uri: bestDeal.image_urls[0] }}
+                                                style={styles.bestDealImage}
+                                            />
+                                        )}
+                                        <View>
+                                            <Text style={styles.bestDealStoreName}>
+                                                {bestDeal.store_name}
+                                            </Text>
+                                            <View style={styles.bestDealRatingContainer}>
+                                                <FontAwesomeIcon icon={faStar} size={12} color={styles.bestDealStarIcon.color} />
+                                                <Text style={styles.bestDealRating}>
+                                                    {bestDeal.stores?.rating || 'N/A'}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={styles.bestDealPriceContainer}>
+                                        <Text style={styles.bestDealPriceLabel}>Price</Text>
+                                        <Text style={styles.bestDealPrice}>
+                                            ₱{bestDeal.price?.toFixed(2)}
+                                        </Text>
+                                        <TouchableOpacity
+                                            style={styles.viewDealButton}
+                                            onPress={() => navigateToProductDetails(bestDeal)}
+                                        >
+                                            <Text style={styles.viewDealButtonText}>View Deal</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
                             </View>
                         )}
 
-                        <View style={{ marginBottom: 10 }}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>
+                        <View style={styles.allOptionsContainer}>
+                            <Text style={styles.allOptionsTitle}>
                                 All Available Options
                             </Text>
-                        </View>
 
-                        {sortedProducts.map((item, index) => (
-                            <TouchableOpacity
-                                key={`${item.id}-${index}`}
-                                style={{
-                                    padding: 16,
-                                    borderBottomWidth: 1,
-                                    borderBottomColor: '#EEEEEE',
-                                    backgroundColor: item.id === product.id ? '#F5F5F5' : 'transparent',
-                                    borderRadius: 8,
-                                    marginBottom: 8
-                                }}
-                                onPress={() => navigateToProductDetails(item)}
-                            >
-                                <View style={{ flexDirection: 'row' }}>
-                                    {item.image_urls && item.image_urls.length > 0 && (
-                                        <Image
-                                            source={{ uri: item.image_urls[0] }}
-                                            style={{ width: 60, height: 60, borderRadius: 8, marginRight: 12 }}
-                                        />
-                                    )}
+                            {sortedProducts.map((item, index) => {
+                                const savings = calculateSavings(item);
 
-                                    <View style={{ flex: 1 }}>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                            <View style={{ flex: 1, marginRight: 8 }}>
-                                                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+                                return (
+                                    <TouchableOpacity
+                                        key={`${item.id}-${index}`}
+                                        style={[
+                                            styles.storeCard,
+                                            item.id === product.id && styles.selectedStoreCard
+                                        ]}
+                                        onPress={() => navigateToProductDetails(item)}
+                                    >
+                                        <View style={styles.storeCardContent}>
+                                            {item.image_urls && item.image_urls.length > 0 && (
+                                                <Image
+                                                    source={{ uri: item.image_urls[0] }}
+                                                    style={styles.storeImage}
+                                                />
+                                            )}
+
+                                            <View style={styles.storeInfo}>
+                                                <Text style={styles.storeName}>
                                                     {item.store_name}
                                                 </Text>
+
                                                 {item.stores && (
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-                                                        <FontAwesomeIcon icon={faStar} color="#FDD700" size={12} />
-                                                        <Text style={{ fontSize: 12, color: '#666', marginLeft: 4 }}>
+                                                    <View style={styles.storeRatingContainer}>
+                                                        <FontAwesomeIcon icon={faStar} size={12} color={styles.storeStarIcon.color} />
+                                                        <Text style={styles.storeRating}>
                                                             {item.stores.rating || 'N/A'}
                                                         </Text>
-                                                        <Text style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>
+                                                        <Text style={styles.storeType}>
                                                             {item.stores.type || 'Store'}
                                                         </Text>
                                                     </View>
                                                 )}
-                                            </View>
-                                            <View style={{ alignItems: 'flex-end' }}>
-                                                <Text style={{
-                                                    fontSize: 18,
-                                                    fontWeight: 'bold',
-                                                    color: item.id === bestDeal?.id ? '#4CAF50' : '#000'
-                                                }}>
-                                                    ₱{item.price?.toFixed(2)}
-                                                </Text>
 
-                                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-                                                    <FontAwesomeIcon icon={faBox} color="#666" size={12} />
-                                                    <Text style={{ fontSize: 12, color: '#666', marginLeft: 4 }}>
+                                                <View style={styles.stockContainer}>
+                                                    <FontAwesomeIcon
+                                                        icon={faBox}
+                                                        color={item.in_stock ? styles.inStockIcon.color : styles.outOfStockIcon.color}
+                                                        size={12}
+                                                    />
+                                                    <Text style={[
+                                                        styles.stockText,
+                                                        item.in_stock ? styles.inStockText : styles.outOfStockText
+                                                    ]}>
                                                         {item.in_stock ? 'In Stock' : 'Out of Stock'}
                                                     </Text>
                                                 </View>
                                             </View>
+
+                                            <View style={styles.priceInfoContainer}>
+                                                <Text style={[
+                                                    styles.storePrice,
+                                                    item.id === bestDeal?.id && styles.bestDealStorePrice
+                                                ]}>
+                                                    ₱{item.price?.toFixed(2)}
+                                                </Text>
+
+                                                {item.id === bestDeal?.id && (
+                                                    <View style={styles.bestPriceTag}>
+                                                        <FontAwesomeIcon icon={faCheckCircle} size={12} color={styles.bestPriceTagIcon.color} />
+                                                        <Text style={styles.bestPriceTagText}>Best Price</Text>
+                                                    </View>
+                                                )}
+
+                                                {savings && (
+                                                    <View style={styles.savingsContainer}>
+                                                        <FontAwesomeIcon icon={faPercent} size={10} color={styles.savingsIcon.color} />
+                                                        <Text style={styles.savingsText}>
+                                                            Save {savings.percentage}% (₱{savings.amount})
+                                                        </Text>
+                                                    </View>
+                                                )}
+                                            </View>
                                         </View>
 
                                         {item.id === product.id && (
-                                            <View style={{
-                                                backgroundColor: '#EEEEEE',
-                                                paddingVertical: 2,
-                                                paddingHorizontal: 8,
-                                                borderRadius: 4,
-                                                alignSelf: 'flex-start',
-                                                marginTop: 8
-                                            }}>
-                                                <Text style={{ fontSize: 12, color: '#666' }}>
+                                            <View style={styles.currentSelectionBadge}>
+                                                <Text style={styles.currentSelectionText}>
                                                     Current Selection
                                                 </Text>
                                             </View>
                                         )}
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                        ))}
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
                     </>
                 )}
             </ScrollView>
