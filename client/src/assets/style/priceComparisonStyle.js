@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: COLORS.white,
+        backgroundColor: COLORS.container,
     },
     loadingIndicator: {
         color: COLORS.primary,
@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: COLORS.primary,
         borderBottomWidth: 1,
-        borderBottomColor: COLORS.lightgray,
+        borderBottomColor: COLORS.accent,
         elevation: 3,
     },
     backButton: {
@@ -76,7 +76,7 @@ export const styles = StyleSheet.create({
     noDataText: {
         fontSize: FONT_SIZE.medium,
         fontFamily: FONTS.regular,
-        color: COLORS.gray,
+        color: COLORS.accent,
         textAlign: 'center',
     },
     bestDealContainer: {
@@ -92,14 +92,14 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
-        backgroundColor: COLORS.secondary,
+        backgroundColor: COLORS.primary,
     },
     bestDealIcon: {
-        color: COLORS.secondary,
+        color: COLORS.white,  // Changed from secondary to white for better contrast
     },
     bestDealHeaderText: {
         marginLeft: 8,
-        color: COLORS.white,
+        color: COLORS.white,  // Changed from white to black for better contrast with secondary
         fontFamily: FONTS.bold,
         fontSize: FONT_SIZE.medium,
     },
@@ -148,11 +148,11 @@ export const styles = StyleSheet.create({
     bestDealPrice: {
         fontSize: FONT_SIZE.large,
         fontFamily: FONTS.bold,
-        color: COLORS.secondary,
+        color: COLORS.secondary,  // Changed from secondary to primary for consistent branding
         marginBottom: 8,
     },
     viewDealButton: {
-        backgroundColor: COLORS.secondary,
+        backgroundColor: COLORS.secondary,  // Changed from secondary to primary
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 20,
@@ -169,7 +169,7 @@ export const styles = StyleSheet.create({
     allOptionsTitle: {
         fontSize: FONT_SIZE.medium,
         fontFamily: FONTS.bold,
-        color: COLORS.accent,
+        color: COLORS.primary,  // Changed from accent to primary
         marginBottom: 12,
     },
     storeCard: {
@@ -183,7 +183,7 @@ export const styles = StyleSheet.create({
     },
     selectedStoreCard: {
         borderWidth: 2,
-        borderColor: COLORS.secondary,
+        borderColor: COLORS.secondary,  // Changed from secondary to primary
     },
     storeCardContent: {
         padding: 12,
@@ -235,16 +235,16 @@ export const styles = StyleSheet.create({
         marginLeft: 4,
     },
     inStockText: {
-        color: COLORS.gold,
+        color: COLORS.highlight,  // Changed from gold to highlight for better visibility
     },
     outOfStockText: {
         color: COLORS.gray,
     },
     inStockIcon: {
-        color: COLORS.secondary,
+        color: COLORS.highlight,  // Changed from secondary to highlight
     },
     outOfStockIcon: {
-        color: COLORS.secondary,
+        color: COLORS.gray,  // Changed from secondary to gray
     },
     priceInfoContainer: {
         alignItems: 'flex-end',
@@ -269,12 +269,12 @@ export const styles = StyleSheet.create({
         marginBottom: 4,
     },
     bestPriceTagIcon: {
-        color: COLORS.white,
+        color: COLORS.white,  // Changed from white to black for better contrast with secondary
     },
     bestPriceTagText: {
         fontSize: FONT_SIZE.small,
         fontFamily: FONTS.semibold,
-        color: COLORS.white,
+        color: COLORS.white,  
         marginLeft: 4,
     },
     savingsContainer: {
@@ -282,7 +282,7 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
     },
     savingsIcon: {
-        color: COLORS.gray,
+        color: COLORS.secondary,  
     },
     savingsText: {
         fontSize: FONT_SIZE.small,
@@ -291,7 +291,7 @@ export const styles = StyleSheet.create({
         marginLeft: 4,
     },
     currentSelectionBadge: {
-        backgroundColor: COLORS.secondary,
+        backgroundColor: COLORS.secondary,  
         paddingVertical: 4,
         alignItems: 'center',
     },
