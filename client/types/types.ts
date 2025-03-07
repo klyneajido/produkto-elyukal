@@ -20,7 +20,9 @@ export type RootStackParamList = {
   Reviews: { reviews: Review[]; product: Product };
   EventDetails: { eventId: string };
   StoreDetails: { store: Store };
-  MapView: { longitude: number, latitude: number }
+  MapView: { longitude: number, latitude: number };
+  PriceComparison: { product: Product; similarProducts: any[] };
+  MunicipalityDetail: { municipality: Municipality };
 };
 export interface Review {
   id: number;
