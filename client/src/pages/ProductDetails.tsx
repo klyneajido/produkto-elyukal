@@ -26,6 +26,7 @@ import {
     ViroMaterials,
     ViroARPlane,
     ViroARPlaneSelector,
+    ViroFlexView
 } from '@viro-community/react-viro';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCameraRetro, faStore, faStar, faTag, faBox } from '@fortawesome/free-solid-svg-icons';
@@ -57,6 +58,21 @@ ViroMaterials.createMaterials({
         diffuseColor: 'rgba(0, 0, 0, 0.7)',
         shininess: 1.0,
     },
+    textBackground: {
+        diffuseColor: 'rgba(0,0,0,0.8)',  // Deep purple with slight transparency (89% opacity from e9)
+        // Subtle white highlights with low opacity for realism
+        shininess: 0.3,             // Low shininess for a soft, diffused look
+        bloomThreshold: 0.85,       // Subtle glow effect, kept as is for elegance
+        roughness: 1,               // Fully rough surface for a matte, modern texture
+        metalness: 0.1,             // Slight metallic sheen to add depth           // Matches the alpha from diffuseColor for consistency   // Faint self-illumination in a darker purple shade   // Low emission for a subtle glow-from-within effect            // Thin glossy layer for a premium finish
+   // Slightly textured clearcoat for realism
+       // Low reflectivity to keep it grounded
+     // Moderate environment map influence for subtle reflections
+    },
+    textBorder: {
+        diffuseColor: 'rgba(70, 70, 70, 0.9)', // Lighter than background for border effect
+        shininess: 0.5,
+    }
 });
 
 type ProductDetailsRouteProp = RouteProp<RootStackParamList, 'ProductDetails'>;
@@ -123,6 +139,7 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                             fontFamily: 'Arial',
                             textAlign: 'center',
                             fontWeight: 'bold',
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
                             shadowOpacity: 0.7,
                             shadowOffset: { width: 2, height: 2 }
                         }}
@@ -134,34 +151,44 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                 )}
                 {/* Product details text */}
                 {showText && (
-                    <ViroText
-                        text={productInfoText}
-                        position={[0, 0.2, 0]} // Slightly above the object
-                        scale={[0.15, 0.15, 0.15]}
-                        width={2}
-                        height={2}
-                        style={{
-                            fontSize: 10,
-                            color: '#FFFFFF',
-                            borderColor: '#000000',
-                            fontFamily: 'Arial',
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            shadowOpacity: 0.7,
-                            shadowOffset: { width: 2, height: 2 },
-                            opacity: 0
-                        }}
-                        animation={{
-                            name: 'fadeIn',
-                            run: true,
-                            loop: false
-                        }}
-                        onClick={() => setShowText(false)}
+                    <ViroNode
+                        position={[0, 0.2, 0]}
                         transformBehaviors={['billboard']}
-                        renderingOrder={1}
-                        extrusionDepth={0}
-                        textLineBreakMode="WordWrap"
-                    />
+                    >
+                        {/* Background quad with padding */}
+                        <ViroQuad
+                            position={[0, 0.03, -0.09]} // Slightly behind the text
+                            height={0.1 * (productInfoText.split('\n').length + 0.5)} // Adjust height based on line count
+                            width={0.4} 
+                            materials={["textBackground"]}
+                        />
+                        <ViroQuad
+                            position={[0, 0.03, -0.095]} // Slightly in front
+                            height={0.1 * (productInfoText.split('\n').length + 0.5) + 0.005}
+                            width={0.4 + 0.005}
+                            materials={["textBorder"]} // Create this material with a lighter color
+                        />
+                        <ViroText
+                            text={productInfoText}
+                            scale={[0.15, 0.15, 0.15]}
+                            width={2}
+                            height={2}
+                            style={{
+                                fontSize: 10,
+                                color: '#FFFFFF',
+                                fontFamily: 'Arial',
+                                textAlign: 'center',
+                                fontWeight: 'bold'
+                            }}
+                            animation={{
+                                name: 'fadeIn',
+                                run: true,
+                                loop: false
+                            }}
+                            onClick={() => setShowText(false)}
+                            textLineBreakMode="WordWrap"
+                        />
+                    </ViroNode>
                 )}
             </ViroNode>
 
