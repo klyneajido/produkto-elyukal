@@ -65,7 +65,7 @@ const EventList = () => {
             }
             const data = await response.json();
             setEvents(data);
-            console.log("Events fetched:", data); // Debug log
+            // console.log("Events fetched:", data);
         } catch (error: any) {
             setError(error.message || "Error fetching events");
             console.error("Fetch error:", error);

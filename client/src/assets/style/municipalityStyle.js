@@ -11,10 +11,10 @@ const styles = StyleSheet.create({
   },
   modernHeader: {
     backgroundColor: COLORS.primary,
-    padding: 16,
+    padding: 20,
     paddingTop: 24,
-    paddingBottom: 20,
-    borderBottomLeftRadius: 30,
+    paddingBottom: 25,
+    borderBottomLeftRadius: 24,
     elevation: 6,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
