@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { COLORS } from '../assets/constants/constant';
+import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 
 const { width } = Dimensions.get('window');
 const { height } = Dimensions.get('window')
@@ -154,8 +154,8 @@ const styles = StyleSheet.create({
         color:COLORS.white,
     },
     welcomeText: {
-        fontFamily: 'OpenSans-Regular',
-        fontSize: 18,
+        fontFamily: FONTS.semibold,
+        fontSize: FONT_SIZE.large,
         color:COLORS.white,
         marginTop: 10,
         textAlign: 'center',

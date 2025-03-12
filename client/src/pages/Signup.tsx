@@ -179,8 +179,8 @@ const SignupScreen: React.FC = () => {
           <View style={styles.formContainer}>
             <InputText
               labelName="First Name"
-              placeholder="Enter first name..."
-              placeholderTextColor={COLORS.gray}
+              placeholder="e.g. Juan"
+              placeholderTextColor={COLORS.lightgray}
               value={firstName}
               onChangeText={(text) => {
                 setFirstName(text);
@@ -191,8 +191,8 @@ const SignupScreen: React.FC = () => {
             />
             <InputText
               labelName="Last Name"
-              placeholder="Enter last name..."
-              placeholderTextColor={COLORS.gray}
+              placeholder="e.g. Dela Cruz"
+              placeholderTextColor={COLORS.lightgray}
               value={lastName}
               onChangeText={(text) => {
                 setLastName(text);
@@ -203,8 +203,8 @@ const SignupScreen: React.FC = () => {
             />
             <InputText
               labelName="Email"
-              placeholder="Enter email..."
-              placeholderTextColor={COLORS.gray}
+              placeholder="example@gmail.com"
+              placeholderTextColor={COLORS.lightgray}
               value={email}
               onChangeText={(text) => {
                 setEmail(text);
@@ -215,8 +215,8 @@ const SignupScreen: React.FC = () => {
             />
             <InputText
               labelName="Password"
-              placeholder="Password"
-              placeholderTextColor={COLORS.gray}
+              placeholder="Set Password"
+              placeholderTextColor={COLORS.lightgray}
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
@@ -229,7 +229,7 @@ const SignupScreen: React.FC = () => {
             <InputText
               labelName="Confirm Password"
               placeholder="Re-enter password"
-              placeholderTextColor={COLORS.gray}
+              placeholderTextColor={COLORS.lightgray}
               value={confirmPassword}
               onChangeText={(text) => {
                 setConfirmPassword(text);

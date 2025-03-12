@@ -22,8 +22,8 @@ import { BASE_URL } from '../config/config.ts';
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
     const { setUser, loginAsGuest } = useAuth();
-    const [email, setEmail] = useState('1@gmail.com'); // Hardcoded for testing
-    const [password, setPassword] = useState('123456'); // Hardcoded for testing
+    const [email, setEmail] = useState(''); // Hardcoded for testing
+    const [password, setPassword] = useState(''); // Hardcoded for testing
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
     // Email validation regex
@@ -136,8 +136,8 @@ const LoginScreen: React.FC = () => {
                     <View style={styles.inputContainer}>
                         <InputText
                             labelName="Email"
-                            placeholder="Enter email..."
-                            placeholderTextColor={COLORS.gray}
+                            placeholder="example@gmail.com"
+                            placeholderTextColor={COLORS.lightgray}
                             value={email}
                             onChangeText={(text) => {
                                 setEmail(text);
@@ -151,8 +151,8 @@ const LoginScreen: React.FC = () => {
                     <View style={styles.inputContainer}>
                         <InputText
                             labelName="Password"
-                            placeholder="Enter password..."
-                            placeholderTextColor={COLORS.gray}
+                            placeholder="Your password"
+                            placeholderTextColor={COLORS.lightgray}
                             value={password}
                             onChangeText={(text) => {
                                 setPassword(text);
