@@ -1,1 +1,3 @@
-export const BASE_URL = 'http://192.168.100.17:8000';
+const ipaddress = "192.168.1.24";
+export const BASE_URL = `http://${ipaddress}:8000`;
+console.log(BASE_URL); 

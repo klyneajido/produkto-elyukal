@@ -15,10 +15,15 @@ export const COLORS: Record<string, string> = {
 
 //FONT SIZES
 export const FONT_SIZE:Record<string,number> ={
-    small:10,
-    medium: 13,
-    large:20,
-    extraLarge:24,
+    extraSmall: 8,  // Very tiny text
+    small: 10,      // Small text
+    medium: 13,     // Default body text
+    large: 16,      // Slightly larger text
+    extraLarge: 20, // Bigger heading
+    xxLarge: 24,    // Extra large heading
+    xxxLarge: 32,   // Section titles
+    huge: 40,       // Main titles
+    massive: 48, 
 } as const;
 
 //FONTS

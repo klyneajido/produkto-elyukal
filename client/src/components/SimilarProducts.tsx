@@ -116,7 +116,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProduct, limit
                     </View>
                     <View style={styles.priceContainer}>
                         
-                        <Text style={styles.priceText}>₱{item.price?.toFixed(2)}</Text>
+                        <Text style={styles.priceText}>₱{item.price_min}+</Text>
                     </View>
                 </View>
             </View>

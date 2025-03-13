@@ -153,7 +153,7 @@ const PriceComparison: React.FC = () => {
                                     <View style={styles.bestDealPriceContainer}>
                                         <Text style={styles.bestDealPriceLabel}>Price</Text>
                                         <Text style={styles.bestDealPrice}>
-                                            ₱{bestDeal.price?.toFixed(2)}
+                                            ₱{bestDeal.price_min?.toFixed(2)}
                                         </Text>
                                         <TouchableOpacity
                                             style={styles.viewDealButton}
@@ -228,7 +228,7 @@ const PriceComparison: React.FC = () => {
                                                     styles.storePrice,
                                                     item.id === bestDeal?.id && styles.bestDealStorePrice
                                                 ]}>
-                                                    ₱{item.price?.toFixed(2)}
+                                                    ₱{item.price_min?.toFixed(2)}
                                                 </Text>
 
                                                 {item.id === bestDeal?.id && (

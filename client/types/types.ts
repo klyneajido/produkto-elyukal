@@ -51,7 +51,8 @@ export interface Product {
   name: string;
   description: string;
   category: string;
-  price: number;
+  price_min: number;
+  price_max:number;
   location_name: string;
   address: string;
   latitude: string;

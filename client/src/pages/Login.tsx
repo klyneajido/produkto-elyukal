@@ -22,8 +22,8 @@ import { BASE_URL } from '../config/config.ts';
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
     const { setUser, loginAsGuest } = useAuth();
-    const [email, setEmail] = useState(''); // Hardcoded for testing
-    const [password, setPassword] = useState(''); // Hardcoded for testing
+    const [email, setEmail] = useState('1@gmail.com'); // Hardcoded for testing
+    const [password, setPassword] = useState('123456'); // Hardcoded for testing
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
     // Email validation regex

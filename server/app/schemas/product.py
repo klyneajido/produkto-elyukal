@@ -6,7 +6,8 @@ class Products(BaseModel):
     name:str
     description:str
     category:str
-    price:float
+    price_min:float
+    price_max:float
     location_name:str
     address:str
     latitude:str

@@ -370,8 +370,7 @@ const ProductDetails: React.FC = () => {
                 <View style={styles.detailsContainer}>
                     <View style={styles.pricingContainer}>
                         <View style={styles.priceRow}>
-                            <FontAwesomeIcon icon={faTag} color="#FDD700" size={20} />
-                            <Text style={styles.priceText}>₱{product.price?.toFixed(2)}</Text>
+                            <Text style={styles.priceText}>₱{product.price_min?.toFixed(2)} - ₱{product.price_max?.toFixed(2)}</Text>
                         </View>
                         <View style={styles.stockRow}>
                             <FontAwesomeIcon icon={faBox} color="#FDD700" size={20} />

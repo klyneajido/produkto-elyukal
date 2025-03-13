@@ -10,7 +10,7 @@ async def fetch_products():
     try:
         # Fetch products with store details
         response = supabase_client.table("products").select(
-            "id, name, description, category, price, ar_asset_url, image_urls, address, in_stock, store_id, stores(name, store_id, latitude, longitude, store_image, type, rating, town)"
+            "id, name, description, category, price_min,price_max, ar_asset_url, image_urls, address, in_stock, store_id, stores(name, store_id, latitude, longitude, store_image, type, rating, town)"
         ).execute()
 
         if not response.data:
@@ -41,7 +41,7 @@ async def fetch_products_by_municipality(municipality_id: str):
     try:
         # Fetch products for a specific municipality (filter by town) with store details
         response = supabase_client.table("products").select(
-            "id, name, description, category, price, ar_asset_url, image_urls, address, in_stock, store_id, stores(name, store_id, latitude, longitude, store_image, type, rating, town)"
+            "id, name, description, category, price_min, price_max, ar_asset_url, image_urls, address, in_stock, store_id, stores(name, store_id, latitude, longitude, store_image, type, rating, town)"
         ).eq("town", municipality_id).execute()
 
         if not response.data:
@@ -80,7 +80,7 @@ async def fetch_similar_products(product_id: str):
         ref_name = reference_product.data["name"].strip()  # Remove leading/trailing spaces
 
         response = supabase_client.table("products").select(
-            "id, name, description, category, price, ar_asset_url, image_urls, address, in_stock, store_id, stores(name, store_id, latitude, longitude, store_image, type, rating, town)"
+            "id, name, description, category, price_min,price_max, ar_asset_url, image_urls, address, in_stock, store_id, stores(name, store_id, latitude, longitude, store_image, type, rating, town)"
         ).eq("name", ref_name).neq("id", product_id).execute()
 
         if not response.data:
@@ -106,3 +106,32 @@ async def fetch_similar_products(product_id: str):
     except Exception as e:
         print(f"Error fetching similar products: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
+@router.get("/fetch_popular_products")
+async def fetch_popular_products():
+    try:
+        # Fetch products without ordering yet
+        response = supabase_client.table('products').select(
+            "id, name, description, category, price_min,price_max, ar_asset_url, image_urls, address, in_stock, store_id, "
+            "stores(name, store_id, latitude, longitude, store_image, type, rating)"
+        ).execute()
+        
+        if not response.data:
+            raise HTTPException(status_code=404, detail="No products found")
+        
+        products = response.data
+        
+        for product in products:
+            ratings_response = supabase_client.table("reviews").select("rating").eq("product_id", product["id"]).execute()
+            ratings = [r["rating"] for r in ratings_response.data] if ratings_response.data else []
+            product["average_rating"] = "{:.1f}".format(round(sum(ratings)/len(ratings), 1)) if ratings else "0"
+            product["total_reviews"] = len(ratings)
+        
+       
+        sorted_products = sorted(products, key=lambda x: x["average_rating"], reverse=True)[:4]
+        
+        return {"products": sorted_products}
+    
+    except Exception as e:
+        print(f"Error fetching products: {type(e).__name__}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {type(e).__name__}: {str(e)}")

@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     priceText: {
-        fontSize: 22,
+        fontSize: FONT_SIZE.large,
         fontWeight: "600",
         color: COLORS.secondary,
         marginLeft: 10,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     stockText: {
-        fontSize: 16,
+        fontSize: FONT_SIZE.medium,
         color: COLORS.gray,
         marginLeft: 10,
     },
