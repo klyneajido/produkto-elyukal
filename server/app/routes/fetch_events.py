@@ -12,13 +12,13 @@ async def fetch_events():
         query = supabase_client.table("events").select(
             "id, title, date, start_time, end_time, location, category, description, image_url, ticket_availability, entrance_fee, town"
         )
-        print("Supabase Query:", query)
+        # print("Supabase Query:", query)
         response = query.execute()
         
-        print("Raw Supabase Response:", response)
-        print("Response Data:", response.data)
-        print("Response Keys in First Item:", 
-              list(response.data[0].keys()) if response.data else "No data")
+        # print("Raw Supabase Response:", response)
+        # print("Response Data:", response.data)
+        # print("Response Keys in First Item:", 
+        #       list(response.data[0].keys()) if response.data else "No data")
 
         if not response.data:
             print("No events found")
@@ -49,10 +49,10 @@ async def fetch_events_by_municipality(municipality_id: str):
         print("Supabase Query:", query)
         response = query.execute()
         
-        print("Raw Supabase Response:", response)
-        print("Response Data:", response.data)
-        print("Response Keys in First Item:", 
-              list(response.data[0].keys()) if response.data else "No data")
+        # print("Raw Supabase Response:", response)
+        # print("Response Data:", response.data)
+        # print("Response Keys in First Item:", 
+        #       list(response.data[0].keys()) if response.data else "No data")
 
         if not response.data:
             print(f"No events found for municipality ID: {municipality_id}")

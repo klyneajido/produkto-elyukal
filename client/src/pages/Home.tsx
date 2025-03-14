@@ -26,6 +26,7 @@ import ProductList from '../components/ProductList.tsx';
 import { RootStackParamList, TabProps } from '../../types/types.ts';
 import EventList from '../components/EventList.tsx';
 import PopularProducts from '../components/PopularList.tsx';
+import Chatbot from '../components/Chatbot.tsx';
 
 const Home: React.FC<TabProps> = ({ onScroll }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -149,7 +150,9 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
               Explore the rich cultural heritage of La Union through its finest handcrafted products and talented artisans.
             </Text>
           </View>
-
+                <View>
+                  <Chatbot/>
+                </View>
           {/* Stats Section */}
           <View style={styles.highlightBox}>
             <Text style={styles.highlightTitle}>Our Growing Community</Text>
