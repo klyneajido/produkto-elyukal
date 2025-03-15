@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../assets/style/settingStyle';
 import {
     View,
@@ -6,7 +6,8 @@ import {
     StyleSheet,
     Switch,
     TouchableOpacity,
-    ScrollView
+    ScrollView,
+    Modal
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
@@ -19,11 +20,54 @@ import {
     faEnvelope,
     faImage,
     faCreditCard,
-    faQuestionCircle
+    faQuestionCircle,
+    faRunning
 } from '@fortawesome/free-solid-svg-icons';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../types/types';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+
+const LogoutModal = ({ modalVisible, setModalVisible, logoutUser }) => {
+    return (
+        <Modal transparent={true} visible={modalVisible} animationType="fade">
+            <View style={styles.modalBackground}>
+                <View style={styles.modalContainer}>
+                    <Text style={styles.modalTitle}>Are you sure you want to logout?</Text>
+                    <View style={styles.modalActions}>
+                        <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.logoutButton} onPress={logoutUser}>
+                            <Text style={styles.logoutButtonText}>Logout</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+    );
+};
 
 const SettingsScreen: React.FC = () => {
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const [modalVisible, setModalVisible] = useState(false);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const token = await AsyncStorage.getItem("token");
+            console.log("Login token: ", token)
+            console.log(token)
+            if (!token) {
+                navigation.navigate("Login");
+            }
+        };
+        checkAuth();
+    }, []);
+
+
 
     const SettingItem = ({
         icon,
@@ -47,11 +91,16 @@ const SettingsScreen: React.FC = () => {
             {rightComponent}
         </View>
     );
+    const logout_user = async () => {
+        const token = await AsyncStorage.removeItem("token")
+        console.log("Logout token: ", token)
+        navigation.navigate("Login")
+    }
+
 
     return (
         <View style={styles.container}>
             <Text style={styles.headerText}>Settings</Text>
-
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.settingsSection}>
                     <SettingItem
@@ -120,12 +169,12 @@ const SettingsScreen: React.FC = () => {
                         }
                     />
                     <SettingItem
-                        icon={faImage}
-                        title="Display Options"
-                        subtitle="Customize app appearance"
+                        icon={faRunning}
+                        title="Logout"
+                        subtitle="Logout to this Account"
                         rightComponent={
-                            <TouchableOpacity style={styles.actionButton}>
-                                <Text style={styles.actionButtonText}>Customize</Text>
+                            <TouchableOpacity style={styles.actionButton} onPress={()=>setModalVisible(true)}>
+                                <Text style={styles.actionButtonText}>Logout</Text>
                             </TouchableOpacity>
                         }
                     />
@@ -149,7 +198,9 @@ const SettingsScreen: React.FC = () => {
                         subtitle="App version 1.0.0"
                     />
                 </View>
+
             </ScrollView>
+              <LogoutModal modalVisible={modalVisible} setModalVisible={setModalVisible} logoutUser={logout_user} />
         </View>
     );
 };

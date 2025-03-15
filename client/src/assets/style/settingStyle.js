@@ -1,23 +1,24 @@
 import { StyleSheet, Dimensions } from "react-native";
+import { FONTS, COLORS, FONT_SIZE } from "../constants/constant";
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f4f4f4',
+        backgroundColor: COLORS.container,
     },
     headerText: {
-        fontFamily: 'OpenSans-Bold',
-        fontSize: 24,
+        fontFamily: FONTS.bold,
+        fontSize: FONT_SIZE.extraLarge,
         paddingHorizontal: 20,
         paddingTop: 20,
         marginBottom: 20,
-        color: 'black',
+        color: COLORS.black,
     },
     scrollContent: {
-        paddingBottom: 20,
+        paddingBottom: 100,
     },
     settingsSection: {
-        backgroundColor: 'white',
+        backgroundColor: COLORS.white,
         marginBottom: 20,
         marginHorizontal: 20,
         borderRadius: 10,
@@ -39,25 +40,75 @@ const styles = StyleSheet.create({
         marginLeft: 15,
     },
     settingTitle: {
-        fontFamily: 'OpenSans-SemiBold',
+        fontFamily: FONTS.semibold,
         fontSize: 16,
         color: 'black',
     },
     settingSubtitle: {
-        fontFamily: 'OpenSans-Regular',
-        fontSize: 12,
+        fontFamily: FONTS.regular,
+        fontSize: FONT_SIZE.small,
         color: 'gray',
     },
     actionButton: {
         paddingVertical: 5,
-        paddingHorizontal: 10,
+        textAlign:'center',
+        minWidth:60,
         backgroundColor: '#ffa726',
         borderRadius: 5,
     },
     actionButtonText: {
-        fontFamily: 'OpenSans-SemiBold',
+        fontFamily: FONTS.regular,
         color: 'white',
         fontSize: 12,
+        textAlign:'center'
+    },
+    modalBackground: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        backgroundColor: COLORS.white,
+        padding: 30,
+        borderRadius: 10,
+        width: 300,
+        alignItems: 'center',
+    },
+    modalTitle: {
+        fontSize: FONT_SIZE.large,
+        fontFamily: FONTS.semibold,
+        color:COLORS.black,
+        marginBottom: 20,
+        textAlign:'center',
+        letterSpacing:0.2,
+    },
+    modalActions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    cancelButton: {
+        paddingVertical: 10,
+        paddingHorizontal:15,
+        backgroundColor:COLORS.lightgray,
+        borderRadius: 5,
+    },
+    cancelButtonText: {
+        color: COLORS.gray,
+        fontSize: FONT_SIZE.large,
+        fontFamily:FONTS.regular,
+    },
+    logoutButton: {
+        backgroundColor: COLORS.alert,
+        paddingVertical: 10,
+        paddingHorizontal:15,
+        borderRadius: 5,
+    },
+    logoutButtonText: {
+        color: '#fff',
+        fontSize: FONT_SIZE.large,
+        fontFamily:FONTS.regular,
     },
 });
 
