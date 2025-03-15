@@ -1,0 +1,51 @@
+version: "3.1"
+
+rules:
+- rule: Say hello when the user greets
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- rule: Say goodbye when the user says goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: Answer when user challenges bot identity
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+- rule: Fetch products when asked about municipality
+  steps:
+  - intent: ask_products_by_municipality
+  - action: action_fetch_products_by_municipality
+
+- rule: Find product location when asked
+  steps:
+  - intent: ask_municipality_by_product
+  - action: action_find_municipality_by_product
+
+- rule: Provide product price information
+  steps:
+  - intent: ask_product_price
+  - action: action_get_product_price
+  - action: utter_product_price_disclaimer
+
+- rule: Provide product availability information
+  steps:
+  - intent: ask_product_availability
+  - action: action_get_product_availability
+  - action: utter_product_availability_info
+
+- rule: Provide product details
+  steps:
+  - intent: ask_product_details
+  - action: action_provide_product_details
+
+- rule: Fallback for unrecognized input
+  condition:
+  - active_loop: null  # Ensures this only triggers outside of forms or loops
+  steps:
+  - action: action_default_fallback
+  - action: utter_fallback

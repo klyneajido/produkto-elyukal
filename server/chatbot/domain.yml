@@ -1,0 +1,91 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - ask_products_by_municipality
+  - ask_municipality_by_product
+  - ask_product_price
+  - ask_product_availability
+  - ask_product_details
+
+entities:
+  - municipality
+  - product
+
+slots:
+  municipality:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: municipality
+
+  product:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: product
+
+responses:
+  utter_greet:
+    - text: "Hello! How can I help you with local products today?"
+    - text: "Hi there! Looking for information about local products in La Union?"
+    - text: "Welcome! I can help you find products in different municipalities. What would you like to know?"
+
+  utter_cheer_up:
+    - text: "Here is something to cheer you up:"
+      image: "https://i.imgur.com/nGF1K8f.jpg"
+
+  utter_did_that_help:
+    - text: "Did that help you?"
+    - text: "Was that information useful?"
+    - text: "Did you find what you were looking for?"
+
+  utter_happy:
+    - text: "Great, carry on!"
+    - text: "Excellent! What else would you like to know?"
+    - text: "Perfect! Feel free to ask about any other local products."
+
+  utter_goodbye:
+    - text: "Goodbye! Visit again for more information on local products."
+    - text: "Take care! Enjoy exploring the local products of La Union."
+    - text: "Bye! Hope to assist you again with local product information."
+
+  utter_iamabot:
+    - text: "I am a bot powered by Rasa, designed to help you learn about local products in La Union."
+
+  utter_ask_product_location:
+    - text: "Which municipality are you looking for products in?"
+    - text: "Could you specify which municipality you're interested in?"
+
+  utter_ask_product_name:
+    - text: "Which product would you like information about?"
+    - text: "What specific product are you looking for?"
+
+  utter_fallback:
+    - text: "I'm not sure I understand. Could you rephrase your question about local products or municipalities?"
+    - text: "I didn't catch that. Are you asking about specific products or municipalities in La Union?"
+
+  utter_product_price_disclaimer:
+    - text: "Please note that prices may vary by season and vendor. Would you like me to connect you with a local market contact?"
+
+  utter_product_availability_info:
+    - text: "Product availability depends on seasonal factors. Would you like to know the best time to find this product?"
+
+actions:
+  - action_fetch_products_by_municipality
+  - action_find_municipality_by_product
+  - action_get_product_price
+  - action_get_product_availability
+  - action_provide_product_details
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

@@ -1,0 +1,131 @@
+version: "3.1"
+nlu:
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - mabuhay
+    - hey there
+    - let's go
+    - hey dude
+    - goodmorning
+    - goodevening
+    - good afternoon
+
+- intent: goodbye
+  examples: |
+    - bye
+    - goodbye
+    - see you around
+    - see you later
+    - paalam
+    - babay
+    - hanggang sa muli
+
+- intent: affirm
+  examples: |
+    - yes
+    - indeed
+    - of course
+    - that sounds good
+    - correct
+    - oo
+    - sige
+
+- intent: deny
+  examples: |
+    - no
+    - never
+    - I don't think so
+    - don't like that
+    - no way
+    - not really
+    - hindi
+    - ayoko
+
+- intent: mood_great
+  examples: |
+    - perfect
+    - great
+    - amazing
+    - feeling like a king
+    - wonderful
+    - I am feeling very good
+    - I am great
+    - I'm good
+    - maganda ang pakiramdam ko
+    - masaya ako
+
+- intent: mood_unhappy
+  examples: |
+    - my day was horrible
+    - I am sad
+    - I don't feel very well
+    - I am disappointed
+    - super sad
+    - I'm so sad
+    - sad
+    - very sad
+    - unhappy
+    - bad
+    - very bad
+    - awful
+    - terrible
+    - not very good
+    - extremely sad
+    - so sad
+    - malungkot ako
+    - hindi maganda ang pakiramdam ko
+
+- intent: bot_challenge
+  examples: |
+    - are you a bot?
+    - are you a human?
+    - am I talking to a bot?
+    - am I talking to a human?
+    - you are a bot?
+    - robot ka ba?
+    - tao ka ba?
+
+- intent: ask_products_by_municipality
+  examples: |
+    - What products are from [San Juan](municipality)?
+    - Which items come from [La Union](municipality)?
+    - Tell me about products in [San Fernando](municipality).
+    - What’s made in [Bacnotan](municipality)?
+    - What can I find in [Naguilian](municipality)?
+    - Products from [Agoo](municipality)?
+    - What’s local to [Bauang](municipality)?
+
+- intent: ask_municipality_by_product
+  examples: |
+    - Where does [Coffee Beans](product) come from?
+    - Which municipality makes [Handwoven Bags](product)?
+    - Where can I find [Pottery](product)?
+    - What town produces [Rice Wine](product)?
+    - Origin of [Wood Carvings](product)?
+
+- intent: ask_product_price
+  examples: |
+    - How much is [Coffee Beans](product)?
+    - What’s the price of [Handwoven Bags](product)?
+    - Cost of [Pottery](product) in [San Juan](municipality)?
+    - How expensive is [Rice Wine](product)?
+
+- intent: ask_product_availability
+  examples: |
+    - Is [Coffee Beans](product) available now?
+    - When can I get [Handwoven Bags](product)?
+    - Availability of [Pottery](product) in [San Juan](municipality)?
+    - Can I find [Rice Wine](product) this month?
+
+- intent: ask_product_details
+  examples: |
+    - Tell me about [Coffee Beans](product).
+    - Details on [Handwoven Bags](product)?
+    - What’s special about [Pottery](product)?
+    - Info on [Rice Wine](product) from [San Juan](municipality)?
