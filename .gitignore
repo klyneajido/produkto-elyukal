@@ -10,6 +10,21 @@
 
 /venv/
 server/venv/
+__pycache__/
+*.pyc
+
+
+# Rasa Cache & Training Outputs
+.nlu_cache/
+.rasa/
+.results/
+models/  # Ignore all models (unless you want to keep a specific one)
+*.db  # SQLite tracker store files (if used)
+*.log  # Logs
+
+# Rasa Configs That May Contain API Keys
+credentials.yml
+endpoints.yml
 
 # But keep these project folders
 !client/
