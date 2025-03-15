@@ -7,6 +7,10 @@
 # Ignore node_modules everywhere
 **/node_modules/
 
+
+/venv/
+server/venv/
+
 # But keep these project folders
 !client/
 !server/
