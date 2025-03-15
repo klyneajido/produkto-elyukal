@@ -11,8 +11,9 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faRobot } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faRobot } from '@fortawesome/free-solid-svg-icons';
 import { ipaddress } from '../config/config';
+import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 
 interface Message {
   text: string;
@@ -83,7 +84,7 @@ const Chatbot: React.FC = () => {
         style={styles.floatingButton}
         onPress={() => setModalVisible(true)}
       >
-     <FontAwesomeIcon icon={faRobot}/>
+     <FontAwesomeIcon icon={faRobot} size={20} color={COLORS.white}/>
       </TouchableOpacity>
 
       {/* Chat Modal */}
@@ -98,7 +99,7 @@ const Chatbot: React.FC = () => {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Chat with Produkto Bot</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Text style={styles.closeButton}>X</Text>
+                <FontAwesomeIcon icon={faClose} color={COLORS.alert} size={20}/>
               </TouchableOpacity>
             </View>
 
@@ -136,11 +137,11 @@ const Chatbot: React.FC = () => {
 const styles = StyleSheet.create({
   floatingButton: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 100,
     right: 20,
     width: 60,
     height: 60,
-    backgroundColor: '#007AFF',
+    backgroundColor: COLORS.secondary,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     height: '70%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -168,15 +169,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: COLORS.container,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
   },
   closeButton: {
-    fontSize: 20,
-    color: '#FF0000',
+    fontSize: FONT_SIZE.large,
+    color: COLORS.alert,
+    fontFamily: FONTS.regular,
   },
   messageList: {
     flex: 1,
@@ -189,15 +191,15 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   userMessage: {
-    backgroundColor: '#007AFF',
+    backgroundColor: COLORS.primary,
     alignSelf: 'flex-end',
   },
   botMessage: {
-    backgroundColor: '#E5E5EA',
+    backgroundColor: COLORS.lightgray,
     alignSelf: 'flex-start',
   },
   messageText: {
-    color: '#000',
+    color: COLORS.white,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -212,18 +214,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 10,
     marginRight: 10,
-    color: '#000',
+    color: COLORS.black,
   },
   sendButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: COLORS.highlight,
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
     justifyContent: 'center',
   },
   sendButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: COLORS.white,
+    fontFamily:FONTS.semibold,
   },
 });
 

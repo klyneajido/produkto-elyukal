@@ -9,7 +9,8 @@ export const COLORS: Record<string, string> = {
     lightgray: "#E5E7EB",
     container: "#F3F4F6",
     accent: "#374151", 
-    highlight: "#3B82F6" 
+    highlight: "#3B82F6",
+    alert: "#D0342C"
 } as const;
 
 
