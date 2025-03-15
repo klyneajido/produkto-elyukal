@@ -42,40 +42,36 @@ Check out our documentation for detailed guides, examples, and best practices!
 
 ---
 
-## 🌐 Server (FastAPI)
+## 🌐 Server (FastAPI + Rasa)
 
 ### 🚀 Getting Started
 
 1. **Open a new terminal**
-2. Navigate to the server directory:
+2. Navigate to the server directory and make a virtual environment(if none yet):
    ```sh
    cd server
    ```
-3. **Activate the virtual environment**
-   - macOS/Linux:
-     ```sh
-     source venv/bin/activate
-     ```
+
+   ``` sh
+   python -m venv venv
+   ```
+
+3. **Install necessary packages (NOTE: only this if setting up project for the first time)**
+   ```sh
+   pip install -r requirements.tsx
+   ```
+
+4. **Activate the backend**
    - Windows:
      ```sh
-     source venv/Scripts/activate
+     ./start-backend.sh
      ```
-4. **Run FastAPI server**
-   - Default:
-     ```sh
-     uvicorn app.main:app --reload
-     ```
-   - Custom IP address:
-     ```sh
-     uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-     ```
-
-Your FastAPI server should now be running and ready to accept requests!
+Your FastAPI + Rasa (for the chatbot) server should now be running and ready to accept requests!
 
 ---
 
 ## 📌 Additional Notes
-- Ensure your mobile device is connected to the same network as your development machine.
+- Ensure your mobile device is connected to the same network as your development machine. Change the Base URL or the IP address on client/src/config/config.ts
 
 Happy coding! 🎉
 

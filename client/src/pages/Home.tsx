@@ -26,6 +26,7 @@ import ProductList from '../components/ProductList.tsx';
 import { RootStackParamList, TabProps } from '../../types/types.ts';
 import EventList from '../components/EventList.tsx';
 import PopularProducts from '../components/PopularList.tsx';
+import Chatbot from '../components/ChatBot.tsx';
 
 const Home: React.FC<TabProps> = ({ onScroll }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -284,6 +285,7 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
           <Text style={styles.copyright}>© 2025 Produkto Elyukal.</Text>
         </View>
       </Animated.ScrollView>
+      <Chatbot/>
     </SafeAreaView>
   );
 };

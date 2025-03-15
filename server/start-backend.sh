@@ -35,11 +35,11 @@ cd chatbot
 
 # Start Rasa action server
 echo "Starting Rasa action server..."
-PYTHONPATH=../ rasa run actions 2>&1 | prefix_output "[1]" "$GREEN" &
+PYTHONPATH=../ rasa run actions --port 5056 2>&1 | prefix_output "[1]" "$GREEN" &
 
 # Start Rasa server with REST API
 echo "Starting Rasa server..."
-PYTHONPATH=../ rasa run --enable-api --cors "*" 2>&1 | prefix_output "[2]" "$BLUE" &
+PYTHONPATH=../ rasa run --enable-api --cors "*" --port 5055 2>&1 | prefix_output "[2]" "$BLUE" &
 
 # Wait for all background processes to finish
 wait
