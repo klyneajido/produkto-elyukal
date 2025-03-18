@@ -7,11 +7,12 @@ import {
   Modal,
   FlatList,
   StyleSheet,
-  Image,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faClose, faRobot } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faRobot, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { ipaddress } from '../config/config';
 import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 
@@ -24,12 +25,22 @@ const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const flatListRef = useRef<FlatList>(null);
+
+  // Add welcome message when chat is opened
+  useEffect(() => {
+    if (modalVisible && messages.length === 0) {
+      setMessages([{ text: 'Hi there! How can I help you today?', sender: 'bot' }]);
+    }
+  }, [modalVisible]);
 
   // Scroll to the latest message
   useEffect(() => {
-    if (flatListRef.current) {
-      flatListRef.current.scrollToEnd({ animated: true });
+    if (flatListRef.current && messages.length > 0) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
     }
   }, [messages]);
 
@@ -40,12 +51,13 @@ const Chatbot: React.FC = () => {
     const userMessage: Message = { text: message, sender: 'user' };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
+    setIsLoading(true);
 
     try {
       const response = await axios.post(
         `http://${ipaddress}:5055/webhooks/rest/webhook`,
         {
-          sender: 'user', 
+          sender: 'user',
           message: message,
         }
       );
@@ -57,25 +69,37 @@ const Chatbot: React.FC = () => {
           setMessages((prev) => [...prev, botMessage]);
         });
       } else {
-        setMessages((prev) => [...prev, { text: 'Sorry, I didn’t get that!', sender: 'bot' }]);
+        setMessages((prev) => [...prev, { text: "Sorry, I didn't get that!", sender: 'bot' }]);
       }
     } catch (error) {
       console.error('Error communicating with Rasa:', error);
       setMessages((prev) => [...prev, { text: 'Oops, something went wrong!', sender: 'bot' }]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // Render individual message
-  const renderMessage = ({ item }: { item: Message }) => (
-    <View
-      style={[
-        styles.messageContainer,
-        item.sender === 'user' ? styles.userMessage : styles.botMessage,
-      ]}
-    >
-      <Text style={styles.messageText}>{item.text}</Text>
-    </View>
-  );
+  const renderMessage = ({ item, index }: { item: Message, index: number }) => {
+    const isLastMessage = index === messages.length - 1;
+    
+    return (
+      <View
+        style={[
+          styles.messageContainer,
+          item.sender === 'user' ? styles.userMessage : styles.botMessage,
+          isLastMessage && styles.lastMessage,
+        ]}
+      >
+        <Text style={[
+          styles.messageText,
+          item.sender === 'user' ? styles.userMessageText : styles.botMessageText
+        ]}>
+          {item.text}
+        </Text>
+      </View>
+    );
+  };
 
   return (
     <>
@@ -84,7 +108,7 @@ const Chatbot: React.FC = () => {
         style={styles.floatingButton}
         onPress={() => setModalVisible(true)}
       >
-     <FontAwesomeIcon icon={faRobot} size={20} color={COLORS.white}/>
+        <FontAwesomeIcon icon={faRobot} size={FONT_SIZE.large} color={COLORS.white} />
       </TouchableOpacity>
 
       {/* Chat Modal */}
@@ -94,40 +118,60 @@ const Chatbot: React.FC = () => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalOverlay}
+        >
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Chat with Produkto Bot</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <FontAwesomeIcon icon={faClose} color={COLORS.alert} size={20}/>
+              <TouchableOpacity 
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <FontAwesomeIcon icon={faClose} color={COLORS.alert} size={FONT_SIZE.large} />
               </TouchableOpacity>
             </View>
 
-            <FlatList
-              ref={flatListRef}
-              data={messages}
-              renderItem={renderMessage}
-              keyExtractor={(item, index) => `${item.sender}-${index}`}
-              style={styles.messageList}
-            />
-
+            <View style={styles.flatlistContainer}>
+              <FlatList
+                ref={flatListRef}
+                data={messages}
+                renderItem={renderMessage}
+                keyExtractor={(item, index) => `${item.sender}-${index}`}
+                style={styles.messageList}
+                contentContainerStyle={styles.messageListContent}
+                ListFooterComponent={<View style={styles.messageFooterSpace} />}
+              />
+            </View>
+            
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
                 value={input}
                 onChangeText={setInput}
                 placeholder="Type a message..."
-                placeholderTextColor="#888"
+                placeholderTextColor={COLORS.gray}
+                multiline
+                maxLength={500}
               />
               <TouchableOpacity
-                style={styles.sendButton}
+                style={[
+                  styles.sendButton,
+                  !input.trim() && styles.sendButtonDisabled
+                ]}
                 onPress={() => sendMessage(input)}
+                disabled={!input.trim() || isLoading}
               >
-                <Text style={styles.sendButtonText}>Send</Text>
+                <FontAwesomeIcon 
+                  icon={faPaperPlane} 
+                  size={FONT_SIZE.medium} 
+                  color={input.trim() ? COLORS.white : COLORS.lightgray} 
+                />
               </TouchableOpacity>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </>
   );
@@ -146,14 +190,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
-  },
-  chatIcon: {
-    width: 30,
-    height: 30,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  flatlistContainer: {
+    flex: 1,
     justifyContent: 'flex-end',
   },
   modalContainer: {
@@ -161,71 +209,94 @@ const styles = StyleSheet.create({
     height: '70%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 10,
+    padding: FONT_SIZE.medium,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
+    padding: FONT_SIZE.medium,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.container,
+    marginBottom: FONT_SIZE.extraSmall,
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: FONT_SIZE.large,
+    fontFamily: FONTS.bold,
+    color: COLORS.black
   },
   closeButton: {
-    fontSize: FONT_SIZE.large,
-    color: COLORS.alert,
-    fontFamily: FONTS.regular,
+    padding: FONT_SIZE.extraSmall,
   },
   messageList: {
     flex: 1,
-    padding: 10,
+  },
+  messageListContent: {
+    paddingHorizontal: FONT_SIZE.medium,
+    paddingBottom: FONT_SIZE.medium,
+  },
+  messageFooterSpace: {
+    height: FONT_SIZE.xxLarge,  // Extra space at the bottom of message list
   },
   messageContainer: {
     maxWidth: '80%',
-    padding: 10,
-    borderRadius: 10,
-    marginVertical: 5,
+    padding: FONT_SIZE.medium,
+    borderRadius: FONT_SIZE.medium,
+    marginVertical: FONT_SIZE.small,
+  },
+  lastMessage: {
+    marginBottom: FONT_SIZE.xxLarge,  // Extra margin for last message
   },
   userMessage: {
     backgroundColor: COLORS.primary,
     alignSelf: 'flex-end',
+    borderBottomRightRadius: FONT_SIZE.extraSmall,
   },
   botMessage: {
-    backgroundColor: COLORS.lightgray,
+    backgroundColor: COLORS.highlight,
     alignSelf: 'flex-start',
+    borderBottomLeftRadius: FONT_SIZE.extraSmall,
   },
   messageText: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.regular,
+  },
+  userMessageText: {
+    color: COLORS.white,
+  },
+  botMessageText: {
     color: COLORS.white,
   },
   inputContainer: {
     flexDirection: 'row',
-    padding: 10,
+    padding: FONT_SIZE.medium,
     borderTopWidth: 1,
-    borderTopColor: '#ddd',
+    borderTopColor: COLORS.lightgray,
+    alignItems: 'center',
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    marginRight: 10,
+    borderColor: COLORS.lightgray,
+    borderRadius: 8,
+    paddingHorizontal: FONT_SIZE.medium,
+    paddingVertical: FONT_SIZE.small,
+    marginRight: FONT_SIZE.medium,
     color: COLORS.black,
+    maxHeight: 100,
+    minHeight: 40,
   },
   sendButton: {
     backgroundColor: COLORS.highlight,
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    borderRadius: 8,
+    width: 45,
+    height: 45,
     justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 2,
   },
-  sendButtonText: {
-    color: COLORS.white,
-    fontFamily:FONTS.semibold,
+  sendButtonDisabled: {
+    backgroundColor: COLORS.container,
   },
 });
 
