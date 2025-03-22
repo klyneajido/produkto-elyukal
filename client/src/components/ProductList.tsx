@@ -14,7 +14,6 @@ type ProductListProps = {
 
 const ProductList: React.FC<ProductListProps> = ({ products =[] }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  console.log('ProductList received products:', products); // Add this
   return (
     <View style={styles.container}>
       <View style={styles.productGrid}>

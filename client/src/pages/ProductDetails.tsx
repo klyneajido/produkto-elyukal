@@ -39,6 +39,7 @@ import ReviewList from '../components/ReviewList';
 import axios from 'axios';
 import { BASE_URL } from '../config/config';
 import SimilarProducts from '../components/SimilarProducts';
+import ProductMediaCarousel from '../components/ProductCarousel';
 
 ViroAnimations.registerAnimations({
     fadeIn: {
@@ -80,6 +81,10 @@ interface Store {
     type: string | null;
     rating: number;
 }
+interface MediaItem {
+    uri: string;
+    type: 'image';
+  }
 
 const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTakePhoto }) => {
     const [isTracking, setIsTracking] = useState(false);
@@ -187,6 +192,27 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
     );
 };
 
+
+const mockMediaItems = [
+    {
+        uri: 'https://example.com/image1.jpg',
+        type: 'image' as const,
+        height: 300, // Add height
+    },
+    {
+        uri: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        type: 'youtube' as const,
+        thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
+        height: 300, // Add height
+    },
+    {
+        uri: 'https://example.com/image2.jpg',
+        type: 'image' as const,
+        height: 300, // Add height
+    },
+];
+
+
 const ProductDetails: React.FC = () => {
     const [showAR, setShowAR] = useState(false);
     const [isTakingPhoto, setIsTakingPhoto] = useState(false);
@@ -200,31 +226,37 @@ const ProductDetails: React.FC = () => {
     const navigation = useNavigation<NavigationProp>();
     const arNavigatorRef: RefObject<ViroARSceneNavigator> = useRef(null);
 
-    const fetchStoreData = async () => {
+    const mediaItems: MediaItem[] = product.image_urls?.map((url: string) => ({
+        uri: url,
+        type: 'image' as const,
+      })) || [];
+    
+      const fetchStoreData = async () => {
         if (!product.store_id) return;
         setLoadingStore(true);
         try {
-            const response = await axios.get(`${BASE_URL}/stores/fetch_stores`);
-            const stores = response.data;
-            const matchingStore = stores.find((store: Store) => store.store_id === product.store_id);
-            setStoreData(matchingStore || null);
+          const response = await axios.get(`${BASE_URL}/stores/fetch_stores`);
+          const stores = response.data;
+          const matchingStore = stores.find((store: Store) => store.store_id === product.store_id);
+          setStoreData(matchingStore || null);
         } catch (error) {
-            console.error('Error fetching store data:', error);
-            setStoreData(null);
+          console.error('Error fetching store data:', error);
+          setStoreData(null);
         } finally {
-            setLoadingStore(false);
+          setLoadingStore(false);
         }
-    };
+      };
+
 
     const fetchSimilarProducts = async () => {
         setLoadingSimilar(true);
         try {
             const url = `${BASE_URL}/products/fetch_similar_products/${product.id}`;
-            console.log('Fetching similar products from:', url);
+
             const response = await axios.get(url);
-            console.log('Response data:', response.data);
+
             setSimilarProducts(response.data.similar_products || []);
-            console.log('Updated similarProducts state:', response.data.similar_products || []);
+
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error('Error fetching similar products:', error.response?.status, error.response?.data);
@@ -238,7 +270,6 @@ const ProductDetails: React.FC = () => {
     };
 
     useEffect(() => {
-        console.log('Current product:', product);
         fetchStoreData();
         fetchSimilarProducts();
     }, [product.id, product.store_id]);
@@ -348,25 +379,32 @@ const ProductDetails: React.FC = () => {
             </View>
         );
     }
-
+   
+    // Log props just before passing to ProductMediaCarousel
+  const carouselProps = {
+    mediaItems,
+    initialIndex: 0,
+    productName: product.name || 'Unnamed Product',
+    averageRating: product.average_rating,
+    totalReviews: product.total_reviews,
+  };
+  console.log('Props passed to ProductMediaCarousel:', JSON.stringify(carouselProps, null, 2));
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
-                <Animatable.View animation="fadeIn" duration={1000} style={styles.headerContainer}>
-                    <Image source={{ uri: product.image_urls[1] }} style={styles.productImage} resizeMode="cover" />
-                    <View style={styles.productInfoOverlay}>
-                        <Text style={styles.productTitle}>{product.name}</Text>
-                        <View style={styles.productMetaContainer}>
-                            <View style={styles.ratingContainer}>
-                                <FontAwesomeIcon icon={faStar} color="#FDD700" size={16} />
-                                <Text style={styles.ratingText}>
-                                    {product.average_rating || 'N/A'} ({product.total_reviews || 0} reviews)
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                </Animatable.View>
-
+            <Animatable.View animation="fadeIn" duration={1000}>
+          {mediaItems.length > 0 ? (
+            <ProductMediaCarousel
+            mediaItems={mediaItems}
+            initialIndex={0}
+            productName={product.name || 'Unnamed Product'}
+            averageRating={product.average_rating}
+            totalReviews={product.total_reviews}
+          />
+          ) : (
+            <Text style={{ textAlign: 'center', marginTop: 20 }}>No images available</Text>
+          )}
+        </Animatable.View>
                 <View style={styles.detailsContainer}>
                     <View style={styles.pricingContainer}>
                         <View style={styles.priceRow}>
