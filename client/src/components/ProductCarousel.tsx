@@ -25,7 +25,7 @@ interface ProductMediaCarouselProps {
   mediaItems: MediaItem[];
   initialIndex?: number;
   productName: string;
-  averageRating?: string;
+  averageRating?: number;
   totalReviews?: number;
 }
 
@@ -153,7 +153,7 @@ const ProductMediaCarousel: React.FC<ProductMediaCarouselProps> = ({
         </>
       )}
 
-      {mediaItems.length > 1 && (
+      {/* {mediaItems.length > 1 && (
         <View style={styles.pagination}>
           {mediaItems.map((_, index) => (
             <View
@@ -168,7 +168,7 @@ const ProductMediaCarousel: React.FC<ProductMediaCarouselProps> = ({
         <Text style={styles.counterText}>
           {activeIndex + 1} / {mediaItems.length}
         </Text>
-      </View>
+      </View> */}
     </Animatable.View>
   );
 };
