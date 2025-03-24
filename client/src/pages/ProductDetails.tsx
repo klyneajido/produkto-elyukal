@@ -240,7 +240,6 @@ const ProductDetails: React.FC = () => {
           const matchingStore = stores.find((store: Store) => store.store_id === product.store_id);
           setStoreData(matchingStore || null);
         } catch (error) {
-          console.error('Error fetching store data:', error);
           setStoreData(null);
         } finally {
           setLoadingStore(false);
@@ -388,7 +387,6 @@ const ProductDetails: React.FC = () => {
     averageRating: product.average_rating,
     totalReviews: product.total_reviews,
   };
-  console.log('Props passed to ProductMediaCarousel:', JSON.stringify(carouselProps, null, 2));
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>

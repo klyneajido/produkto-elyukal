@@ -82,7 +82,7 @@ export default function ReviewList() {
                     signal: abortController.signal,
                 }
             );
-            console.log('Response:', response.data);
+            // console.log('Response:', response.data);
 
             const fetchResponse = await axios.get(`${BASE_URL}/reviews/${product.id}`, {
                 signal: abortController.signal,

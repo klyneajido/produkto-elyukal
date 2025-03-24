@@ -7,13 +7,29 @@ import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 import { useNavigation } from '@react-navigation/native';
 import { Product, RootStackParamList } from '../../types/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { BASE_URL } from '../config/config';
+import axios from 'axios';
 
 type ProductListProps = {
   products: Product[];
+  id: number;
 };
 
-const ProductList: React.FC<ProductListProps> = ({ products =[] }) => {
+
+
+const ProductList: React.FC<ProductListProps> = ({ products = [] }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const increment_views = async (productId: number) => {
+    try {
+      const response = await axios.put(`${BASE_URL}/products/add_view_to_product/${productId}`)
+      console.log("Incremented successfully!")
+    }
+    catch (error: any) {
+      console.log("Error incrementing product views: ", error.message);
+    }
+  };
+  
   return (
     <View style={styles.container}>
       <View style={styles.productGrid}>
@@ -21,7 +37,11 @@ const ProductList: React.FC<ProductListProps> = ({ products =[] }) => {
           <TouchableOpacity
             key={product.id}
             style={styles.card}
-            onPress={() => navigation.navigate('ProductDetails', { product })}
+            onPress={() => {
+              increment_views(product.id),
+                navigation.navigate('ProductDetails', { product })
+            }
+            }
           >
             <Image
               source={{ uri: product.image_urls[0] }}
@@ -29,7 +49,7 @@ const ProductList: React.FC<ProductListProps> = ({ products =[] }) => {
             />
             <View style={styles.starContainer}>
               <View style={styles.ratings}>
-                <FontAwesomeIcon icon={faStar}  color="#FFD700" size={12} />
+                <FontAwesomeIcon icon={faStar} color="#FFD700" size={12} />
                 <Text style={styles.starText}> {product.average_rating || '0'} ({product.total_reviews})</Text>
               </View>
             </View>

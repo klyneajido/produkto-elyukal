@@ -37,11 +37,11 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProduct, limit
     const fetchSimilarProducts = async () => {
         setLoading(true);
         setError(null);
-        
+
         try {
             // Fetching products
             const response = await axios.get(`${BASE_URL}/products/fetch_products`);
-            
+
             // Extract the products array from the response
             // Check if response.data has a products property
             if (!response.data || !response.data.products || !Array.isArray(response.data.products)) {
@@ -50,38 +50,38 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProduct, limit
                 setLoading(false);
                 return;
             }
-            
+
             const allProducts = response.data.products;
-            
+
             // Filter products by the same category, excluding the current product
-            let filtered = allProducts.filter((product: Product) => 
-                product.category === currentProduct.category && 
+            let filtered = allProducts.filter((product: Product) =>
+                product.category === currentProduct.category &&
                 product.id !== currentProduct.id
             );
-            
+
             // If not enough products from the same category, add some from the same store
             if (filtered.length < limit) {
-                const storeProducts = allProducts.filter((product: Product) => 
-                    product.store_id === currentProduct.store_id && 
+                const storeProducts = allProducts.filter((product: Product) =>
+                    product.store_id === currentProduct.store_id &&
                     product.id !== currentProduct.id &&
                     !filtered.some(p => p.id === product.id)
                 );
-                
+
                 filtered = [...filtered, ...storeProducts].slice(0, limit);
             }
-            
+
             // If still not enough, add random products
             if (filtered.length < limit) {
                 const randomProducts = allProducts
-                    .filter((product: Product) => 
+                    .filter((product: Product) =>
                         product.id !== currentProduct.id &&
                         !filtered.some(p => p.id === product.id)
                     )
                     .slice(0, limit - filtered.length);
-                
+
                 filtered = [...filtered, ...randomProducts];
             }
-            
+
             setSimilarProducts(filtered.slice(0, limit));
         } catch (err) {
             console.error('Error fetching similar products:', err);
@@ -95,13 +95,28 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProduct, limit
         navigation.navigate('ProductDetails', { product });
     };
 
+    const increment_views = async (productId: number) => {
+        try {
+            const response = await axios.put(`${BASE_URL}/products/add_view_to_product/${productId}`)
+            console.log("Incremented Successfully!")
+        }
+        catch (error: any) {
+            console.log("Error in Incrementing Product: ", error.message)
+
+        }
+    }
+
     const renderProductItem = ({ item }: { item: Product }) => (
-        <TouchableOpacity 
-            style={styles.productCard} 
-            onPress={() => navigateToProductDetails(item)}
+        <TouchableOpacity
+            style={styles.productCard}
+
+            onPress={() => {
+                increment_views(item.id);
+                navigateToProductDetails(item)
+            }}
         >
-            <Image 
-                source={{ uri: item.image_urls[0] || item.image_urls[1] }} 
+            <Image
+                source={{ uri: item.image_urls[0] || item.image_urls[1] }}
                 style={styles.productImage}
                 resizeMode="cover"
             />
@@ -115,7 +130,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProduct, limit
                         </Text>
                     </View>
                     <View style={styles.priceContainer}>
-                        
+
                         <Text style={styles.priceText}>₱{item.price_min}+</Text>
                     </View>
                 </View>
@@ -193,7 +208,7 @@ const styles = StyleSheet.create({
     },
     productName: {
         fontSize: 14,
-        fontFamily:FONTS.semibold,
+        fontFamily: FONTS.semibold,
         marginBottom: 5,
         color: COLORS.black,
     },
@@ -214,11 +229,11 @@ const styles = StyleSheet.create({
     priceContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop:5,
+        marginTop: 5,
     },
     priceText: {
-        fontFamily:FONTS.bold,
-        fontSize:FONT_SIZE.medium-1,
+        fontFamily: FONTS.bold,
+        fontSize: FONT_SIZE.medium - 1,
         color: COLORS.secondary,
         marginLeft: 4,
     },

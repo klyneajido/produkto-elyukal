@@ -37,6 +37,15 @@ const PopularList = () => {
     );
   }
 
+  const increment_views = async (productId:number) => {
+      try{
+        const response = await axios.put(`${BASE_URL}/products/add_view_to_product/${productId}`)
+        console.log("Incremented Successfully!")
+      }
+      catch(error:any){
+        console.log("Error Incrementing product: ", error.message)
+      }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.productGrid}>
@@ -44,7 +53,10 @@ const PopularList = () => {
           <TouchableOpacity
             key={product.id}
             style={styles.card}
-            onPress={() => navigation.navigate('ProductDetails', { product })}
+            onPress={() => {
+              increment_views(product.id);
+              navigation.navigate('ProductDetails', { product });
+            }}
           >
             <Image
               source={{ uri: product.image_urls[0] }}
@@ -109,7 +121,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'absolute',
     top: 115,
-    right:5
+    right: 5
   },
   ratings: {
     flexDirection: 'row',
@@ -118,7 +130,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondary,
     borderRadius: 8,
     padding: 2,
-    opacity:0.9,
+    opacity: 0.9,
   },
   starText: {
     color: COLORS.gray,

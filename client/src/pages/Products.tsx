@@ -146,7 +146,7 @@ const Products: React.FC<ProductsProps> = ({onScroll }) => {
 
   const applyFilters = () => {
     let filteredProducts = [...products];
-    console.log('Initial products for filtering:', filteredProducts);
+    // console.log('Initial products for filtering:', filteredProducts);
 
     if (searchText) {
       const searchResults = fuzzySearch<Product>(
@@ -216,7 +216,7 @@ const Products: React.FC<ProductsProps> = ({onScroll }) => {
   };
 
   const filteredProducts = applyFilters();
-  console.log('Final filteredProducts:', filteredProducts);
+  // console.log('Final filteredProducts:', filteredProducts);
 
   if (error) {
     return (

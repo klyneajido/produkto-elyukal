@@ -42,7 +42,7 @@ const ProductMediaCarousel: React.FC<ProductMediaCarouselProps> = ({
   const carouselRef = useRef<FlatList>(null);
 
   // Log to verify props
-  console.log('ProductMediaCarousel Props:', { productName, averageRating, totalReviews });
+  // console.log('ProductMediaCarousel Props:', { productName, averageRating, totalReviews });
 
   const handleNext = () => {
     if (activeIndex < mediaItems.length - 1) {
