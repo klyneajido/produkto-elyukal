@@ -135,3 +135,17 @@ async def fetch_popular_products():
     except Exception as e:
         print(f"Error fetching products: {type(e).__name__}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database error: {type(e).__name__}: {str(e)}")
+    
+@router.put("/add_view_to_product/{product_id}")
+def increment_views(product_id:str):
+    try:
+        
+        response = supabase_client.table("products").select("views").eq("id", product_id).execute()
+        views = response.data[0]["views"]
+        new_views = views +1
+        response = supabase_client.table("products").update({"views":new_views}).eq("id", product_id).execute()
+        
+        print(response)
+    except Exception as e:
+        print(f"Error incrementing views: {type(e).__name__}: {str(e)}")
+        raise HTTPException(status_code=404, detail="Product not found")

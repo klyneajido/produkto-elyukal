@@ -18,4 +18,5 @@ class Products(BaseModel):
     rating:float
     store_id: Union[UUID, str]
     town: Optional[str] = None
+    views: int
 
