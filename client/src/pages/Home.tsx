@@ -46,17 +46,7 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
       }
     };
     checkAuth();
-
-    const backAction =()=>{
-      Alert.alert('Hold on!', 'Do you really want to exit the app?',[
-        {text:'Cancel', style:'cancel'},
-        {text:'Exit', onPress: () => BackHandler.exitApp()},
-      ]);
-      return true;
-    };
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-    return () => backHandler.remove();
-  }, []);
+  }, [navigation]);
 
   const onRefresh = async () => {
     setRefreshing(true);

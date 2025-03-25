@@ -1,31 +1,29 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, StyleSheet, Dimensions, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, StyleSheet, Dimensions, Animated, NativeSyntheticEvent, NativeScrollEvent, BackHandler } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHome, faCog, faMap, faBox, faCity, faTreeCity } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faCog, faMap, faBox, faCity } from '@fortawesome/free-solid-svg-icons';
 import Home from '../pages/Home';
 import Products from '../pages/Products';
 import Map from '../pages/Map';
 import Settings from '../pages/Settings';
 import Municipalities from '../pages/Municipality';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const Tab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
 
 const TabNavigator: React.FC = () => {
-  // Use a single Animated.Value for tab bar translation
   const tabBarTranslate = useRef(new Animated.Value(0)).current;
-
-  // Track visibility state
   const [isNavVisible, setIsNavVisible] = useState(true);
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
-  // Track scroll related variables with refs
   const lastScrollY = useRef(0);
   const isScrollingDown = useRef(false);
   const scrollTimer = useRef<NodeJS.Timeout | null>(null);
   const isTouching = useRef(false);
 
-  // Clear timer on component unmount
   useEffect(() => {
     return () => {
       if (scrollTimer.current) {
@@ -34,31 +32,26 @@ const TabNavigator: React.FC = () => {
     };
   }, []);
 
-  // Function to show navbar
   const showNavbar = useCallback(() => {
     Animated.spring(tabBarTranslate, {
       toValue: 0,
       useNativeDriver: true,
       tension: 80,
-      friction: 12
+      friction: 12,
     }).start(() => setIsNavVisible(true));
   }, [tabBarTranslate]);
 
-  // Function to hide navbar
   const hideNavbar = useCallback(() => {
     Animated.spring(tabBarTranslate, {
       toValue: 100,
       useNativeDriver: true,
       tension: 80,
-      friction: 12
+      friction: 12,
     }).start(() => setIsNavVisible(false));
   }, [tabBarTranslate]);
 
-  // Setup touch handlers
   const handleTouchStart = useCallback(() => {
     isTouching.current = true;
-
-    // Clear any pending timers when touch starts
     if (scrollTimer.current) {
       clearTimeout(scrollTimer.current);
       scrollTimer.current = null;
@@ -67,12 +60,9 @@ const TabNavigator: React.FC = () => {
 
   const handleTouchEnd = useCallback(() => {
     isTouching.current = false;
-
-    // Set timer to show navbar after touch ends
     if (scrollTimer.current) {
       clearTimeout(scrollTimer.current);
     }
-
     scrollTimer.current = setTimeout(() => {
       if (!isNavVisible) {
         showNavbar();
@@ -80,48 +70,97 @@ const TabNavigator: React.FC = () => {
     }, 1500);
   }, [isNavVisible, showNavbar]);
 
-  // Main scroll handler
-  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentScrollY = event.nativeEvent.contentOffset.y;
-    const diff = currentScrollY - lastScrollY.current;
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const currentScrollY = event.nativeEvent.contentOffset.y;
+      const diff = currentScrollY - lastScrollY.current;
+      lastScrollY.current = currentScrollY;
 
-    // Update last scroll position
-    lastScrollY.current = currentScrollY;
+      if (Math.abs(diff) < 3) return;
 
-    // Determine scroll direction with sufficient threshold to avoid jitter
-    if (Math.abs(diff) < 3) return; // Ignore small movements
-
-    const newIsScrollingDown = diff > 0;
-
-    // Only trigger animation when scrolling down and navbar is visible,
-    // or scrolling up and navbar is hidden
-    if (newIsScrollingDown && isNavVisible) {
-      hideNavbar();
-      // Clear any pending show timers when actively scrolling down
-      if (scrollTimer.current) {
-        clearTimeout(scrollTimer.current);
-        scrollTimer.current = null;
-      }
-    } else if (!newIsScrollingDown && !isNavVisible) {
-      showNavbar();
-    }
-
-    isScrollingDown.current = newIsScrollingDown;
-
-    // When scrolling without touching (momentum scrolling),
-    // set a timer to show the navbar when scrolling stops
-    if (!isTouching.current) {
-      if (scrollTimer.current) {
-        clearTimeout(scrollTimer.current);
-      }
-
-      scrollTimer.current = setTimeout(() => {
-        if (!isNavVisible) {
-          showNavbar();
+      const newIsScrollingDown = diff > 0;
+      if (newIsScrollingDown && isNavVisible) {
+        hideNavbar();
+        if (scrollTimer.current) {
+          clearTimeout(scrollTimer.current);
+          scrollTimer.current = null;
         }
-      }, 1500);
-    }
-  }, [isNavVisible, hideNavbar, showNavbar]);
+      } else if (!newIsScrollingDown && !isNavVisible) {
+        showNavbar();
+      }
+      isScrollingDown.current = newIsScrollingDown;
+
+      if (!isTouching.current) {
+        if (scrollTimer.current) {
+          clearTimeout(scrollTimer.current);
+        }
+        scrollTimer.current = setTimeout(() => {
+          if (!isNavVisible) {
+            showNavbar();
+          }
+        }, 1500);
+      }
+    },
+    [isNavVisible, hideNavbar, showNavbar]
+  );
+
+  useEffect(() => {
+    const backAction = () => {
+      const navState = navigation.getState();
+      const tabState = navState.routes.find((r) => r.name === 'Tabs')?.state;
+      const currentTabRouteName = tabState?.routes[tabState.index || 0]?.name || 'Home';
+
+      console.log('Back button pressed. Current tab route:', currentTabRouteName);
+      console.log('Can go back:', navigation.canGoBack());
+
+      // If there's a previous screen in the stack (e.g., ProductDetails), go back to it
+      if (navigation.canGoBack()) {
+        const currentRoute = navState.routes[navState.index];
+        const nestedState = currentRoute.state;
+        // Type guard for nestedState.index
+        const activeScreen = nestedState && typeof nestedState.index === 'number' 
+          ? nestedState.routes[nestedState.index]?.name 
+          : undefined;
+        console.log('Current active screen:', activeScreen || 'Unknown');
+        console.log('Going back to previous screen');
+        navigation.goBack();
+        return true; // Prevent default back behavior
+      }
+
+      // If on a top-level tab screen other than Home, navigate to Home
+      if (currentTabRouteName !== 'Home') {
+        console.log('Navigating to Home from:', currentTabRouteName);
+        navigation.navigate('Home');
+        return true; // Prevent default back behavior
+      }
+
+      // If on Home and no previous screen, show exit alert
+      console.log('Already on Home, showing exit alert');
+      Alert.alert(
+        'Hold on!',
+        'Do you want to exit the app?',
+        [
+          { text: 'Cancel', style: 'cancel', onPress: () => console.log('Cancel pressed, staying on Home') },
+          { 
+            text: 'Exit', 
+            onPress: () => {
+              console.log('Exit pressed, attempting to close app');
+              BackHandler.exitApp();
+            }
+          },
+        ],
+        { cancelable: false }
+      );
+      return true; // Prevent default back behavior
+    };
+
+    console.log('Registering BackHandler listener');
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    return () => {
+      console.log('Removing BackHandler listener');
+      backHandler.remove();
+    };
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -224,7 +263,7 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Maps"
-          children={() => <Map />}
+          component={Map}
         />
         <Tab.Screen
           options={{
@@ -270,7 +309,7 @@ const TabNavigator: React.FC = () => {
             ),
           }}
           name="Settings"
-          children={() => <Settings />}
+          component={Settings}
         />
       </Tab.Navigator>
     </View>

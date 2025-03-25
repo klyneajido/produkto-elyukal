@@ -85,33 +85,26 @@ const LoginScreen: React.FC = () => {
             return null;
         }
     };
-
     const handleLogin = async () => {
         if (!validateForm()) {
-            return; // Stop if validation fails
+          return; // Stop if validation fails
         }
-
+      
         const token = await loginUser(email, password);
         if (token) {
-            const profile = await getUserProfile();
-            if (profile) {
-                console.log('Updating user context with profile:', profile);
-                setUser(profile);
-                const isAuthenticated = true;
-                if (isAuthenticated){
-                    navigation.reset({
-                        index:0,
-                        routes: [{name:'Tabs'}],
-                    });
-                } else{
-                    Alert.alert('Login Failed', 'Invalid email or password');
-                }
-                // navigation.navigate("Tabs");
-            }
+          const profile = await getUserProfile();
+          if (profile) {
+            console.log('Updating user context with profile:', profile);
+            setUser(profile);
+            // Reset navigation stack to Tabs (Home screen)
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Tabs' }],
+            });
+          }
         }
+      };
 
-        
-    };
 
     const handleGuest = async () => {
         loginAsGuest();
