@@ -97,9 +97,20 @@ const LoginScreen: React.FC = () => {
             if (profile) {
                 console.log('Updating user context with profile:', profile);
                 setUser(profile);
-                navigation.navigate("Tabs");
+                const isAuthenticated = true;
+                if (isAuthenticated){
+                    navigation.reset({
+                        index:0,
+                        routes: [{name:'Tabs'}],
+                    });
+                } else{
+                    Alert.alert('Login Failed', 'Invalid email or password');
+                }
+                // navigation.navigate("Tabs");
             }
         }
+
+        
     };
 
     const handleGuest = async () => {
@@ -115,6 +126,8 @@ const LoginScreen: React.FC = () => {
     const handleForgotPassword = () => {
         navigation.navigate('ForgotPassword');
     };
+
+
 
     return (
         <SafeAreaView style={styles.container}>
