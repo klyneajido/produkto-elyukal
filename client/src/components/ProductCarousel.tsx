@@ -4,14 +4,13 @@ import {
   Image,
   StyleSheet,
   Dimensions,
-  TouchableOpacity,
   FlatList,
   ActivityIndicator,
   Text,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChevronLeft, faChevronRight, faStar } from '@fortawesome/free-solid-svg-icons';
-import { COLORS } from '../assets/constants/constant';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { COLORS, FONTS } from '../assets/constants/constant';
 import * as Animatable from 'react-native-animatable';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -41,27 +40,9 @@ const ProductMediaCarousel: React.FC<ProductMediaCarouselProps> = ({
 
   const carouselRef = useRef<FlatList>(null);
 
-  // Log to verify props
-  // console.log('ProductMediaCarousel Props:', { productName, averageRating, totalReviews });
-
-  const handleNext = () => {
-    if (activeIndex < mediaItems.length - 1) {
-      setActiveIndex(activeIndex + 1);
-      carouselRef.current?.scrollToIndex({ index: activeIndex + 1, animated: true });
-    }
-  };
-
-  const handlePrevious = () => {
-    if (activeIndex > 0) {
-      setActiveIndex(activeIndex - 1);
-      carouselRef.current?.scrollToIndex({ index: activeIndex - 1, animated: true });
-    }
-  };
-
   const onViewableItemsChanged = ({ viewableItems }: any) => {
     if (viewableItems.length > 0) {
-      const index = viewableItems[0].index;
-      setActiveIndex(index);
+      setActiveIndex(viewableItems[0].index);
     }
   };
 
@@ -71,26 +52,24 @@ const ProductMediaCarousel: React.FC<ProductMediaCarouselProps> = ({
 
   const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }]);
 
-  const renderItem = ({ item }: { item: MediaItem }) => {
-    return (
-      <View style={styles.itemContainer}>
-        <Image
-          source={{ uri: item.uri }}
-          style={styles.mediaItem}
-          resizeMode="cover"
-          onLoadStart={() => setLoading(true)}
-          onLoadEnd={() => setLoading(false)}
+  const renderItem = ({ item }: { item: MediaItem }) => (
+    <View style={styles.itemContainer}>
+      <Image
+        source={{ uri: item.uri }}
+        style={styles.mediaItem}
+        resizeMode="cover"
+        onLoadStart={() => setLoading(true)}
+        onLoadEnd={() => setLoading(false)}
+      />
+      {loading && (
+        <ActivityIndicator
+          style={styles.loader}
+          size="large"
+          color={COLORS.primary}
         />
-        {loading && (
-          <ActivityIndicator
-            style={styles.loader}
-            size="large"
-            color={COLORS.primary}
-          />
-        )}
-      </View>
-    );
-  };
+      )}
+    </View>
+  );
 
   return (
     <Animatable.View animation="fadeIn" duration={800} style={styles.container}>
@@ -111,7 +90,6 @@ const ProductMediaCarousel: React.FC<ProductMediaCarouselProps> = ({
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
       />
 
-      {/* Overlay with product info */}
       <View style={styles.productInfoOverlay}>
         <Text style={styles.productTitle}>{productName || 'No Name Provided'}</Text>
         <View style={styles.productMetaContainer}>
@@ -123,52 +101,6 @@ const ProductMediaCarousel: React.FC<ProductMediaCarouselProps> = ({
           </View>
         </View>
       </View>
-
-      {mediaItems.length > 1 && (
-        <>
-          <TouchableOpacity
-            style={[styles.navButton, styles.prevButton]}
-            onPress={handlePrevious}
-            disabled={activeIndex === 0}
-          >
-            <FontAwesomeIcon
-              icon={faChevronLeft}
-              color="white"
-              size={20}
-              style={{ opacity: activeIndex === 0 ? 0.5 : 1 }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.navButton, styles.nextButton]}
-            onPress={handleNext}
-            disabled={activeIndex === mediaItems.length - 1}
-          >
-            <FontAwesomeIcon
-              icon={faChevronRight}
-              color="white"
-              size={20}
-              style={{ opacity: activeIndex === mediaItems.length - 1 ? 0.5 : 1 }}
-            />
-          </TouchableOpacity>
-        </>
-      )}
-
-      {/* {mediaItems.length > 1 && (
-        <View style={styles.pagination}>
-          {mediaItems.map((_, index) => (
-            <View
-              key={`dot-${index}`}
-              style={[styles.paginationDot, index === activeIndex && styles.paginationDotActive]}
-            />
-          ))}
-        </View>
-      )}
-
-      <View style={styles.counterContainer}>
-        <Text style={styles.counterText}>
-          {activeIndex + 1} / {mediaItems.length}
-        </Text>
-      </View> */}
     </Animatable.View>
   );
 };
@@ -176,7 +108,6 @@ const ProductMediaCarousel: React.FC<ProductMediaCarouselProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    marginBottom: 16,
     backgroundColor: '#f9f9f9',
     borderRadius: 12,
     overflow: 'hidden',
@@ -202,11 +133,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
     padding: 15,
     paddingBottom: 30,
-    zIndex: 10, // Ensure overlay is above images
+    zIndex: 10,
   },
   productTitle: {
     fontSize: 24,
-    fontFamily: 'OpenSans-Bold', // Replace with your FONTS.bold if different
+    fontFamily: FONTS.bold,
     color: COLORS.white,
     marginBottom: 5,
   },
@@ -222,55 +153,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 14,
     color: COLORS.white,
-  },
-  navButton: {
-    position: 'absolute',
-    top: '50%',
-    transform: [{ translateY: -25 }],
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
-  },
-  prevButton: {
-    left: 10,
-  },
-  nextButton: {
-    right: 10,
-  },
-  pagination: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    marginHorizontal: 4,
-  },
-  paginationDotActive: {
-    backgroundColor: COLORS.primary,
-  },
-  counterContainer: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 15,
-    zIndex: 10,
-  },
-  counterText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
   },
 });
 
