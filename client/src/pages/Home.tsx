@@ -23,9 +23,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ProductList from '../components/ProductList.tsx';
 import { RootStackParamList, TabProps } from '../../types/types.ts';
-import EventList from '../components/EventList.tsx';
 import PopularProducts from '../components/PopularList.tsx';
 import Chatbot from '../components/ChatBot.tsx';
 
@@ -222,19 +220,6 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
           <View style={styles.productContainer}>
             <PopularProducts />
           </View>
-
-          {/* Events Section */}
-          <View style={styles.eventsContainer}>
-            <View style={styles.divider} />
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionHeaderTitle}>Upcoming Events</Text>
-              <TouchableOpacity onPress={() => setShowCalendar(true)}>
-                <Text style={styles.sectionHeaderLink}>View Calendar</Text>
-              </TouchableOpacity>
-            </View>
-            <EventList />
-          </View>
-
         </View>
         {/* Footer Section */}
         <View style={styles.footerContainer}>
