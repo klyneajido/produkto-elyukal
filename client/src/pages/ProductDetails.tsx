@@ -90,9 +90,31 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
     const [isTracking, setIsTracking] = useState(false);
     const [showText, setShowText] = useState(false);
     const initialPosition: [number, number, number] = [0, -0.15, -0.2];
-    const [position] = useState<[number, number, number]>(initialPosition);
-    const [scale] = useState<[number, number, number]>([0.21, 0.21, 0.21]);
-    const [rotation] = useState<[number, number, number]>([0, 45, 0]);
+    const [position, setPosition] = useState<[number, number, number]>(initialPosition);
+    const [scale, setScale] = useState<[number, number, number]>([0.21, 0.21, 0.21]);
+    const [rotation, setRotation] = useState<[number, number, number]>([0, 45, 0]);
+    const [isDragging, setIsDragging] = useState(false);
+    const [lastDragPosition, setLastDragPosition] = useState<{x: number, y: number} | null>(null);
+    const [isPinching, setIsPinching] = useState(false);
+    const [lastPinchDistance, setLastPinchDistance] = useState<number | null>(null);
+    const [objectPosition, setObjectPosition] = useState<[number, number, number]>([0, 0, 0]);
+    const [objectDragging, setObjectDragging] = useState(false);
+    
+    // Calculate text position based on current object scale
+    const getTextPosition = (): [number, number, number] => {
+        // Adjust height based on scale to maintain consistent relative position
+        const heightOffset = 0.1 * scale[1];
+        return [0, heightOffset, 0];
+    };
+    
+    // Calculate info text position based on current object scale
+    const getInfoTextPosition = (): [number, number, number] => {
+        // Adjust height based on scale to maintain consistent relative position
+        const heightOffset = 0.2 * scale[1];
+        return [0, heightOffset, 0];
+    };
+
+    // No auto-rotation functionality
 
     const onInitialized = (state: ViroTrackingState) => {
         setIsTracking(state === ViroTrackingStateConstants.TRACKING_NORMAL);
@@ -102,76 +124,178 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
         setShowText(!showText);
     };
 
+    // Handle drag to rotate
+    const onDrag = (dragToPos: any, source: any) => {
+        // If source.state is 'ENDED', this means the drag has ended
+        if (source.state === 'ENDED') {
+            setIsDragging(false);
+            setLastDragPosition(null);
+            return;
+        }
+        
+        if (!lastDragPosition) {
+            setLastDragPosition({ x: dragToPos[0], y: dragToPos[1] });
+            setIsDragging(true);
+            return;
+        }
+
+        const deltaX = dragToPos[0] - lastDragPosition.x;
+        const deltaY = dragToPos[1] - lastDragPosition.y;
+        
+        setRotation(prevRotation => {
+            // Adjust Y rotation based on horizontal drag (left/right)
+            let newYRotation = prevRotation[1] - deltaX * 100;
+            // Adjust X rotation based on vertical drag (up/down)
+            let newXRotation = prevRotation[0] + deltaY * 100;
+            
+            // Clamp X rotation to prevent flipping
+            newXRotation = Math.max(-30, Math.min(30, newXRotation));
+            
+            // Keep Y rotation within 0-360 range
+            newYRotation = newYRotation % 360;
+            if (newYRotation < 0) newYRotation += 360;
+            
+            return [newXRotation, newYRotation, prevRotation[2]];
+        });
+        
+        // Update position to move the object (and its child text nodes) when dragging
+        // This ensures text moves along with the object during drag
+        setObjectPosition(dragToPos);
+        
+        setLastDragPosition({ x: dragToPos[0], y: dragToPos[1] });
+    };
+    
+    // Handle object position change when dragged
+    const onObjectDrag = (dragToPos: any, source: any) => {
+        if (source.state === 'ENDED') {
+            setObjectDragging(false);
+            return;
+        }
+        
+        setObjectDragging(true);
+        setObjectPosition(dragToPos);
+        // No need to update text positions separately as they're now calculated dynamically
+    };
+
+    const onDragEnd = () => {
+        setIsDragging(false);
+        setLastDragPosition(null);
+    };
+
+    // No rotation control functions needed
+
     const productInfoText = `${product.description}\n${product.in_stock ? 'Stock Available' : 'Sorry, Out of Stock'}\n₱${product.price?.toFixed(2)}`;
 
     return (
         <ViroARScene onTrackingUpdated={onInitialized}>
             <ViroAmbientLight color="#FFFFFF" intensity={1000} />
-            <ViroNode position={position}>
-                <Viro3DObject
-                    source={{ uri: product.ar_asset_url }}
-                    type="GLB"
-                    position={[0, 0, 0]}
-                    scale={scale}
-                    rotation={rotation}
-                    onClick={onProductTap}
-                    onError={(event) => console.error("3D Object Loading Error:", event)}
-                />
-                {!showText && (
-                    <ViroText
-                        text="Tap the product to view details"
-                        position={[0, 0.1, 0]}
-                        scale={[0.15, 0.15, 0.15]}
-                        width={2}
-                        height={2}
-                        style={{
-                            fontSize: 12,
-                            color: '#FFFFFF',
-                            fontFamily: 'Arial',
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            shadowOpacity: 0.7,
-                            shadowOffset: { width: 2, height: 2 },
-                        }}
-                        transformBehaviors={['billboard']}
-                        renderingOrder={1}
-                        extrusionDepth={0}
-                        textLineBreakMode="WordWrap"
-                    />
-                )}
-                {showText && (
-                    <ViroNode position={[0, 0.2, 0]} transformBehaviors={['billboard']}>
-                        <ViroQuad
-                            position={[0, 0.03, -0.09]}
-                            height={0.1 * (productInfoText.split('\n').length + 0.5)}
-                            width={0.4}
-                            materials={["textBackground"]}
-                        />
-                        <ViroQuad
-                            position={[0, 0.03, -0.095]}
-                            height={0.1 * (productInfoText.split('\n').length + 0.5) + 0.005}
-                            width={0.4 + 0.005}
-                            materials={["textBorder"]}
-                        />
-                        <ViroText
-                            text={productInfoText}
-                            scale={[0.15, 0.15, 0.15]}
-                            width={2}
-                            height={2}
-                            style={{
-                                fontSize: 10,
-                                color: '#FFFFFF',
-                                fontFamily: 'Arial',
-                                textAlign: 'center',
-                                fontWeight: 'bold',
+            {/* <ViroNode position={position}> */}
+                {/* Main 3D object with text that moves together */}
+                <ViroNode position={objectPosition} dragType="FixedToWorld" onDrag={onObjectDrag}>
+                    {/* Group the 3D object and text together so they move as one unit */}
+                    <ViroNode
+                        position={[0, 0, 0]}
+                        onDrag={onDrag}
+                        dragType="FixedDistance"
+                    >
+                        <Viro3DObject
+                            source={{ uri: product.ar_asset_url }}
+                            type="GLB"
+                            position={[0, 0, 0]}
+                            scale={scale}
+                            rotation={rotation}
+                            onClick={onProductTap}
+                            onPinch={(pinchState, scaleFactor, source) => {
+                                // Handle pinch for scaling
+                                if (pinchState === 1) { // BEGAN
+                                    setIsPinching(true);
+                                } else if (pinchState === 2) { // CHANGED
+                                    setScale(prevScale => {
+                                        const newScale = prevScale.map(s => s * scaleFactor) as [number, number, number];
+                                        // Limit min/max scale to prevent object from becoming too small or too large
+                                        return newScale.map(s => Math.max(0.05, Math.min(s, 0.5))) as [number, number, number];
+                                    });
+                                    // Scale changes are automatically reflected in text positions via getTextPosition()
+                                    // No need to update text positions separately as they're calculated dynamically
+                                } else if (pinchState === 3) { // ENDED
+                                    setIsPinching(false);
+                                }
                             }}
-                            animation={{ name: 'fadeIn', run: true, loop: false }}
-                            onClick={() => setShowText(false)}
-                            textLineBreakMode="WordWrap"
-                        />
-                    </ViroNode>
-                )}
+                        onError={(event) => console.error("3D Object Loading Error:", event)}
+                    />
+                    
+                    {/* Hint text that stays with the object and updates position dynamically */}
+                    {!showText && (
+                        <ViroNode 
+                            position={getTextPosition()} 
+                            transformBehaviors={['billboard']}
+                            // Scale the node proportionally to the object scale to maintain consistent text size
+                            // When object gets bigger (pinch out), text should get bigger (and vice versa)
+                            scale={[0.15*scale[0], 0.15*scale[1], 0.15*scale[2]]}
+                        >
+                            <ViroText
+                                text="Tap the product to view details"
+                                position={[0, 0, 0]}
+                                scale={[4, 4, 4]}
+                                width={2}
+                                height={2}
+                                style={{
+                                    fontSize: 12,
+                                    color: '#FFFFFF',
+                                    fontFamily: 'Arial',
+                                    textAlign: 'center',
+                                    fontWeight: 'bold',
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    shadowOpacity: 0.7,
+                                    shadowOffset: { width: 2, height: 2 },
+                                }}
+                                renderingOrder={1}
+                                extrusionDepth={0}
+                                textLineBreakMode="WordWrap"
+                            />
+                        </ViroNode>
+                    )}
+                    
+                    {/* Product info text that stays with the object and updates position dynamically */}
+                    {showText && (
+                        <ViroNode 
+                            position={getInfoTextPosition()} 
+                            transformBehaviors={['billboard']}
+                            // Scale the node proportionally to the object scale to maintain consistent text size
+                            // When object gets bigger (pinch out), text should get bigger (and vice versa)
+                            scale={[0.15*scale[0], 0.15*scale[1], 0.15*scale[2]]}
+                        >
+                            <ViroQuad
+                                position={[0, 0.03, -0.09]}
+                                height={0.1 * (productInfoText.split('\n').length + 0.5)}
+                                width={0.4}
+                                materials={["textBackground"]}
+                            />
+                            <ViroQuad
+                                position={[0, 0.03, -0.095]}
+                                height={0.1 * (productInfoText.split('\n').length + 0.5) + 0.005}
+                                width={0.4 + 0.005}
+                                materials={["textBorder"]}
+                            />
+                            <ViroText
+                                text={productInfoText}
+                                scale={[4, 4, 4]}
+                                width={2}
+                                height={4}
+                                style={{
+                                    fontSize: 7,
+                                    color: '#FFFFFF',
+                                    fontFamily: 'Arial',
+                                    textAlign: 'center',
+                                    fontWeight: 'bold',
+                                }}
+                                animation={{ name: 'fadeIn', run: true, loop: false }}
+                                onClick={() => setShowText(false)}
+                                textLineBreakMode="WordWrap"
+                            />
+                        </ViroNode>
+                    )}
+                </ViroNode>
             </ViroNode>
             {!isTracking && (
                 <ViroText
@@ -188,7 +312,10 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                     transformBehaviors={['billboard']}
                 />
             )}
+            
+            {/* Controls UI removed */}
         </ViroARScene>
+        
     );
 };
 
