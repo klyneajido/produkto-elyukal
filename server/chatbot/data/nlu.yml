@@ -1,131 +1,205 @@
 version: "3.1"
+
 nlu:
+# Core Intents
 - intent: greet
   examples: |
-    - hey
-    - hello
     - hi
-    - hello there
-    - good morning
-    - good evening
-    - mabuhay
+    - hello
     - hey there
-    - let's go
-    - hey dude
-    - goodmorning
-    - goodevening
+    - good morning
     - good afternoon
+    - mabuhay
+    - kumusta
+    - yo, what’s up
+    - hi, bot!
+    - hello from La Union
+    - hey, let’s talk products
 
 - intent: goodbye
   examples: |
     - bye
     - goodbye
-    - see you around
-    - see you later
+    - see ya
+    - later
     - paalam
     - babay
+    - thanks, bye
+    - catch you later
     - hanggang sa muli
+    - I’m out
 
 - intent: affirm
   examples: |
     - yes
-    - indeed
+    - yup
+    - sure
     - of course
-    - that sounds good
-    - correct
     - oo
     - sige
+    - definitely
+    - sounds good
+    - okay lang
+    - go ahead
 
 - intent: deny
   examples: |
     - no
-    - never
-    - I don't think so
-    - don't like that
-    - no way
+    - nope
     - not really
+    - never
     - hindi
     - ayoko
+    - pass
+    - don’t think so
+    - nah
+    - no thanks
 
 - intent: mood_great
   examples: |
-    - perfect
-    - great
-    - amazing
-    - feeling like a king
-    - wonderful
-    - I am feeling very good
-    - I am great
-    - I'm good
-    - maganda ang pakiramdam ko
+    - I’m great
+    - feeling awesome
+    - super happy
+    - perfect day
     - masaya ako
+    - all good here
+    - loving it
+    - so excited
+    - everything’s cool
+    - ganda ng mood ko
 
 - intent: mood_unhappy
   examples: |
-    - my day was horrible
-    - I am sad
-    - I don't feel very well
-    - I am disappointed
-    - super sad
-    - I'm so sad
-    - sad
-    - very sad
-    - unhappy
-    - bad
-    - very bad
-    - awful
-    - terrible
-    - not very good
-    - extremely sad
-    - so sad
+    - I’m sad
+    - feeling down
+    - not good
+    - bad day
     - malungkot ako
-    - hindi maganda ang pakiramdam ko
+    - disappointed
+    - so tired
+    - awful vibe
+    - hindi okay
+    - stressed out
 
 - intent: bot_challenge
   examples: |
     - are you a bot?
-    - are you a human?
-    - am I talking to a bot?
-    - am I talking to a human?
-    - you are a bot?
+    - human or bot?
     - robot ka ba?
     - tao ka ba?
+    - who’s this?
+    - am I talking to AI?
+    - you real?
+    - bot or not?
+    - what are you?
+    - machine ka ba?
 
+# Product/Municipality-Specific Intents
 - intent: ask_products_by_municipality
   examples: |
-    - What products are from [San Juan](municipality)?
-    - Which items come from [La Union](municipality)?
-    - Tell me about products in [San Fernando](municipality).
-    - What’s made in [Bacnotan](municipality)?
-    - What can I find in [Naguilian](municipality)?
-    - Products from [Agoo](municipality)?
-    - What’s local to [Bauang](municipality)?
+    - What’s from [San Juan](municipality)?
+    - Products in [San Fernando](municipality)?
+    - What’s made in [Agoo](municipality)?
+    - Tell me about [Bacnotan](municipality) goods
+    - Any specialties in [Naguilian](municipality)?
+    - What can I get from [Bauang](municipality)?
+    - Local stuff in [La Union](municipality)?
+    - [San Juan](municipality) products please
+    - What’s cool in [Sudipen](municipality)?
+    - Show me [Luna](municipality) items
 
 - intent: ask_municipality_by_product
   examples: |
-    - Where does [Coffee Beans](product) come from?
-    - Which municipality makes [Handwoven Bags](product)?
-    - Where can I find [Pottery](product)?
-    - What town produces [Rice Wine](product)?
-    - Origin of [Wood Carvings](product)?
+    - Where’s [Coffee Beans](product) from?
+    - Which town makes [Handwoven Bags](product)?
+    - Origin of [Pottery](product)?
+    - [Rice Wine](product) comes from where?
+    - What place has [Wood Carvings](product)?
+    - Where can I find [Bamboo Crafts](product)?
+    - [Coffee](product) source?
+    - Who makes [Vinegar](product)?
+    - Location of [Fish Sauce](product)?
+    - [Honey](product) from which town?
 
 - intent: ask_product_price
   examples: |
     - How much is [Coffee Beans](product)?
-    - What’s the price of [Handwoven Bags](product)?
-    - Cost of [Pottery](product) in [San Juan](municipality)?
-    - How expensive is [Rice Wine](product)?
+    - Price of [Handwoven Bags](product)?
+    - [Pottery](product) cost in [San Juan](municipality)?
+    - What's [Rice Wine](product) worth?
+    - How expensive is [Wood Carvings](product)?
+    - [Coffee Beans](product) price tag?
+    - Cost of [Bamboo Crafts](product)?
+    - [Vinegar](product) how much?
+    - Tell me [Honey](product) price
+    - [Fish Sauce](product) in [Agoo](municipality)?
+    - Price [Pottery](product) [Agoo](municipality)
+    - [Pottery](product) price
+    - Price of [Coffee Beans](product) in [San Juan](municipality)
+    - How much does [Pottery](product) cost?
+    - What's the price range for [Handwoven Bags](product)?
 
 - intent: ask_product_availability
   examples: |
-    - Is [Coffee Beans](product) available now?
-    - When can I get [Handwoven Bags](product)?
-    - Availability of [Pottery](product) in [San Juan](municipality)?
-    - Can I find [Rice Wine](product) this month?
+    - Is [Coffee Beans](product) available?
+    - Can I get [Handwoven Bags](product) now?
+    - [Pottery](product) in [San Juan](municipality) when?
+    - [Rice Wine](product) this month?
+    - [Wood Carvings](product) in stock?
+    - When’s [Coffee](product) ready?
+    - [Bamboo Crafts](product) available today?
+    - [Vinegar](product) season?
+    - [Honey](product) around now?
+    - Find [Fish Sauce](product) anytime?
 
 - intent: ask_product_details
   examples: |
-    - Tell me about [Coffee Beans](product).
-    - Details on [Handwoven Bags](product)?
-    - What’s special about [Pottery](product)?
-    - Info on [Rice Wine](product) from [San Juan](municipality)?
+    - Tell me about [Coffee Beans](product)
+    - What’s [Handwoven Bags](product) like?
+    - Details on [Pottery](product)
+    - [Rice Wine](product) from [San Juan](municipality)?
+    - Info on [Wood Carvings](product)
+    - Describe [Coffee](product)
+    - [Bamboo Crafts](product) specifics?
+    - What’s up with [Vinegar](product)?
+    - [Honey](product) background
+    - Explain [Fish Sauce](product)
+
+# Out-of-Scope Intent (Bonus!)
+- intent: out_of_scope
+  examples: |
+    - What’s the weather?
+    - Book me a flight
+    - How’s the traffic?
+    - Tell me a joke
+    - What’s 2+2?
+    - Can you sing?
+    - Who’s the president?
+    - Play music
+    - How’s the beach?
+    - Fix my car
+
+# Synonyms for Entities
+- synonym: Coffee
+  examples: |
+    - Coffee Beans
+    - Local Coffee
+    - Brewed Coffee
+
+- synonym: San Juan
+  examples: |
+    - San Juan La Union
+    - SJ
+    - San Juan Town
+
+- synonym: Pottery
+  examples: |
+    - Clay Pots
+    - Ceramic Ware
+    - Handmade Pottery
+
+- synonym: Rice Wine
+  examples: |
+    - Tapuey
+    - Local Wine
+    - Fermented Rice Drink

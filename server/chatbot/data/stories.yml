@@ -28,24 +28,57 @@ stories:
   - intent: deny
   - action: utter_goodbye
 
-- story: product inquiry flow
+- story: product municipality inquiry flow with empty slots
   steps:
   - intent: greet
   - action: utter_greet
   - intent: ask_products_by_municipality
+  - action: municipality_form
+  - active_loop: municipality_form
+  - active_loop: null
   - action: action_fetch_products_by_municipality
   - intent: ask_product_price
+  - action: product_price_form
+  - active_loop: product_price_form
+  - active_loop: null
   - action: action_get_product_price
   - action: utter_product_price_disclaimer
   - intent: ask_product_availability
+  - action: product_availability_form
+  - active_loop: product_availability_form
+  - active_loop: null
   - action: action_get_product_availability
   - action: utter_product_availability_info
   - intent: goodbye
   - action: utter_goodbye
 
-- story: product location inquiry
+- story: product location inquiry with empty slot
   steps:
   - intent: ask_municipality_by_product
+  - action: product_location_form
+  - active_loop: product_location_form
+  - active_loop: null
   - action: action_find_municipality_by_product
   - intent: ask_product_details
+  - action: product_details_form
+  - active_loop: product_details_form
+  - active_loop: null
   - action: action_provide_product_details
+
+- story: product inquiry with filled slot
+  steps:
+  - intent: ask_products_by_municipality
+    entities:
+    - municipality: "San Juan"
+  - action: municipality_form
+  - active_loop: municipality_form
+  - active_loop: null
+  - action: action_fetch_products_by_municipality
+  - intent: ask_product_price
+    entities:
+    - product: "Coffee Beans"
+  - action: product_price_form
+  - active_loop: product_price_form
+  - active_loop: null
+  - action: action_get_product_price
+  - action: utter_product_price_disclaimer
