@@ -133,7 +133,7 @@ const LoginScreen: React.FC = () => {
                         source={require('../assets/img/signup_logo.png')}
                         resizeMode='cover'
                         style={styles.bgImg}>
-                        <Text style={styles.text}>KISSABAM!</Text>
+                        <Text style={styles.text}>Welcome back.</Text>
                         <Text style={styles.subText}>Sign In & Pick Up Where You Left Off!</Text>
                     </ImageBackground>
                 </View>
