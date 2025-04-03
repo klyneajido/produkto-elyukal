@@ -1,4 +1,4 @@
-// ProductList.tsx
+// ProductList.tsx - Updated with better error handling
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -15,20 +15,27 @@ type ProductListProps = {
   id: number;
 };
 
-
-
 const ProductList: React.FC<ProductListProps> = ({ products = [] }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const increment_views = async (productId: number) => {
     try {
-      const response = await axios.put(`${BASE_URL}/products/add_view_to_product/${productId}`)
-      console.log("Incremented successfully!")
+      await axios.put(`${BASE_URL}/products/add_view_to_product/${productId}`);
     }
     catch (error: any) {
-      console.log("Error incrementing product views: ", error.message);
+      // Silent error handling - don't show to user
+      console.log("View increment failed silently");
     }
   };
+  
+  // Display empty state when no products are available
+  if (!products || products.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>No products available at the moment</Text>
+      </View>
+    );
+  }
   
   return (
     <View style={styles.container}>
@@ -38,24 +45,25 @@ const ProductList: React.FC<ProductListProps> = ({ products = [] }) => {
             key={product.id}
             style={styles.card}
             onPress={() => {
-              increment_views(product.id),
-                navigation.navigate('ProductDetails', { product })
-            }
-            }
+              increment_views(product.id);
+              navigation.navigate('ProductDetails', { product });
+            }}
           >
             <Image
               source={{ uri: product.image_urls[0] }}
               style={styles.productImage}
+              // Add fallback handling for image errors
+              onError={() => console.log("Image load error - continuing silently")}
             />
             <View style={styles.starContainer}>
               <View style={styles.ratings}>
                 <FontAwesomeIcon icon={faStar} color="#FFD700" size={12} />
-                <Text style={styles.starText}> {product.average_rating || '0'} ({product.total_reviews})</Text>
+                <Text style={styles.starText}> {product.average_rating || '0'} ({product.total_reviews || 0})</Text>
               </View>
             </View>
             <View style={styles.cardContent}>
               <Text style={styles.cardText} numberOfLines={1}>
-                {product.name}
+                {product.name || "Unnamed Product"}
               </Text>
               <Text style={styles.locationText} numberOfLines={1}>
                 {product.address || 'Address not available'}
@@ -96,6 +104,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '70%',
     resizeMode: 'cover',
+    backgroundColor: COLORS.lightgray, // Fallback background color
   },
   cardContent: {
     padding: 8,
@@ -132,6 +141,19 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.small,
     color: COLORS.gray,
     fontFamily: FONTS.regular,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: COLORS.white,
+  },
+  emptyText: {
+    fontSize: FONT_SIZE.medium,
+    color: COLORS.gray,
+    fontFamily: FONTS.regular,
+    textAlign: 'center',
   },
 });
 

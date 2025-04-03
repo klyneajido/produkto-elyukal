@@ -37,7 +37,6 @@ type SearchResult<T> = {
   isSubstring: boolean;
 };
 
-
 function fuzzySearch<T>(
   query: string,
   items: T[],
@@ -119,24 +118,22 @@ function fuzzySearch<T>(
   return results;
 }
 
-const Products: React.FC<ProductsProps> = ({onScroll }) => {
+const Products: React.FC<ProductsProps> = ({ onScroll }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchText, setSearchText] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPriceRange, setSelectedPriceRange] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(`${BASE_URL}/products/fetch_products`);
         setProducts(response.data.products || []);
-        // console.log('Fetched products:', response.data.products);
       } catch (e) {
-        setError('Error fetching products');
-        console.error(e);
+        setProducts([]); // Set empty array on error
+        console.error('Failed to fetch products:', e);
       }
     };
     fetchProducts();
@@ -146,7 +143,6 @@ const Products: React.FC<ProductsProps> = ({onScroll }) => {
 
   const applyFilters = () => {
     let filteredProducts = [...products];
-    // console.log('Initial products for filtering:', filteredProducts);
 
     if (searchText) {
       const searchResults = fuzzySearch<Product>(
@@ -155,8 +151,8 @@ const Products: React.FC<ProductsProps> = ({onScroll }) => {
         (product) => {
           const fields = [
             product.name || '',
-            product.stores?.name || '', // Changed from store to stores
-            product.stores?.town || ''  // Changed from store to stores
+            product.stores?.name || '',
+            product.stores?.town || '',
           ];
           console.log('Search fields for product:', {
             name: product.name,
@@ -216,15 +212,6 @@ const Products: React.FC<ProductsProps> = ({onScroll }) => {
   };
 
   const filteredProducts = applyFilters();
-  // console.log('Final filteredProducts:', filteredProducts);
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
-    );
-  }
 
   return (
     <SafeAreaView style={styles.container}>
