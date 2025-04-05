@@ -1,5 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet,Dimensions } from "react-native";
 import { COLORS, FONT_SIZE, FONTS } from "../constants/constant";
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -15,16 +16,13 @@ const styles = StyleSheet.create({
   },
   topContainer: {
     backgroundColor: COLORS.primary,
-    paddingTop: 20, 
-    paddingBottom: 10, 
-    paddingHorizontal: 16,
-    borderBottomLeftRadius: 60,
+    padding: 20,
+    borderBottomLeftRadius: 24,
+    elevation: 8,
     shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 6,
-    overflow: "hidden",
+    shadowRadius: 8,
   },
   text: {
     fontFamily: FONTS.regular,
@@ -76,19 +74,55 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  circleContainer: {
-    marginTop: 12,
+
+  carouselContainer: {
+    marginVertical: 15,
+    height: 150,
   },
-  circleWrapper: {
-    flexDirection: "row",
-    paddingVertical: 10,
-    paddingHorizontal: 5,
+  carouselScroll: {
+    width: '100%',
   },
-  circleSubContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    width: 70,
-    marginHorizontal:4
+  carouselItem: {
+    width: width * 0.9,
+    height: 120,
+    marginHorizontal: 5,
+    borderRadius: 15,
+    overflow: 'hidden',
+  },
+  carouselImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  carouselOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 10,
+  },
+  carouselTitle: {
+    color: COLORS.white,
+    fontSize: FONT_SIZE.large,
+    fontFamily:FONTS.semibold,
+  },
+  carouselSubtitle: {
+    color: COLORS.lightgray,
+    fontSize: FONT_SIZE.medium-1,
+    fontFamily:FONTS.regular
+  },
+  paginationDots: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
   },
   image: {
     width: 34,
@@ -97,86 +131,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.3)",
-  },
-  featuredContainer: {
-    paddingHorizontal: 20,
-    marginTop: 24,
-  },
-  square1: {
-    backgroundColor: COLORS.gray,
-    borderRadius: 16,
-    width: "100%",
-    height: 120,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 4,
-  },
-  featureImage: {
-    height: "100%",
-    width: "100%",
-    resizeMode: "cover",
-  },
-  squaresContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    flexWrap: "wrap",
-    marginTop: 4,
-  },
-  squares: {
-    flexDirection: "column",
-    justifyContent: "space-between",
-    flexBasis: "50%",
-  },
-  square2: {
-    marginTop: 12,
-    borderRadius: 16,
-    backgroundColor: COLORS.gray,
-    width: "97%",
-    height: 220,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 4,
-  },
-  square3: {
-    marginTop: 12,
-    borderRadius: 16,
-    backgroundColor: COLORS.gray,
-    width: "97%",
-    height: 105,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 4,
-  },
-  discoverContainer: {
-    marginVertical: 8,
-    marginHorizontal: 20,
-  },
-  discoverWrapper: {
-    flexDirection: "row",
-    paddingVertical: 10,
-  },
-  discoverText: {
-    color: COLORS.black,
-    paddingHorizontal: 12,
-    fontSize: 15,
-    fontFamily: FONTS.semibold,
-    textAlign: "center",
-    opacity: 0.7,
-  },
-  activeDiscoverText: {
-    borderBottomWidth: 2,
-    borderBottomColor: COLORS.primary,
-    opacity: 1,
   },
   productContainer: {
     marginTop: 8,
@@ -210,16 +164,16 @@ const styles = StyleSheet.create({
 
   welcomeSection: {
     paddingHorizontal: 20,
-    paddingVertical: 24,
+    paddingVertical: 10,
   },
   welcomeTitle: {
-    fontSize: 28,
+    fontSize: FONT_SIZE.xxLarge,
     fontFamily: FONTS.bold,
     color: COLORS.black,
     marginBottom: 8,
   },
   welcomeSubtitle: {
-    fontSize: 16,
+    fontSize: FONT_SIZE.medium+1,
     fontFamily: FONTS.regular,
     color: COLORS.black,
     opacity: 0.7,
@@ -283,20 +237,20 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   enhancedPromo: {
-  marginHorizontal: 20,
-  marginVertical: 20,
-  backgroundColor: COLORS.white,
-  borderRadius: 24,
-  padding: 0,
-  overflow: 'hidden',
-  position: 'relative',
-  borderWidth: 1,
-  borderColor: 'rgba(0,0,0,0.05)',
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: 8 },
-  shadowOpacity: 0.1,
-  shadowRadius: 12,
-  elevation: 7,
+    marginHorizontal: 20,
+    marginVertical: 20,
+    backgroundColor: COLORS.white,
+    borderRadius: 24,
+    padding: 0,
+    overflow: 'hidden',
+    position: 'relative',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 7,
 },
 promoPattern: {
   position: 'absolute',

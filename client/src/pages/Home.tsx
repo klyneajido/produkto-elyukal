@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,8 @@ import {
   Modal,
   RefreshControl,
   Animated,
-  BackHandler
+  BackHandler,
+  Dimensions
 } from 'react-native';
 import styles from '../assets/style/homeStyle.js';
 import { useNavigation } from '@react-navigation/native';
@@ -28,6 +29,8 @@ import PopularProducts from '../components/PopularList.tsx';
 import Chatbot from '../components/ChatBot.tsx';
 import { useAuth } from '../../contextAuth.tsx';
 
+const { width } = Dimensions.get('window');
+
 const Home: React.FC<TabProps> = ({ onScroll }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState<string>('');
@@ -36,18 +39,46 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
+  const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
-        const token = await AsyncStorage.getItem("token");
-        console.log("Home - User:", user, "Token:", token); // Add logging
-        if (!token && !user) { // Check user instead of just token
-            console.log("Home - No token and no user, navigating to Login");
-            navigation.navigate("Login");
-        }
+      const token = await AsyncStorage.getItem("token");
+      console.log("Home - User:", user, "Token:", token); // Add logging
+      if (!token && !user) { // Check user instead of just token
+        console.log("Home - No token and no user, navigating to Login");
+        navigation.navigate("Login");
+      }
     };
     checkAuth();
-}, [navigation, user]);
+  }, [navigation, user]);
+
+  //categories
+  const categories = [
+    { name: 'Handcraft', image: require('../assets/img/handcraft.png'), count: '50+', screen: 'Products' },
+    { name: 'Furniture', image: require('../assets/img/furniture.jpg'), count: '30+', screen: 'Products' },
+    { name: 'Food', image: require('../assets/img/food.jpg'), count: '20+', screen: 'Products' },
+    { name: 'Pottery', image: require('../assets/img/pottery.jpg'), count: '15+', screen: 'Products' },
+  ];
+
+  const handleCategoryPress = (screen: string, categoryName: string) => {
+    navigation.navigate(screen, { category: categoryName });
+  }
+
+  const onScrollEnd = (event: any) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(contentOffsetX / (width * 0.9));
+    setActiveIndex(index);
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = (activeIndex + 1) % categories.length;
+      scrollRef.current?.scrollTo({ x: nextIndex * width * 0.9, animated: true });
+      setActiveIndex(nextIndex);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [activeIndex]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -60,13 +91,6 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
       setRefreshing(false);
     }
   };
-
-  const categories = [
-    { name: 'Handcraft', icon: require('../assets/img/handcraft.png') },
-    { name: 'Furniture', icon: require('../assets/img/furniture.jpg') },
-    { name: 'Food', icon: require('../assets/img/food.jpg') },
-    { name: 'Pottery', icon: require('../assets/img/pottery.jpg') },
-  ];
 
   const stats = [
     { number: '1', label: 'City' },
@@ -96,7 +120,7 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
     <SafeAreaView style={styles.container}>
       <Animated.ScrollView
         onScroll={onScroll}
-        scrollEventThrottle={16} 
+        scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -125,27 +149,48 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
                 placeholderTextColor="#888"
               />
             </View>
-
-            {/* Categories */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.circleContainer}
-            >
-              <View style={styles.circleWrapper}>
-                {categories.map((category, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.circleSubContainer}
-                  >
-                    <Image style={styles.image} source={category.icon} />
-                    <Text style={styles.text}>{category.name}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
           </View>
-
+          {/* Categories */}
+          <View style={styles.carouselContainer}>
+            <ScrollView
+              ref={scrollRef}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onMomentumScrollEnd={onScrollEnd}
+              style={styles.carouselScroll}
+            >
+              {categories.map((category, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleCategoryPress(category.screen, category.name)}
+                  style={styles.carouselItem}
+                >
+                  <Image
+                    source={category.image}
+                    style={styles.carouselImage}
+                  />
+                  <View style={styles.carouselOverlay}>
+                    <Text style={styles.carouselTitle}>{category.name}</Text>
+                    <Text style={styles.carouselSubtitle}>
+                      Explore {category.count} Items
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <View style={styles.paginationDots}>
+              {categories.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.dot,
+                    { backgroundColor: index === activeIndex ? '#ffa726' : '#ccc' },
+                  ]}
+                />
+              ))}
+            </View>
+          </View>
           {/* Welcome Section */}
           <View style={styles.welcomeSection}>
             <Text style={styles.welcomeTitle}>Discover Local Artistry</Text>
@@ -275,7 +320,7 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
           <Text style={styles.copyright}>© 2025 Produkto Elyukal.</Text>
         </View>
       </Animated.ScrollView>
-      <Chatbot/>
+      <Chatbot />
     </SafeAreaView>
   );
 };
