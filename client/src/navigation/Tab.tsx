@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, StyleSheet, Dimensions, Animated, NativeSyntheticEvent, NativeScrollEvent, BackHandler, Alert } from 'react-native';
+import { View, StyleSheet, Dimensions, Animated, NativeSyntheticEvent, NativeScrollEvent, BackHandler, Text, TouchableOpacity, Modal } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome, faCog, faMap, faBox, faCity } from '@fortawesome/free-solid-svg-icons';
 import Home from '../pages/Home';
@@ -14,9 +14,49 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 const Tab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
 
+const ExitModal: React.FC<{ visible: boolean, onCancel: () => void, onExit: () => void }> = ({ visible, onCancel, onExit }) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible, fadeAnim]);
+
+  return (
+    <Modal transparent visible={visible} animationType="none">
+      <View style={styles.modalOverlay}>
+        <Animated.View style={[styles.modalContainer, { opacity: fadeAnim }]}>
+          <Text style={styles.modalTitle}>Hold On!</Text>
+          <Text style={styles.modalMessage}>Are you sure you want to exit the app?</Text>
+          <View style={styles.modalButtonContainer}>
+            <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={onCancel}>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modalButton, styles.exitButton]} onPress={onExit}>
+              <Text style={styles.exitButtonText}>Exit</Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </View>
+    </Modal>
+  );
+};
+
 const TabNavigator: React.FC = () => {
   const tabBarTranslate = useRef(new Animated.Value(0)).current;
   const [isNavVisible, setIsNavVisible] = useState(true);
+  const [isExitModalVisible, setIsExitModalVisible] = useState(false);
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   const lastScrollY = useRef(0);
@@ -114,45 +154,27 @@ const TabNavigator: React.FC = () => {
       console.log('Back button pressed. Current tab route:', currentTabRouteName);
       console.log('Can go back:', navigation.canGoBack());
 
-      // If there's a previous screen in the stack (e.g., ProductDetails), go back to it
       if (navigation.canGoBack()) {
         const currentRoute = navState.routes[navState.index];
         const nestedState = currentRoute.state;
-        // Type guard for nestedState.index
         const activeScreen = nestedState && typeof nestedState.index === 'number' 
           ? nestedState.routes[nestedState.index]?.name 
           : undefined;
         console.log('Current active screen:', activeScreen || 'Unknown');
         console.log('Going back to previous screen');
         navigation.goBack();
-        return true; // Prevent default back behavior
+        return true;
       }
 
-      // If on a top-level tab screen other than Home, navigate to Home
       if (currentTabRouteName !== 'Home') {
         console.log('Navigating to Home from:', currentTabRouteName);
         navigation.navigate('Home');
-        return true; // Prevent default back behavior
+        return true;
       }
 
-      // If on Home and no previous screen, show exit alert
-      console.log('Already on Home, showing exit alert');
-      Alert.alert(
-        'Hold on!',
-        'Do you want to exit the app?',
-        [
-          { text: 'Cancel', style: 'cancel', onPress: () => console.log('Cancel pressed, staying on Home') },
-          { 
-            text: 'Exit', 
-            onPress: () => {
-              console.log('Exit pressed, attempting to close app');
-              BackHandler.exitApp();
-            }
-          },
-        ],
-        { cancelable: false }
-      );
-      return true; // Prevent default back behavior
+      console.log('Already on Home, showing exit modal');
+      setIsExitModalVisible(true);
+      return true;
     };
 
     console.log('Registering BackHandler listener');
@@ -162,6 +184,17 @@ const TabNavigator: React.FC = () => {
       backHandler.remove();
     };
   }, [navigation]);
+
+  const handleCancelExit = () => {
+    setIsExitModalVisible(false);
+    console.log('Cancel pressed, staying on Home');
+  };
+
+  const handleConfirmExit = () => {
+    setIsExitModalVisible(false);
+    console.log('Exit pressed, attempting to close app');
+    BackHandler.exitApp();
+  };
 
   return (
     <View style={styles.container}>
@@ -313,6 +346,11 @@ const TabNavigator: React.FC = () => {
           component={Settings}
         />
       </Tab.Navigator>
+      <ExitModal
+        visible={isExitModalVisible}
+        onCancel={handleCancelExit}
+        onExit={handleConfirmExit}
+      />
     </View>
   );
 };
@@ -328,6 +366,63 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: '100%',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: width * 0.8,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 10 },
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    marginHorizontal: 5,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#e0e0e0',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '600',
+  },
+  exitButton: {
+    backgroundColor: '#ffa726',
+  },
+  exitButtonText: {
+    fontSize: 16,
+    color: 'white',
+    fontWeight: '600',
   },
 });
 
