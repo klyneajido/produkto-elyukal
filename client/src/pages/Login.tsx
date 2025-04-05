@@ -7,7 +7,7 @@ import {
     SafeAreaView,
     KeyboardAvoidingView,
     Platform,
-    Alert,
+    StyleSheet,
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -22,25 +22,21 @@ import { BASE_URL } from '../config/config.ts';
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
     const { setUser, loginAsGuest } = useAuth();
-    const [email, setEmail] = useState('1@gmail.com'); // Hardcoded for testing
-    const [password, setPassword] = useState('123456'); // Hardcoded for testing
-    const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+    const [email, setEmail] = useState('1@gmail.com');
+    const [password, setPassword] = useState('123456');
+    const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
 
-    // Email validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    // Validation function
     const validateForm = (): boolean => {
-        const newErrors: { email?: string; password?: string } = {};
+        const newErrors: { email?: string; password?: string; general?: string } = {};
 
-        // Validate email
         if (!email.trim()) {
             newErrors.email = 'Email is required';
         } else if (!emailRegex.test(email)) {
             newErrors.email = 'Please enter a valid email address';
         }
 
-        // Validate password
         if (!password.trim()) {
             newErrors.password = 'Password is required';
         } else if (password.length < 6) {
@@ -48,21 +44,36 @@ const LoginScreen: React.FC = () => {
         }
 
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; // Return true if no errors
+        return Object.keys(newErrors).length === 0;
     };
 
     const loginUser = async (email: string, password: string) => {
         try {
             console.log('Attempting to login with:', { email, password });
             const response = await axios.post(`${BASE_URL}/auth/login`, { email, password });
-
             const { access_token } = response.data;
             await AsyncStorage.setItem("token", access_token);
             console.log("Token saved in AsyncStorage:", access_token);
             return access_token;
         } catch (error: any) {
-            console.error("Login failed:", error.response?.data?.detail || error.message);
-            Alert.alert("Login Failed", error.response?.data?.detail || "Invalid credentials");
+            let errorMessage = 'Something went wrong. Please try again.';
+            
+            if (error.response) {
+                if (error.response.status === 401) {
+                    errorMessage = 'Invalid email or password';
+                } else if (error.response.status === 400) {
+                    errorMessage = 'Invalid login details provided';
+                } else if (error.response.status >= 500) {
+                    errorMessage = 'Server error. Please try again later';
+                }
+            } else if (error.request) {
+                errorMessage = 'Network error. Please check your internet connection';
+            }
+
+            setErrors(prev => ({
+                ...prev,
+                general: errorMessage
+            }));
             return null;
         }
     };
@@ -71,45 +82,52 @@ const LoginScreen: React.FC = () => {
         try {
             const token = await AsyncStorage.getItem("token");
             if (!token) {
-                console.error('No token found in AsyncStorage!');
+                setErrors(prev => ({
+                    ...prev,
+                    general: 'Authentication error. Please try logging in again'
+                }));
                 throw new Error('No token found');
             }
-            console.log('Fetching user profile with token:', token);
             const response = await axios.get(`${BASE_URL}/auth/profile`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            console.log("User Profile:", response.data);
             return response.data;
         } catch (error: any) {
-            console.error("Failed to fetch profile:", error.response?.data?.detail || error.message);
+            setErrors(prev => ({
+                ...prev,
+                general: 'Failed to load profile. Please try again'
+            }));
             return null;
         }
     };
+
     const handleLogin = async () => {
+        setErrors({});
+        
         if (!validateForm()) {
-          return; // Stop if validation fails
+            return;
         }
-      
+
         const token = await loginUser(email, password);
         if (token) {
-          const profile = await getUserProfile();
-          if (profile) {
-            console.log('Updating user context with profile:', profile);
-            setUser(profile);
-            // Reset navigation stack to Tabs (Home screen)
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Tabs' }],
-            });
-          }
+            const profile = await getUserProfile();
+            if (profile) {
+                setUser(profile);
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Tabs' }],
+                });
+            }
         }
-      };
-
+    };
 
     const handleGuest = async () => {
         loginAsGuest();
-        navigation.navigate("Tabs");
-        console.log("Logged in as guest");
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'Tabs' }],
+        });
+        console.log("LoginScreen - Navigated to Tabs with reset");
     };
 
     const handleSignup = () => {
@@ -120,7 +138,8 @@ const LoginScreen: React.FC = () => {
         navigation.navigate('ForgotPassword');
     };
 
-
+    // Get the first error message to display in the banner
+    const errorMessage = errors.general || errors.email || errors.password;
 
     return (
         <SafeAreaView style={styles.container}>
@@ -139,7 +158,13 @@ const LoginScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.formContainer}>
-                    <View style={styles.inputContainer}>
+                    {errorMessage && (
+                        <View style={styles.errorBanner}>
+                            <Text style={styles.errorText}>{errorMessage}</Text>
+                        </View>
+                    )}
+
+                    <View style={[styles.inputContainer, { marginBottom: 20 }]}>
                         <InputText
                             labelName="Email"
                             placeholder="example@gmail.com"
@@ -147,14 +172,15 @@ const LoginScreen: React.FC = () => {
                             value={email}
                             onChangeText={(text) => {
                                 setEmail(text);
-                                setErrors((prev) => ({ ...prev, email: undefined })); // Clear error on change
+                                setErrors((prev) => ({ ...prev, email: undefined }));
                             }}
                             error={!!errors.email}
-                            errorText={errors.email}
+                            errorText={""} // Don't show error text here
+                            extraStyle={{ marginBottom: 0 }}
                         />
                     </View>
 
-                    <View style={styles.inputContainer}>
+                    <View style={[styles.inputContainer, { marginBottom: 20 }]}>
                         <InputText
                             labelName="Password"
                             placeholder="Your password"
@@ -162,11 +188,12 @@ const LoginScreen: React.FC = () => {
                             value={password}
                             onChangeText={(text) => {
                                 setPassword(text);
-                                setErrors((prev) => ({ ...prev, password: undefined })); // Clear error on change
+                                setErrors((prev) => ({ ...prev, password: undefined }));
                             }}
                             error={!!errors.password}
-                            errorText={errors.password}
+                            errorText={""} // Don't show error text here
                             secureTextEntry={true}
+                            extraStyle={{ marginBottom: 0 }}
                         />
                     </View>
 
@@ -193,5 +220,7 @@ const LoginScreen: React.FC = () => {
         </SafeAreaView>
     );
 };
+
+
 
 export default LoginScreen;

@@ -26,25 +26,28 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootStackParamList, TabProps } from '../../types/types.ts';
 import PopularProducts from '../components/PopularList.tsx';
 import Chatbot from '../components/ChatBot.tsx';
+import { useAuth } from '../../contextAuth.tsx';
 
 const Home: React.FC<TabProps> = ({ onScroll }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  // const { user } = useAuth();
   const [searchText, setSearchText] = useState<string>('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshing, setRefreshing] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) {
-        navigation.navigate("Login");
-      }
+        const token = await AsyncStorage.getItem("token");
+        console.log("Home - User:", user, "Token:", token); // Add logging
+        if (!token && !user) { // Check user instead of just token
+            console.log("Home - No token and no user, navigating to Login");
+            navigation.navigate("Login");
+        }
     };
     checkAuth();
-  }, [navigation]);
+}, [navigation, user]);
 
   const onRefresh = async () => {
     setRefreshing(true);

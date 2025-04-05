@@ -27,8 +27,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types/types';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../contextAuth.tsx';
 
-
+// Type guard to check if user is GuestUser
+const isGuestUser = (user: any): user is { guest: boolean } => {
+    return user && 'guest' in user;
+};
 
 const LogoutModal = ({ modalVisible, setModalVisible, logoutUser }) => {
     return (
@@ -54,20 +58,18 @@ const SettingsScreen: React.FC = () => {
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const [modalVisible, setModalVisible] = useState(false);
+    const { user } = useAuth();
 
     useEffect(() => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem("token");
-            console.log("Login token: ", token)
-            console.log(token)
-            if (!token) {
+            // Only navigate to Login if no token AND not in guest mode
+            if (!token && !isGuestUser(user)) {
                 navigation.navigate("Login");
             }
         };
         checkAuth();
-    }, []);
-
-
+    }, [user]);
 
     const SettingItem = ({
         icon,
@@ -91,12 +93,11 @@ const SettingsScreen: React.FC = () => {
             {rightComponent}
         </View>
     );
-    const logout_user = async () => {
-        const token = await AsyncStorage.removeItem("token")
-        console.log("Logout token: ", token)
-        navigation.navigate("Login")
-    }
 
+    const logout_user = async () => {
+        await AsyncStorage.removeItem("token");
+        navigation.navigate("Login");
+    };
 
     return (
         <View style={styles.container}>
@@ -173,7 +174,7 @@ const SettingsScreen: React.FC = () => {
                         title="Logout"
                         subtitle="Logout to this Account"
                         rightComponent={
-                            <TouchableOpacity style={styles.actionButton} onPress={()=>setModalVisible(true)}>
+                            <TouchableOpacity style={styles.actionButton} onPress={() => setModalVisible(true)}>
                                 <Text style={styles.actionButtonText}>Logout</Text>
                             </TouchableOpacity>
                         }
@@ -181,7 +182,6 @@ const SettingsScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.settingsSection}>
-
                     <SettingItem
                         icon={faQuestionCircle}
                         title="Help & Support"
@@ -198,13 +198,10 @@ const SettingsScreen: React.FC = () => {
                         subtitle="App version 1.0.0"
                     />
                 </View>
-
             </ScrollView>
-              <LogoutModal modalVisible={modalVisible} setModalVisible={setModalVisible} logoutUser={logout_user} />
+            <LogoutModal modalVisible={modalVisible} setModalVisible={setModalVisible} logoutUser={logout_user} />
         </View>
     );
 };
-
-
 
 export default SettingsScreen;

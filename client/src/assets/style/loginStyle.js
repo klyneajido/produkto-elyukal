@@ -46,7 +46,6 @@ const loginSignupStyles = StyleSheet.create({
   inputContainer: {
     alignItems: "center",
     borderRadius: 10,
-    marginBottom: 15,
     paddingHorizontal: 15,
   },
   inputIcon: {
@@ -61,7 +60,7 @@ const loginSignupStyles = StyleSheet.create({
   forgotPasswordContainer: {
     alignSelf: "flex-end",
     marginBottom: 20,
-      marginHorizontal: 15,
+    marginHorizontal: 15,
   },
   forgotPasswordText: {
     fontFamily: FONTS.regular,
@@ -76,6 +75,19 @@ const loginSignupStyles = StyleSheet.create({
     marginBottom: 10,
     marginHorizontal: 15,
   },
+  errorBanner: {
+    backgroundColor: '#ffe6e6',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#ff9999',
+},
+errorText: {
+    color: '#cc0000',
+    fontSize: 14,
+    textAlign: 'center',
+},
 
   continueGuestButton: {
     backgroundColor: COLORS.white, 

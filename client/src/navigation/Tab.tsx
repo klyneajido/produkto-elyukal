@@ -23,7 +23,8 @@ const TabNavigator: React.FC = () => {
   const isScrollingDown = useRef(false);
   const scrollTimer = useRef<NodeJS.Timeout | null>(null);
   const isTouching = useRef(false);
-
+  
+  console.log("TabNavigator - Mounted");
   useEffect(() => {
     return () => {
       if (scrollTimer.current) {

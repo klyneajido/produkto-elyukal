@@ -26,49 +26,41 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     const fetchSession = async () => {
-      setLoading(true);
+        setLoading(true);
+        const { data: { session }, error } = await supabase.auth.getSession();
+        console.log("AuthProvider - Initial session:", { session, error });
 
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      console.log("🔵 Initial auth session:", { session, error });
-
-      if (session?.user) {
-        setUser(session.user);
-        console.log("✅ Logged in as User:", session.user);
-      } else {
-        console.log("🚫 No session found.");
-      }
-
-      setLoading(false);
+        if (session?.user) {
+            setUser(session.user);
+            console.log("AuthProvider - Set user from session:", session.user);
+        } else {
+            console.log("AuthProvider - No session, user remains:", user);
+        }
+        setLoading(false);
     };
 
     fetchSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("🟡 Auth state changed:", { event: _event, session });
-
-      if (session?.user) {
-        setUser(session.user);
-        console.log("✅ User mode activated:", session.user);
-      } else {
-        setUser(null);
-        console.log("🚫 User logged out.");
-      }
+        console.log("AuthProvider - Auth state change:", { event: _event, session });
+        if (session?.user) {
+            setUser(session.user);
+        } else {
+            setUser(null);
+        }
+        console.log("AuthProvider - Updated user:", user);
     });
 
     return () => {
-      authListener?.subscription.unsubscribe();
-      console.log("🔴 Auth listener unsubscribed.");
+        authListener?.subscription.unsubscribe();
     };
-  }, []);
+}, []);
+  
 
   // ✅ Log guest mode activation
   const loginAsGuest = () => {
     setUser({ guest: true });
-    console.log("🟢 Guest mode activated!");
+    console.log("🟢 Guest mode activated! New user state:", { guest: true });
   };
 
   return (

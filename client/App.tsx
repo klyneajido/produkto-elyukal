@@ -24,6 +24,7 @@ const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  console.log("AppNavigator - Loading:", loading, "User:", user);
 
   useEffect(() => {
     setLoading(false); // Ensure we avoid flickers on initial auth check
@@ -37,8 +38,17 @@ const AppNavigator = () => {
     );
   }
 
+  const initialRoute = user ? 'Tabs':'Welcome';
+  console.log("App Navigator - Seeting initial route to: ", initialRoute)
+
   return (
-    <Stack.Navigator initialRouteName={user ? 'Tabs' : 'Welcome'}>
+    <Stack.Navigator initialRouteName={initialRoute}
+    screenListeners={{
+      state: (e) =>{
+        console.log("AppNavigator - Navigation state changed: ", e.data.state.routes);
+      }
+    }}
+    >
       <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Signup" component={SignupScreen} options={{ headerShown: false }} />

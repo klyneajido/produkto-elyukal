@@ -178,7 +178,7 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
       filteredProducts = filteredProducts.filter((product) =>
         selectedPriceRange.some((range) => {
           const rangeObj = priceRanges.find((r) => r.value === range);
-          return rangeObj && product.price >= rangeObj.min && product.price <= rangeObj.max;
+          return rangeObj && product.price_min >= rangeObj.min && product.price_max <= rangeObj.max;
         })
       );
       console.log('After price filter:', filteredProducts);
