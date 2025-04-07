@@ -84,7 +84,7 @@ interface Store {
 interface MediaItem {
     uri: string;
     type: 'image';
-  }
+}
 
 const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTakePhoto }) => {
     const [isTracking, setIsTracking] = useState(false);
@@ -94,27 +94,20 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
     const [scale, setScale] = useState<[number, number, number]>([0.21, 0.21, 0.21]);
     const [rotation, setRotation] = useState<[number, number, number]>([0, 45, 0]);
     const [isDragging, setIsDragging] = useState(false);
-    const [lastDragPosition, setLastDragPosition] = useState<{x: number, y: number} | null>(null);
+    const [lastDragPosition, setLastDragPosition] = useState<{ x: number, y: number } | null>(null);
     const [isPinching, setIsPinching] = useState(false);
     const [lastPinchDistance, setLastPinchDistance] = useState<number | null>(null);
-    const [objectPosition, setObjectPosition] = useState<[number, number, number]>([0, 0, 0]);
-    const [objectDragging, setObjectDragging] = useState(false);
-    
+
     // Calculate text position based on current object scale
     const getTextPosition = (): [number, number, number] => {
-        // Adjust height based on scale to maintain consistent relative position
         const heightOffset = 0.1 * scale[1];
         return [0, heightOffset, 0];
     };
-    
-    // Calculate info text position based on current object scale
+
     const getInfoTextPosition = (): [number, number, number] => {
-        // Adjust height based on scale to maintain consistent relative position
         const heightOffset = 0.2 * scale[1];
         return [0, heightOffset, 0];
     };
-
-    // No auto-rotation functionality
 
     const onInitialized = (state: ViroTrackingState) => {
         setIsTracking(state === ViroTrackingStateConstants.TRACKING_NORMAL);
@@ -124,15 +117,13 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
         setShowText(!showText);
     };
 
-    // Handle drag to rotate
     const onDrag = (dragToPos: any, source: any) => {
-        // If source.state is 'ENDED', this means the drag has ended
         if (source.state === 'ENDED') {
             setIsDragging(false);
             setLastDragPosition(null);
             return;
         }
-        
+
         if (!lastDragPosition) {
             setLastDragPosition({ x: dragToPos[0], y: dragToPos[1] });
             setIsDragging(true);
@@ -141,40 +132,17 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
 
         const deltaX = dragToPos[0] - lastDragPosition.x;
         const deltaY = dragToPos[1] - lastDragPosition.y;
-        
+
         setRotation(prevRotation => {
-            // Adjust Y rotation based on horizontal drag (left/right)
             let newYRotation = prevRotation[1] - deltaX * 100;
-            // Adjust X rotation based on vertical drag (up/down)
             let newXRotation = prevRotation[0] + deltaY * 100;
-            
-            // Clamp X rotation to prevent flipping
             newXRotation = Math.max(-30, Math.min(30, newXRotation));
-            
-            // Keep Y rotation within 0-360 range
             newYRotation = newYRotation % 360;
             if (newYRotation < 0) newYRotation += 360;
-            
             return [newXRotation, newYRotation, prevRotation[2]];
         });
-        
-        // Update position to move the object (and its child text nodes) when dragging
-        // This ensures text moves along with the object during drag
-        setObjectPosition(dragToPos);
-        
+
         setLastDragPosition({ x: dragToPos[0], y: dragToPos[1] });
-    };
-    
-    // Handle object position change when dragged
-    const onObjectDrag = (dragToPos: any, source: any) => {
-        if (source.state === 'ENDED') {
-            setObjectDragging(false);
-            return;
-        }
-        
-        setObjectDragging(true);
-        setObjectPosition(dragToPos);
-        // No need to update text positions separately as they're now calculated dynamically
     };
 
     const onDragEnd = () => {
@@ -182,56 +150,52 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
         setLastDragPosition(null);
     };
 
-    // No rotation control functions needed
+    // Function to truncate text if it exceeds a certain length
+    const truncateText = (text: string, maxLength: number) => {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+    };
 
-    const productInfoText = `${product.description}\n${product.in_stock ? 'Stock Available' : 'Sorry, Out of Stock'}\n₱${product.price?.toFixed(2)}`;
+    // Truncate description to 100 characters
+    const truncatedDescription = truncateText(product.description || '', 600);
+    const productInfoText = `${truncatedDescription}\n${product.in_stock ? 'Stock Available' : 'Sorry, Out of Stock'}\n₱${product.price?.toFixed(2)}`;
 
     return (
         <ViroARScene onTrackingUpdated={onInitialized}>
             <ViroAmbientLight color="#FFFFFF" intensity={1000} />
-            {/* <ViroNode position={position}> */}
-                {/* Main 3D object with text that moves together */}
-                <ViroNode position={objectPosition} dragType="FixedToWorld" onDrag={onObjectDrag}>
-                    {/* Group the 3D object and text together so they move as one unit */}
-                    <ViroNode
-                        position={[0, 0, 0]}
-                        onDrag={onDrag}
-                        dragType="FixedDistance"
-                    >
-                        <Viro3DObject
-                            source={{ uri: product.ar_asset_url }}
-                            type="GLB"
-                            position={[0, 0, 0]}
-                            scale={scale}
-                            rotation={rotation}
-                            onClick={onProductTap}
-                            onPinch={(pinchState, scaleFactor, source) => {
-                                // Handle pinch for scaling
-                                if (pinchState === 1) { // BEGAN
-                                    setIsPinching(true);
-                                } else if (pinchState === 2) { // CHANGED
-                                    setScale(prevScale => {
-                                        const newScale = prevScale.map(s => s * scaleFactor) as [number, number, number];
-                                        // Limit min/max scale to prevent object from becoming too small or too large
-                                        return newScale.map(s => Math.max(0.05, Math.min(s, 0.5))) as [number, number, number];
-                                    });
-                                    // Scale changes are automatically reflected in text positions via getTextPosition()
-                                    // No need to update text positions separately as they're calculated dynamically
-                                } else if (pinchState === 3) { // ENDED
-                                    setIsPinching(false);
-                                }
-                            }}
+            <ViroNode position={position}>
+                <ViroNode
+                    position={[0, 0, 0]}
+                    onDrag={onDrag}
+                    dragType="FixedDistance"
+                >
+                    <Viro3DObject
+                        source={{ uri: product.ar_asset_url }}
+                        type="GLB"
+                        position={[0, 0, -0.05]}
+                        scale={scale}
+                        rotation={rotation}
+                        onClick={onProductTap}
+                        onPinch={(pinchState, scaleFactor, source) => {
+                            if (pinchState === 1) {
+                                setIsPinching(true);
+                            } else if (pinchState === 2) {
+                                setScale(prevScale => {
+                                    const newScale = prevScale.map(s => s * scaleFactor) as [number, number, number];
+                                    return newScale.map(s => Math.max(0.05, Math.min(s, 0.5))) as [number, number, number];
+                                });
+                            } else if (pinchState === 3) {
+                                setIsPinching(false);
+                            }
+                        }}
                         onError={(event) => console.error("3D Object Loading Error:", event)}
                     />
-                    
-                    {/* Hint text that stays with the object and updates position dynamically */}
+
                     {!showText && (
-                        <ViroNode 
-                            position={getTextPosition()} 
+                        <ViroNode
+                            position={getTextPosition()}
                             transformBehaviors={['billboard']}
-                            // Scale the node proportionally to the object scale to maintain consistent text size
-                            // When object gets bigger (pinch out), text should get bigger (and vice versa)
-                            scale={[0.15*scale[0], 0.15*scale[1], 0.15*scale[2]]}
+                            scale={[0.15 * scale[0], 0.15 * scale[1], 0.15 * scale[2]]}
                         >
                             <ViroText
                                 text="Tap the product to view details"
@@ -255,20 +219,17 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                             />
                         </ViroNode>
                     )}
-                    
-                    {/* Product info text that stays with the object and updates position dynamically */}
+
                     {showText && (
-                        <ViroNode 
-                            position={getInfoTextPosition()} 
+                        <ViroNode
+                            position={getInfoTextPosition()}
                             transformBehaviors={['billboard']}
-                            // Scale the node proportionally to the object scale to maintain consistent text size
-                            // When object gets bigger (pinch out), text should get bigger (and vice versa)
-                            scale={[0.15*scale[0], 0.15*scale[1], 0.15*scale[2]]}
+                            scale={[0.15 * scale[0], 0.15 * scale[1], 0.15 * scale[2]]}
                         >
                             <ViroQuad
-                                position={[0, 0.03, -0.09]}
-                                height={0.1 * (productInfoText.split('\n').length + 0.5)}
-                                width={0.4}
+                                position={[0, 7, -0.5]}
+                                height={9}
+                                width={9}
                                 materials={["textBackground"]}
                             />
                             <ViroQuad
@@ -278,12 +239,13 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                                 materials={["textBorder"]}
                             />
                             <ViroText
+                                position={[0, 3, -0.1]}
                                 text={productInfoText}
                                 scale={[4, 4, 4]}
                                 width={2}
                                 height={4}
                                 style={{
-                                    fontSize: 7,
+                                    fontSize: 10,
                                     color: '#FFFFFF',
                                     fontFamily: 'Arial',
                                     textAlign: 'center',
@@ -312,33 +274,28 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                     transformBehaviors={['billboard']}
                 />
             )}
-            
-            {/* Controls UI removed */}
         </ViroARScene>
-        
     );
 };
-
 
 const mockMediaItems = [
     {
         uri: 'https://example.com/image1.jpg',
         type: 'image' as const,
-        height: 300, // Add height
+        height: 300,
     },
     {
         uri: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         type: 'youtube' as const,
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
-        height: 300, // Add height
+        height: 300,
     },
     {
         uri: 'https://example.com/image2.jpg',
         type: 'image' as const,
-        height: 300, // Add height
+        height: 300,
     },
 ];
-
 
 const ProductDetails: React.FC = () => {
     const [showAR, setShowAR] = useState(false);
@@ -356,33 +313,29 @@ const ProductDetails: React.FC = () => {
     const mediaItems: MediaItem[] = product.image_urls?.map((url: string) => ({
         uri: url,
         type: 'image' as const,
-      })) || [];
-    
-      const fetchStoreData = async () => {
+    })) || [];
+
+    const fetchStoreData = async () => {
         if (!product.store_id) return;
         setLoadingStore(true);
         try {
-          const response = await axios.get(`${BASE_URL}/stores/fetch_stores`);
-          const stores = response.data;
-          const matchingStore = stores.find((store: Store) => store.store_id === product.store_id);
-          setStoreData(matchingStore || null);
+            const response = await axios.get(`${BASE_URL}/stores/fetch_stores`);
+            const stores = response.data;
+            const matchingStore = stores.find((store: Store) => store.store_id === product.store_id);
+            setStoreData(matchingStore || null);
         } catch (error) {
-          setStoreData(null);
+            setStoreData(null);
         } finally {
-          setLoadingStore(false);
+            setLoadingStore(false);
         }
-      };
-
+    };
 
     const fetchSimilarProducts = async () => {
         setLoadingSimilar(true);
         try {
             const url = `${BASE_URL}/products/fetch_similar_products/${product.id}`;
-
             const response = await axios.get(url);
-
             setSimilarProducts(response.data.similar_products || []);
-
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error('Error fetching similar products:', error.response?.status, error.response?.data);
@@ -403,7 +356,6 @@ const ProductDetails: React.FC = () => {
     const handleComparePrices = () => {
         console.log('Navigating with:', { product, similarProducts });
         navigation.navigate('PriceComparison', { product, similarProducts });
-        console.log('Navigating with:', { product, similarProducts });
     };
 
     const toggleProductSelection = (productId: string) => {
@@ -505,31 +457,30 @@ const ProductDetails: React.FC = () => {
             </View>
         );
     }
-   
-    // Log props just before passing to ProductMediaCarousel
-  const carouselProps = {
-    mediaItems,
-    initialIndex: 0,
-    productName: product.name || 'Unnamed Product',
-    averageRating: product.average_rating,
-    totalReviews: product.total_reviews,
-  };
+
+    const carouselProps = {
+        mediaItems,
+        initialIndex: 0,
+        productName: product.name || 'Unnamed Product',
+        averageRating: product.average_rating,
+        totalReviews: product.total_reviews,
+    };
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
-            <Animatable.View animation="fadeIn" duration={1000}>
-          {mediaItems.length > 0 ? (
-            <ProductMediaCarousel
-            mediaItems={mediaItems}
-            initialIndex={0}
-            productName={product.name || 'Unnamed Product'}
-            averageRating={product.average_rating}
-            totalReviews={product.total_reviews}
-          />
-          ) : (
-            <Text style={{ textAlign: 'center', marginTop: 20 }}>No images available</Text>
-          )}
-        </Animatable.View>
+                <Animatable.View animation="fadeIn" duration={1000}>
+                    {mediaItems.length > 0 ? (
+                        <ProductMediaCarousel
+                            mediaItems={mediaItems}
+                            initialIndex={0}
+                            productName={product.name || 'Unnamed Product'}
+                            averageRating={product.average_rating}
+                            totalReviews={product.total_reviews}
+                        />
+                    ) : (
+                        <Text style={{ textAlign: 'center', marginTop: 20 }}>No images available</Text>
+                    )}
+                </Animatable.View>
                 <View style={styles.detailsContainer}>
                     <View style={styles.pricingContainer}>
                         <View style={styles.priceRow}>
@@ -577,7 +528,6 @@ const ProductDetails: React.FC = () => {
 
                     <View style={styles.comparePricesSection}>
                         <Text style={styles.sectionTitle}>Compare Prices at Other Stores</Text>
-
                         {loadingSimilar ? (
                             <View style={styles.loadingContainer}>
                                 <ActivityIndicator size="small" color={COLORS.primary} />
