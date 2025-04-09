@@ -10,6 +10,7 @@ import Settings from '../pages/Settings';
 import Municipalities from '../pages/Municipality';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { COLORS } from '../assets/constants/constant';
 
 const Tab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
@@ -230,7 +231,7 @@ const TabNavigator: React.FC = () => {
                 <FontAwesomeIcon
                   icon={faHome}
                   size={24}
-                  color={focused ? '#ffa726' : '#bdbdbd'}
+                  color={focused ? COLORS.primary : '#bdbdbd'}
                 />
               </View>
             ),
@@ -260,7 +261,7 @@ const TabNavigator: React.FC = () => {
                 <FontAwesomeIcon
                   icon={faBox}
                   size={24}
-                  color={focused ? '#ffa726' : '#bdbdbd'}
+                  color={focused ? COLORS.primary : '#bdbdbd'}
                 />
               </View>
             ),
@@ -291,7 +292,7 @@ const TabNavigator: React.FC = () => {
                 <FontAwesomeIcon
                   icon={faMap}
                   size={24}
-                  color={focused ? '#ffa726' : '#bdbdbd'}
+                  color={focused ? COLORS.primary : '#bdbdbd'}
                 />
               </View>
             ),
@@ -307,7 +308,7 @@ const TabNavigator: React.FC = () => {
                 <FontAwesomeIcon
                   icon={faCity}
                   size={24}
-                  color={focused ? '#ffa726' : '#bdbdbd'}
+                  color={focused ? COLORS.primary : '#bdbdbd'}
                 />
               </View>
             ),
@@ -337,7 +338,7 @@ const TabNavigator: React.FC = () => {
                 <FontAwesomeIcon
                   icon={faCog}
                   size={24}
-                  color={focused ? '#ffa726' : '#bdbdbd'}
+                  color={focused ? COLORS.primary : '#bdbdbd'}
                 />
               </View>
             ),

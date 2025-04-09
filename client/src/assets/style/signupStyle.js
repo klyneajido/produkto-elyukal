@@ -26,7 +26,7 @@ signupButtonDisabled: {
     borderBottomLeftRadius: 20,
     overflow:'hidden',
   },
-  bgImg:{
+  gradientContainer:{
     height: 200,
     width: screenWidth,
     padding:15,
@@ -81,7 +81,7 @@ signupButtonDisabled: {
   input: {
     flex: 1,
     height: 50,
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: FONTS.regular,
     color: '#333',
     borderWidth: 1,
     borderColor: '#ddd',
@@ -95,18 +95,18 @@ signupButtonDisabled: {
     marginBottom: 20,
   },
   forgotPasswordText: {
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: FONTS.regular,
     color: '#666',
   },
   loginButton: {
-    backgroundColor: '#ffd700',
+    backgroundColor: COLORS.secondary,
     height: 50,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
   },
   signupButton: {
-    backgroundColor: '#ffd700',
+    backgroundColor: COLORS.primary,
     height: 50,
     borderRadius: 10,
     justifyContent: 'center',
@@ -121,7 +121,8 @@ signupButtonDisabled: {
   signupButtonText: {
     fontFamily: FONTS.semibold,
     color: '#fff',
-    fontSize: 16,
+    fontSize: FONT_SIZE.large,
+    letterSpacing:0.5
   },
   signupContainer: {
     flexDirection: 'row',

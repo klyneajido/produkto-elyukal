@@ -135,11 +135,12 @@ import {COLORS, FONTS, FONT_SIZE} from '../assets/constants/constant'
     inputContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      borderWidth: 1,
+      backgroundColor:COLORS.container,
       borderRadius: 10,
       paddingRight: 10,
       overflow: 'hidden',
       marginBottom:10,
+
     },
     input: {
       flex: 1,
@@ -153,6 +154,7 @@ import {COLORS, FONTS, FONT_SIZE} from '../assets/constants/constant'
       fontFamily:FONTS.semibold,
       marginBottom: 10,
       color: COLORS.black,
+      letterSpacing:0.1,
     },
     iconContainer: {
       padding: 8,

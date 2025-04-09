@@ -8,6 +8,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     StyleSheet,
+    ScrollView,
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -18,6 +19,8 @@ import { COLORS } from '../assets/constants/constant';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from '../../contextAuth.tsx';
 import { BASE_URL } from '../config/config.ts';
+import LinearGradient from 'react-native-linear-gradient';
+import Footer from '../components/Footer.tsx';
 
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -142,40 +145,35 @@ const LoginScreen: React.FC = () => {
     const errorMessage = errors.general || errors.email || errors.password;
 
     return (
-        <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.container}>
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.container}
             >
                 <View style={styles.logoContainer}>
-                    <ImageBackground
-                        source={require('../assets/img/signup_logo.png')}
-                        resizeMode='cover'
-                        style={styles.bgImg}>
-                        <Text style={styles.text}>Welcome back.</Text>
-                        <Text style={styles.subText}>Sign In & Pick Up Where You Left Off!</Text>
-                    </ImageBackground>
+                    <LinearGradient
+                     colors={['#6B48FF', '#8E2DE2']}
+                     start={{ x: 0, y: 0 }}
+                     end={{ x: 1, y: 1 }}
+                     style={styles.gradientContainer}>
+                         <Text style={styles.text}>Welcome back.</Text>
+                         <Text style={styles.subText}>Sign In & Pick Up Where You Left Off!</Text>
+                    </LinearGradient>
                 </View>
 
                 <View style={styles.formContainer}>
-                    {errorMessage && (
-                        <View style={styles.errorBanner}>
-                            <Text style={styles.errorText}>{errorMessage}</Text>
-                        </View>
-                    )}
-
                     <View style={[styles.inputContainer, { marginBottom: 20 }]}>
                         <InputText
                             labelName="Email"
                             placeholder="example@gmail.com"
-                            placeholderTextColor={COLORS.lightgray}
+                            placeholderTextColor={COLORS.gray}
                             value={email}
                             onChangeText={(text) => {
                                 setEmail(text);
                                 setErrors((prev) => ({ ...prev, email: undefined }));
                             }}
                             error={!!errors.email}
-                            errorText={""} // Don't show error text here
+                            errorText={errors.email} 
                             extraStyle={{ marginBottom: 0 }}
                         />
                     </View>
@@ -184,14 +182,14 @@ const LoginScreen: React.FC = () => {
                         <InputText
                             labelName="Password"
                             placeholder="Your password"
-                            placeholderTextColor={COLORS.lightgray}
+                            placeholderTextColor={COLORS.gray}
                             value={password}
                             onChangeText={(text) => {
                                 setPassword(text);
                                 setErrors((prev) => ({ ...prev, password: undefined }));
                             }}
                             error={!!errors.password}
-                            errorText={""} // Don't show error text here
+                            errorText={errors.password} 
                             secureTextEntry={true}
                             extraStyle={{ marginBottom: 0 }}
                         />
@@ -215,9 +213,12 @@ const LoginScreen: React.FC = () => {
                             <Text style={styles.signupLinkText}>Sign Up</Text>
                         </TouchableOpacity>
                     </View>
+                    <View style={styles.footerContainer}>
+                        <Footer/>
+                    </View>
                 </View>
             </KeyboardAvoidingView>
-        </SafeAreaView>
+        </ScrollView>
     );
 };
 

@@ -28,6 +28,7 @@ import { RootStackParamList, TabProps } from '../../types/types.ts';
 import PopularProducts from '../components/PopularList.tsx';
 import Chatbot from '../components/ChatBot.tsx';
 import { useAuth } from '../../contextAuth.tsx';
+import Footer from '../components/Footer.tsx';
 
 const { width } = Dimensions.get('window');
 
@@ -191,6 +192,7 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
               ))}
             </View>
           </View>
+
           {/* Welcome Section */}
           <View style={styles.welcomeSection}>
             <Text style={styles.welcomeTitle}>Discover Local Artistry</Text>
@@ -271,53 +273,7 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
         </View>
         {/* Footer Section */}
         <View style={styles.footerContainer}>
-          <View style={styles.footerTop}>
-            <Image
-              source={require('../assets/img/logo.png')}
-              style={styles.footerLogo}
-              resizeMode="contain"
-            />
-            <Text style={styles.footerTagline}>Connecting You to La Union's Local Products</Text>
-          </View>
-
-          <View style={styles.footerDivider} />
-
-          <View style={styles.footerLinks}>
-            <TouchableOpacity style={styles.footerLinkItem}>
-              <Text style={styles.footerLinkText}>About Us</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.footerLinkItem}>
-              <Text style={styles.footerLinkText}>Contact</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.footerLinkItem}>
-              <Text style={styles.footerLinkText}>Terms</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.footerLinkItem}>
-              <Text style={styles.footerLinkText}>Privacy</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.socialLinks}>
-            <TouchableOpacity style={styles.socialIcon}>
-              <Image
-                style={styles.image}
-                source={require('../assets/img/facebook-icon.png')}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialIcon}>
-              <Image
-                style={styles.image}
-                source={require('../assets/img/instagram-icon.png')}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialIcon}>
-              <Image
-                style={styles.image}
-                source={require('../assets/img/twitter-icon.png')}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <Text style={styles.copyright}>© 2025 Produkto Elyukal.</Text>
+          <Footer/>
         </View>
       </Animated.ScrollView>
       <Chatbot />

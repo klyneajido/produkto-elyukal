@@ -2,60 +2,39 @@ import React, { useEffect, useRef } from 'react';
 import {
     View,
     Text,
-    ImageBackground,
     Animated,
     StyleSheet,
     Dimensions,
-    ActivityIndicator
+    ActivityIndicator,
+    Image
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
+import LinearGradient from 'react-native-linear-gradient';
+import { FONT_SIZE, FONTS } from '../assets/constants/constant';
 
-const { width } = Dimensions.get('window');
-const { height } = Dimensions.get('window')
+const { width, height } = Dimensions.get('window');
+
 const Welcome = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
-    // Animations
+    // Simplified animations
     const fadeAnim = useRef(new Animated.Value(0)).current;
-    const translateY = useRef(new Animated.Value(50)).current;
-    const logoScale = useRef(new Animated.Value(0.8)).current;
-    const floatingAnim = useRef(new Animated.Value(0)).current;
+    const scaleAnim = useRef(new Animated.Value(0.95)).current;
 
     useEffect(() => {
-        // Start animation sequence
+        // Animation sequence
         Animated.parallel([
             Animated.timing(fadeAnim, {
                 toValue: 1,
-                duration: 700,
+                duration: 800,
                 useNativeDriver: true,
             }),
-            Animated.timing(translateY, {
-                toValue: 0,
-                duration: 700,
-                useNativeDriver: true,
-            }),
-            Animated.spring(logoScale, {
+            Animated.spring(scaleAnim, {
                 toValue: 1,
-                friction: 3,
-                tension: 80,
+                friction: 8,
                 useNativeDriver: true,
             }),
-            Animated.loop(
-                Animated.sequence([
-                    Animated.timing(floatingAnim, {
-                        toValue: 5,
-                        duration: 1000,
-                        useNativeDriver: true,
-                    }),
-                    Animated.timing(floatingAnim, {
-                        toValue: 0,
-                        duration: 1000,
-                        useNativeDriver: true,
-                    }),
-                ])
-            ),
         ]).start();
 
         // Navigate to Login screen after delay
@@ -65,104 +44,85 @@ const Welcome = () => {
 
         // Cleanup timeout on unmount
         return () => clearTimeout(navigationTimeout);
-    }, [fadeAnim, translateY, logoScale, floatingAnim, navigation]);
+    }, [fadeAnim, scaleAnim, navigation]);
 
     return (
-        <ImageBackground
-         source={require('../assets/img/splash_bg.png')}
-               resizeMode='cover'
-        style={styles.container}>
+        <LinearGradient
+            colors={['#6B48FF', '#8E2DE2']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.container}
+        >
             <Animated.View
                 style={[
                     styles.contentContainer,
                     {
                         opacity: fadeAnim,
-                        transform: [{ translateY }],
+                        transform: [{ scale: scaleAnim }],
                     },
                 ]}
             >
-              <Animated.Image
-                    source={require('../assets/img/logo_plain.png')}
-                    style={[
-                        styles.logo,
-                        {
-                            transform: [
-                                { scale: logoScale },
-                                { translateY: floatingAnim },
-                            ],
-                        },
-                    ]}
-                />
+                {/* Circular logo container */}
+                <View style={styles.logoContainer}>
+                    <Image
+                        source={require('../assets/img/logo_plain.png')}
+                        style={styles.logo}
+                    />
+                </View>
 
-                <Animated.Text
-                    style={[
-                        styles.appTitle,
-                        { opacity: fadeAnim }
-                    ]}
-                >
-                    Produkto Elyukal
-                </Animated.Text>
-
-                <Animated.Text
-                    style={[
-                        styles.welcomeText,
-                        { opacity: fadeAnim }
-                    ]}
-                >
-                    Welcome
-                </Animated.Text>
+                <Text style={styles.appTitle}>Produkto Elyukal</Text>
+                <Text style={styles.subtitle}>An Augmented Reality Experience</Text>
 
                 <View style={styles.loaderContainer}>
                     <ActivityIndicator
                         size="large"
-                        color="#ffd700"
+                        color="#FFFFFF"
                     />
                 </View>
             </Animated.View>
-        </ImageBackground>
+        </LinearGradient>
     );
 };
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.white,
         justifyContent: 'center',
         alignItems: 'center',
     },
     contentContainer: {
         alignItems: 'center',
-        justifyContent: 'center',
+        padding: 20,
     },
-    bgImg:{
-        width: width,
-        height: height,
-        alignItems: 'center',
+    logoContainer: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
         justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 30,
     },
     logo: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        marginBottom: 20,
-
+        width: 70,
+        height: 70,
+        borderRadius: 35,
     },
     appTitle: {
-        fontFamily: 'OpenSans-Bold',
-        fontSize: 28,
-        marginBottom: 10,
-        textAlign: 'center',
-        color:COLORS.white,
+        fontFamily: FONTS.bold, // Fallback to system font
+        fontSize: FONT_SIZE.xxxLarge,
+        color: '#FFFFFF',
+        letterSpacing: 1,
+        marginBottom: 8,
     },
-    welcomeText: {
-        fontFamily: FONTS.semibold,
+    subtitle: {
+        fontFamily: FONTS.light,
         fontSize: FONT_SIZE.large,
-        color:COLORS.white,
-        marginTop: 10,
-        textAlign: 'center',
+        color: 'rgba(255, 255, 255, 0.9)',
+        letterSpacing: 0.5,
     },
     loaderContainer: {
-        marginTop: 20,
-        alignItems: 'center',
+        marginTop: 40,
     },
 });
 

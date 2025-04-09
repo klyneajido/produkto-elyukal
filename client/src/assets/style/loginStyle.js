@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
-import { COLORS, FONTS} from "../constants/constant";
+import { COLORS, FONT_SIZE, FONTS } from "../constants/constant";
 
 const screenWidth = Dimensions.get("window").width;
 const loginSignupStyles = StyleSheet.create({
@@ -21,6 +21,11 @@ const loginSignupStyles = StyleSheet.create({
     width: screenWidth,
     padding: 15,
   },
+  gradientContainer: {
+    height: 200,
+    width: screenWidth,
+    padding: 15,
+  },
   text: {
     fontFamily: FONTS.bold,
     fontSize: 35,
@@ -37,7 +42,7 @@ const loginSignupStyles = StyleSheet.create({
   appTitle: {
     fontFamily: FONTS.bold,
     fontSize: 22,
-    color:  COLORS.black,
+    color: COLORS.black,
     marginTop: 15,
   },
   formContainer: {
@@ -63,11 +68,11 @@ const loginSignupStyles = StyleSheet.create({
     marginHorizontal: 15,
   },
   forgotPasswordText: {
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.semibold,
     color: COLORS.gray,
   },
   loginButton: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.primary,
     height: 50,
     borderRadius: 10,
     justifyContent: "center",
@@ -76,40 +81,41 @@ const loginSignupStyles = StyleSheet.create({
     marginHorizontal: 15,
   },
   errorBanner: {
-    backgroundColor: '#ffe6e6',
+    backgroundColor: "#ffe6e6",
     padding: 10,
     borderRadius: 8,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#ff9999',
-},
-errorText: {
-    color: '#cc0000',
+    borderColor: "#ff9999",
+  },
+  errorText: {
+    color: "#cc0000",
     fontSize: 14,
-    textAlign: 'center',
-},
+    textAlign: "center",
+  },
 
   continueGuestButton: {
-    backgroundColor: COLORS.white, 
+    backgroundColor: COLORS.white,
     height: 50,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
-    borderWidth: 2, 
+    borderWidth: 2,
     borderColor: COLORS.secondary,
     marginHorizontal: 15,
   },
   loginButtonText: {
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.semibold,
     color: COLORS.white,
-    fontSize: 16,
+    fontSize: FONT_SIZE.large,
+    letterSpacing: 0.5,
   },
-  // New text style for Continue as Guest button
   continueGuestButtonText: {
     fontFamily: FONTS.semibold,
-    color: COLORS.secondary, 
-    fontSize: 16,
+    color: COLORS.secondary,
+    fontSize: FONT_SIZE.large,
+    letterSpacing: 0.5,
   },
   signupButton: {
     backgroundColor: COLORS.secondary,
@@ -173,9 +179,11 @@ errorText: {
     height: 150,
     marginTop: 20,
     marginBottom: 20,
-  }
+  },
+
+  footerContainer: {
+    marginTop: 100,
+  },
 });
 
 export default loginSignupStyles;
-
-//mejo kinabahan ako sa merge, pero safe safe

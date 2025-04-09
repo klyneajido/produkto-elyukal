@@ -2,6 +2,14 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "src/assets/fonts/Eurostile-Bold.ttf",
+      "sha1": "6c0b5747046574740e528818f3d97697d128ed26"
+    },
+    {
+      "path": "src/assets/fonts/Eurostile.ttf",
+      "sha1": "b7bbfb44b5d748c4c6375780aa8ed4d9cc1be177"
+    },
+    {
       "path": "src/assets/fonts/OpenSans-Bold.ttf",
       "sha1": "c1691e8168b2596af8a00162bac60dbe605e9e36"
     },

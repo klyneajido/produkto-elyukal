@@ -375,10 +375,9 @@ imageBadgeText: {
 
 footerContainer: {
   backgroundColor: COLORS.white,
-  paddingHorizontal: 20,
   paddingTop: 30,
-  paddingBottom: 40,
-  marginTop: 20,
+  paddingBottom: 60,
+  marginVertical: 20,
   borderTopLeftRadius: 30,
   borderTopRightRadius: 30,
 },

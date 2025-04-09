@@ -19,6 +19,7 @@ import InputText from "../components/TextInput";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { BASE_URL } from "../config/config";
+import LinearGradient from "react-native-linear-gradient";
 
 const SignupScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -157,11 +158,11 @@ const SignupScreen: React.FC = () => {
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.logoContainer}>
-            <ImageBackground
-              source={require("../assets/img/signup_logo.png")}
-              resizeMode="cover"
-              style={styles.bgImg}
-            >
+            <LinearGradient
+              colors={['#6B48FF', '#8E2DE2']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradientContainer}>
               <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                 <FontAwesomeIcon
                   icon={faArrowLeft}
@@ -171,16 +172,16 @@ const SignupScreen: React.FC = () => {
               </TouchableOpacity>
               <Text style={styles.text}>Sign up</Text>
               <Text style={styles.subText}>
-                & discover the hidden gems of La Union!
+                & Discover the hidden gems of La Union!
               </Text>
-            </ImageBackground>
+            </LinearGradient>
           </View>
 
           <View style={styles.formContainer}>
             <InputText
               labelName="First Name"
               placeholder="e.g. Juan"
-              placeholderTextColor={COLORS.lightgray}
+              placeholderTextColor={COLORS.gray}
               value={firstName}
               onChangeText={(text) => {
                 setFirstName(text);
@@ -192,7 +193,7 @@ const SignupScreen: React.FC = () => {
             <InputText
               labelName="Last Name"
               placeholder="e.g. Dela Cruz"
-              placeholderTextColor={COLORS.lightgray}
+              placeholderTextColor={COLORS.gray}
               value={lastName}
               onChangeText={(text) => {
                 setLastName(text);
@@ -204,7 +205,7 @@ const SignupScreen: React.FC = () => {
             <InputText
               labelName="Email"
               placeholder="example@gmail.com"
-              placeholderTextColor={COLORS.lightgray}
+              placeholderTextColor={COLORS.gray}
               value={email}
               onChangeText={(text) => {
                 setEmail(text);
@@ -216,7 +217,7 @@ const SignupScreen: React.FC = () => {
             <InputText
               labelName="Password"
               placeholder="Set Password"
-              placeholderTextColor={COLORS.lightgray}
+              placeholderTextColor={COLORS.gray}
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
@@ -229,7 +230,7 @@ const SignupScreen: React.FC = () => {
             <InputText
               labelName="Confirm Password"
               placeholder="Re-enter password"
-              placeholderTextColor={COLORS.lightgray}
+              placeholderTextColor={COLORS.gray}
               value={confirmPassword}
               onChangeText={(text) => {
                 setConfirmPassword(text);

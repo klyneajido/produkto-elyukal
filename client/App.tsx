@@ -9,7 +9,6 @@ import ProductDetails from './src/pages/ProductDetails';
 import LoginScreen from './src/pages/Login';
 import SignupScreen from './src/pages/Signup';
 import Welcome from './src/pages/Welcome';
-import TestEnv from './TestEnv';
 import ForgotPassword from './src/pages/ForgotPassword';
 import AuthProvider, { useAuth } from './contextAuth';
 import EventDetails from './src/pages/EventDetails';
@@ -57,7 +56,6 @@ const AppNavigator = () => {
       <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ headerShown: false }} />
       <Stack.Screen name="Reviews" component={ReviewScreen} />
       <Stack.Screen name="EventDetails" component={EventDetails} options={{ headerShown: false }} />
-      <Stack.Screen name="TestEnv" component={TestEnv} options={{ headerShown: false }} />
       <Stack.Screen name="StoreDetails" component={StoreDetails}  options={{ headerShown: false }} />
       <Stack.Screen name="MunicipalityDetail" component={MunicipalityDetail} options={{ headerShown: false }} />
       <Stack.Screen name="PriceComparison" component={PriceComparison} options={{headerShown: false}} />
