@@ -57,20 +57,6 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     letterSpacing: 0.1,
   },
-  filterButton: {
-    width: 48,
-    height: 48,
-    backgroundColor: COLORS.secondary,
-    borderRadius: 15,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: COLORS.secondary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-    padding: 0,
-  },
   content: {
     flex: 1,
   },
@@ -161,23 +147,21 @@ const styles = StyleSheet.create({
     marginVertical: 24,
     opacity: 0.2,
   },
+  buttonContainer:{
+    alignItems:'flex-end'
+  },
+  exploreButton:{
+    backgroundColor:COLORS.primary,
+    padding:13,
+    marginTop:15,
+    borderRadius:7,
+    alignItems:'center',
+  },
+  exploreText:{
+    fontFamily:FONTS.semibold,
+    letterSpacing:0.2,
+    
 
-  welcomeSection: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  welcomeTitle: {
-    fontSize: FONT_SIZE.xxLarge,
-    fontFamily: FONTS.bold,
-    color: COLORS.black,
-    marginBottom: 8,
-  },
-  welcomeSubtitle: {
-    fontSize: FONT_SIZE.medium+1,
-    fontFamily: FONTS.regular,
-    color: COLORS.black,
-    opacity: 0.7,
-    lineHeight: 24,
   },
   highlightBox: {
     backgroundColor: "rgba(0,0,0,0.03)",
@@ -193,7 +177,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   highlightText: {
-    fontSize: 15,
+    fontSize: FONT_SIZE.medium,
     fontFamily: FONTS.regular,
     color: COLORS.black,
     opacity: 0.7,
@@ -214,7 +198,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   statLabel: {
-    fontSize: 14,
+    fontSize: FONT_SIZE.medium,
     fontFamily: FONTS.regular,
     color: COLORS.black,
     opacity: 0.6,
@@ -297,14 +281,14 @@ promoTagline: {
 },
 promoHeadline: {
   fontFamily: FONTS.bold,
-  fontSize: 26,
+  fontSize: FONT_SIZE.xxLarge,
   color: COLORS.black,
   marginBottom: 10,
   lineHeight: 32,
 },
 promoSubtext: {
   fontFamily: FONTS.regular,
-  fontSize: 14,
+  fontSize: FONT_SIZE.medium,
   lineHeight: 20,
   color: 'rgba(0,0,0,0.7)',
   marginBottom: 20,
@@ -323,25 +307,8 @@ promoStatNumber: {
 },
 promoStatLabel: {
   fontFamily: FONTS.regular,
-  fontSize: 12,
+  fontSize: 13,
   color: 'rgba(0,0,0,0.6)',
-},
-ctaButton: {
-  backgroundColor: COLORS.primary,
-  paddingVertical: 14,
-  paddingHorizontal: 28,
-  borderRadius: 50,
-  alignSelf: 'flex-start',
-  shadowColor: COLORS.primary,
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.3,
-  shadowRadius: 6,
-  elevation: 4,
-},
-ctaButtonText: {
-  color: COLORS.white,
-  fontFamily: FONTS.semibold,
-  fontSize: 15,
 },
 promoImageContainer: {
   position: 'relative',

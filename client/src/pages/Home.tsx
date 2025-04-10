@@ -18,6 +18,7 @@ import styles from '../assets/style/homeStyle.js';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import Map from '../pages/Map';
 
 import {
   faSearch,
@@ -31,13 +32,16 @@ import { useAuth } from '../../contextAuth.tsx';
 import Footer from '../components/Footer.tsx';
 
 const { width } = Dimensions.get('window');
-
+type Category = {
+  name: string;
+  image: any;
+  count: string;
+  screen: keyof RootStackParamList;
+};
 const Home: React.FC<TabProps> = ({ onScroll }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState<string>('');
   const [activeIndex, setActiveIndex] = useState(0);
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
   const scrollRef = useRef<ScrollView>(null);
@@ -55,16 +59,20 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
   }, [navigation, user]);
 
   //categories
-  const categories = [
+  const categories: Category[] = [
     { name: 'Handcraft', image: require('../assets/img/handcraft.png'), count: '50+', screen: 'Products' },
     { name: 'Furniture', image: require('../assets/img/furniture.jpg'), count: '30+', screen: 'Products' },
     { name: 'Food', image: require('../assets/img/food.jpg'), count: '20+', screen: 'Products' },
     { name: 'Pottery', image: require('../assets/img/pottery.jpg'), count: '15+', screen: 'Products' },
   ];
 
-  const handleCategoryPress = (screen: string, categoryName: string) => {
-    navigation.navigate(screen, { category: categoryName });
-  }
+
+  const handleCategoryPress = (
+    screen: keyof RootStackParamList,
+    categoryName: string
+  ) => {
+    navigation.navigate(screen, { category: categoryName } as any);
+  };
 
   const onScrollEnd = (event: any) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -74,12 +82,14 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const nextIndex = (activeIndex + 1) % categories.length;
-      scrollRef.current?.scrollTo({ x: nextIndex * width * 0.9, animated: true });
-      setActiveIndex(nextIndex);
+      setActiveIndex((prevIndex) => {
+        const nextIndex = (prevIndex + 1) % categories.length;
+        scrollRef.current?.scrollTo({ x: nextIndex * width * 0.9, animated: true });
+        return nextIndex;
+      });
     }, 3000);
     return () => clearInterval(interval);
-  }, [activeIndex]);
+  }, []);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -192,20 +202,11 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
               ))}
             </View>
           </View>
-
-          {/* Welcome Section */}
-          <View style={styles.welcomeSection}>
-            <Text style={styles.welcomeTitle}>Discover Local Artistry</Text>
-            <Text style={styles.welcomeSubtitle}>
-              Explore the rich cultural heritage of La Union through its finest handcrafted products and talented artisans.
-            </Text>
-          </View>
-
           {/* Stats Section */}
           <View style={styles.highlightBox}>
-            <Text style={styles.highlightTitle}>Our Growing Community</Text>
+            <Text style={styles.highlightTitle}>Discover Local Artistry</Text>
             <Text style={styles.highlightText}>
-              Join our thriving marketplace where tradition meets innovation.
+              Explore the rich cultural heritage of La Union through its finest handcrafted products and talented artisans.
             </Text>
             <View style={styles.statsContainer}>
               {stats.map((stat, index) => (
@@ -215,9 +216,14 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
                 </View>
               ))}
             </View>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.exploreButton} onPress={() => navigation.navigate("Tabs", { screen: "Maps" })}>
+                <Text style={styles.exploreText}>Explore Now</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          {/* Enhanced Product Promotion */}
+
           <View style={styles.divider} />
           <View style={styles.enhancedPromo}>
             <View style={styles.promoPattern}>
@@ -256,9 +262,6 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
               </View>
             </View>
           </View>
-
-
-
           {/* Products Section */}
           <View style={styles.divider} />
           <View style={styles.sectionHeader}>
@@ -273,7 +276,7 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
         </View>
         {/* Footer Section */}
         <View style={styles.footerContainer}>
-          <Footer/>
+          <Footer />
         </View>
       </Animated.ScrollView>
       <Chatbot />

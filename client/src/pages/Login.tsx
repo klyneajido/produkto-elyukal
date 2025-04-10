@@ -158,7 +158,6 @@ const LoginScreen: React.FC = () => {
 
     const onGradientLayout = (event) => {
         const { width, height } = event.nativeEvent.layout;
-        console.log('Gradient Container Size:', { width, height });
         setContainerSize({ width, height });
     };
 

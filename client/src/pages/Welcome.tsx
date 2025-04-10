@@ -71,7 +71,7 @@ const Welcome = () => {
                 </View>
 
                 <Text style={styles.appTitle}>Produkto Elyukal</Text>
-                <Text style={styles.subtitle}>An Augmented Reality Experience</Text>
+                <Text style={styles.subtitle}>Explore, Discover, Experience</Text>
 
                 <View style={styles.loaderContainer}>
                     <ActivityIndicator
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
         borderRadius: 35,
     },
     appTitle: {
-        fontFamily: FONTS.bold, // Fallback to system font
+        fontFamily: 'Eurostile', 
         fontSize: FONT_SIZE.xxxLarge,
         color: '#FFFFFF',
         letterSpacing: 1,
