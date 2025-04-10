@@ -11,7 +11,6 @@ import SignupScreen from './src/pages/Signup';
 import Welcome from './src/pages/Welcome';
 import ForgotPassword from './src/pages/ForgotPassword';
 import AuthProvider, { useAuth } from './contextAuth';
-import EventDetails from './src/pages/EventDetails';
 import StoreDetails  from './src/pages/StoreDetails';
 import { ActivityIndicator, View } from 'react-native';
 import ReviewScreen from './src/pages/Reviews';
@@ -23,10 +22,8 @@ const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  console.log("AppNavigator - Loading:", loading, "User:", user);
-
   useEffect(() => {
-    setLoading(false); // Ensure we avoid flickers on initial auth check
+    setLoading(false);
   }, [user]);
 
   if (loading) {
@@ -38,13 +35,11 @@ const AppNavigator = () => {
   }
 
   const initialRoute = user ? 'Tabs':'Welcome';
-  console.log("App Navigator - Seeting initial route to: ", initialRoute)
-
   return (
     <Stack.Navigator initialRouteName={initialRoute}
     screenListeners={{
       state: (e) =>{
-        console.log("AppNavigator - Navigation state changed: ", e.data.state.routes);
+        
       }
     }}
     >
@@ -55,7 +50,6 @@ const AppNavigator = () => {
       <Stack.Screen name="Tabs" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ headerShown: false }} />
       <Stack.Screen name="Reviews" component={ReviewScreen} />
-      <Stack.Screen name="EventDetails" component={EventDetails} options={{ headerShown: false }} />
       <Stack.Screen name="StoreDetails" component={StoreDetails}  options={{ headerShown: false }} />
       <Stack.Screen name="MunicipalityDetail" component={MunicipalityDetail} options={{ headerShown: false }} />
       <Stack.Screen name="PriceComparison" component={PriceComparison} options={{headerShown: false}} />

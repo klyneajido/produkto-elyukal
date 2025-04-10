@@ -1,4 +1,4 @@
-import { RouteProp } from "@react-navigation/native";
+import { NavigatorScreenParams, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
@@ -8,12 +8,19 @@ export type TabProps = {
   onTouchEnd?: () => void;
   onMomentumScrollEnd?: () => void;
 };
+export type TabsParamList = {
+  Home: undefined;
+  Favorites: undefined;
+  Profile: undefined;
+  Maps:undefined;
+};
 export type RootStackParamList = {
   Welcome: undefined;
   Login: undefined;
   Signup: undefined;
+  Maps: undefined;
   ForgotPassword: undefined;
-  Tabs: undefined;
+  Tabs: NavigatorScreenParams<TabsParamList>;
   ProductDetails: { product: Product; reviews?: Review[] };
   Products: undefined;
   Municipalities: undefined;
