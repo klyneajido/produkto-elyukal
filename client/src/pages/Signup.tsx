@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  Dimensions,
 } from "react-native";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -20,6 +21,19 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { BASE_URL } from "../config/config";
 import LinearGradient from "react-native-linear-gradient";
+import Footer from "../components/Footer";
+import FloatingARElement from "../components/Floatingelements";
+
+
+const { width, height } = Dimensions.get('window');
+
+type FloatingElement = {
+  type: string;
+  initialPosition: {
+    x: number;
+    y: number;
+  };
+};
 
 const SignupScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -36,6 +50,8 @@ const SignupScreen: React.FC = () => {
     password?: string;
     confirmPassword?: string;
   }>({});
+  const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
+  const [containerSize, setContainerSize] = useState({ width: width, height: 200 });
 
   const apiURL = `${BASE_URL}/auth/register`;
 
@@ -150,6 +166,20 @@ const SignupScreen: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (containerSize.width > 0 && containerSize.height > 0) {
+      const newElements: FloatingElement[] = [
+        { type: 'eye', initialPosition: { x: -containerSize.width * 0.6, y: -containerSize.height * 0.6 } },
+        { type: 'wave', initialPosition: { x: containerSize.width * 0.6, y: -containerSize.height * 0.6 } },
+        { type: 'box', initialPosition: { x: 0, y: containerSize.height * 0.6 } },
+        { type: 'hologram', initialPosition: { x: -containerSize.width * 0.6, y: containerSize.height * 0.6 } },
+        { type: 'palm', initialPosition: { x: containerSize.width * 0.6, y: containerSize.height * 0.6 } },
+        { type: 'star', initialPosition: { x: -containerSize.width * 0.6, y: 0 } },
+        { type: 'eye', initialPosition: { x: containerSize.width * 0.6, y: 0 } },
+      ];
+      setFloatingElements(newElements);
+    }
+  }, [containerSize]);
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -170,6 +200,14 @@ const SignupScreen: React.FC = () => {
                   size={25}
                 />
               </TouchableOpacity>
+              {floatingElements.map((element, index) => (
+                <FloatingARElement
+                  key={index}
+                  type={element.type}
+                  initialPosition={element.initialPosition}
+                  containerSize={containerSize}
+                />
+              ))}
               <Text style={styles.text}>Sign up</Text>
               <Text style={styles.subText}>
                 & Discover the hidden gems of La Union!
@@ -256,6 +294,9 @@ const SignupScreen: React.FC = () => {
               <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                 <Text style={styles.loginLinkText}>Login</Text>
               </TouchableOpacity>
+            </View>
+            <View style={styles.footerContainer}>
+              <Footer />
             </View>
           </View>
         </ScrollView>

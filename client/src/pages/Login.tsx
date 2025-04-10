@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
-    ImageBackground,
     TouchableOpacity,
-    SafeAreaView,
     KeyboardAvoidingView,
     Platform,
     StyleSheet,
     ScrollView,
+    Animated,
+    Easing,
+    Dimensions,
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -21,6 +22,16 @@ import { useAuth } from '../../contextAuth.tsx';
 import { BASE_URL } from '../config/config.ts';
 import LinearGradient from 'react-native-linear-gradient';
 import Footer from '../components/Footer.tsx';
+import FloatingARElement from '../components/Floatingelements.tsx';
+
+const { width, height } = Dimensions.get('window');
+type FloatingElement = {
+    type: string;
+    initialPosition: {
+        x: number;
+        y: number;
+    };
+};
 
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
@@ -28,6 +39,8 @@ const LoginScreen: React.FC = () => {
     const [email, setEmail] = useState('1@gmail.com');
     const [password, setPassword] = useState('123456');
     const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+    const [containerSize, setContainerSize] = useState({ width: width, height: 200 });
+    const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([])
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -141,8 +154,28 @@ const LoginScreen: React.FC = () => {
         navigation.navigate('ForgotPassword');
     };
 
-    // Get the first error message to display in the banner
     const errorMessage = errors.general || errors.email || errors.password;
+
+    const onGradientLayout = (event) => {
+        const { width, height } = event.nativeEvent.layout;
+        console.log('Gradient Container Size:', { width, height });
+        setContainerSize({ width, height });
+    };
+
+    useEffect(() => {
+        if (containerSize.width > 0 && containerSize.height > 0) {
+            const newElements: FloatingElement[] = [
+                { type: 'eye', initialPosition: { x: -containerSize.width * 0.6, y: -containerSize.height * 0.6 } },
+                { type: 'wave', initialPosition: { x: containerSize.width * 0.6, y: -containerSize.height * 0.6 } },
+                { type: 'box', initialPosition: { x: 0, y: containerSize.height * 0.6 } },
+                { type: 'hologram', initialPosition: { x: -containerSize.width * 0.6, y: containerSize.height * 0.6 } },
+                { type: 'palm', initialPosition: { x: containerSize.width * 0.6, y: containerSize.height * 0.6 } },
+                { type: 'star', initialPosition: { x: -containerSize.width * 0.6, y: 0 } },
+                { type: 'eye', initialPosition: { x: containerSize.width * 0.6, y: 0 } },
+            ];
+            setFloatingElements(newElements);
+        }
+    }, [containerSize]);
 
     return (
         <ScrollView style={styles.container}>
@@ -152,12 +185,22 @@ const LoginScreen: React.FC = () => {
             >
                 <View style={styles.logoContainer}>
                     <LinearGradient
-                     colors={['#6B48FF', '#8E2DE2']}
-                     start={{ x: 0, y: 0 }}
-                     end={{ x: 1, y: 1 }}
-                     style={styles.gradientContainer}>
-                         <Text style={styles.text}>Welcome back.</Text>
-                         <Text style={styles.subText}>Sign In & Pick Up Where You Left Off!</Text>
+                        colors={['#6B48FF', '#8E2DE2']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={[styles.gradientContainer, { position: 'relative' }]}
+                        onLayout={onGradientLayout}
+                    >
+                       {floatingElements.map((element, index) => (
+                            <FloatingARElement 
+                                key={index} 
+                                type={element.type} 
+                                initialPosition={element.initialPosition}
+                                containerSize={containerSize}
+                            />
+                        ))}
+                        <Text style={styles.text}>Welcome back.</Text>
+                        <Text style={styles.subText}>Sign In & Pick Up Where You Left Off!</Text>
                     </LinearGradient>
                 </View>
 
@@ -221,7 +264,4 @@ const LoginScreen: React.FC = () => {
         </ScrollView>
     );
 };
-
-
-
 export default LoginScreen;

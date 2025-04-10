@@ -16,6 +16,9 @@ const loginSignupStyles = StyleSheet.create({
     borderBottomLeftRadius: 20,
     overflow: "hidden",
   },
+  float:{
+    borderWidth:2
+  },
   bgImg: {
     height: 200,
     width: screenWidth,

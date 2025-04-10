@@ -150,6 +150,9 @@ signupButtonDisabled: {
   loginLinkText: {
     fontFamily: FONTS.semibold,
     color: COLORS.secondary,
+  },
+  footerContainer:{
+    marginTop:100,
   }
 });
 
