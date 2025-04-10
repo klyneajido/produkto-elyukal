@@ -49,7 +49,7 @@ const AppNavigator = () => {
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
       <Stack.Screen name="Tabs" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ headerShown: false }} />
-      <Stack.Screen name="Reviews" component={ReviewScreen} />
+      <Stack.Screen name="Reviews" component={ReviewScreen}options={{ headerShown: false }} />
       <Stack.Screen name="StoreDetails" component={StoreDetails}  options={{ headerShown: false }} />
       <Stack.Screen name="MunicipalityDetail" component={MunicipalityDetail} options={{ headerShown: false }} />
       <Stack.Screen name="PriceComparison" component={PriceComparison} options={{headerShown: false}} />

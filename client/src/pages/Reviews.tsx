@@ -1,363 +1,474 @@
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { Review, RootStackParamList } from "../../types/types";
-import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator } from "react-native-paper";
-import { COLORS, FONT_SIZE, FONTS } from "../assets/constants/constant";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import { useAuth } from "../../contextAuth";
-import { BASE_URL } from "../config/config";
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  ScrollView, View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Animated, Dimensions,
+  Alert
+} from 'react-native';
+import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
+import { Review, RootStackParamList } from '../../types/types';
+import { ActivityIndicator } from 'react-native-paper';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faStar, faMapMarkerAlt, faArrowLeft, faPencil, faTimes } from '@fortawesome/free-solid-svg-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useAuth } from '../../contextAuth';
+import { BASE_URL } from '../config/config';
+import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 
-// Correct route type for 'Reviews'
 type ReviewsRouteProp = RouteProp<RootStackParamList, 'Reviews'>;
+const { width, height } = Dimensions.get('window');
 
 const ReviewScreen: React.FC = () => {
-  const reviewInputRef = useRef<TextInput>(null);
+  const navigation = useNavigation();
+  useEffect(() => {
+    console.log('Navigation in ReviewScreen:', navigation);
+  }, [navigation]);
   const route = useRoute<ReviewsRouteProp>();
-  const { reviews: initialReviews, product } = route.params; // Destructure both reviews and product
+  const { reviews: initialReviews, product } = route.params;
   const { user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  
+  // Animation values
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const reviewContainerAnim = useRef(new Animated.Value(0)).current;
+  const fabAnim = useRef(new Animated.Value(1)).current;
+  const overlayOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const abortController = new AbortController();
     const fetchReviews = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
         const response = await axios.get(`${BASE_URL}/reviews/${product.id}`, {
           signal: abortController.signal,
         });
         setReviews(response.data);
-        setError(null);
       } catch (error: any) {
-        if (error.name === 'AbortError') {
-          console.log('Review fetch aborted');
-        } else {
-          console.error('Error fetching reviews:', error.message, error.response?.data);
-          setError('Failed to load reviews');
-        }
+        console.error('Error fetching reviews:', error);
       } finally {
         setLoading(false);
       }
     };
     fetchReviews();
     return () => abortController.abort();
-  }, [product.id]); 
+  }, [product.id]);
 
-  const formatDate = (timestamp: string): string => {
-    const date = new Date(timestamp);
-    return date.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
+  const formatDate = (timestamp: string) => new Date(timestamp).toLocaleDateString('en-GB');
 
   const submitReview = async () => {
-    if (!user || (user as any).guest) {
-      Alert.alert('Login Required', 'Please Log in as a Registered User to submit a Review');
-      return;
-    }
-    if (!reviewText || rating < 1 || rating > 5) {
-      Alert.alert('Invalid Input', 'Please provide a review and a rating between 1 and 5.');
-      return;
-    }
-    if (!product || !product.id) {
-      Alert.alert('Error', 'Product information is missing. Cannot submit review.');
-      return;
-    }
+    if (!user || (user as any).guest) return Alert.alert('Login Required', 'Please log in to review.');
+    if (!reviewText || rating < 1) return Alert.alert('Invalid Input', 'Add a review and rating.');
     setSubmitting(true);
-    const abortController = new AbortController();
     try {
       const token = await AsyncStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-      await axios.post(
-        `${BASE_URL}/reviews/`,
-        {
-          product_id: product.id, // Now uses the actual product ID
-          rating,
-          review_text: reviewText,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          signal: abortController.signal,
-        }
-      );
-      // Fetch updated reviews
-      const fetchResponse = await axios.get(`${BASE_URL}/reviews/${product.id}`, {
-        signal: abortController.signal,
-      });
-      setReviews(fetchResponse.data);
+      await axios.post(`${BASE_URL}/reviews/`, {
+        product_id: product.id, rating, review_text: reviewText,
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      const response = await axios.get(`${BASE_URL}/reviews/${product.id}`);
+      setReviews(response.data);
       setReviewText('');
       setRating(0);
-      setError(null);
-      Alert.alert('Success', 'Review submitted successfully!');
+      Alert.alert('Success', 'Review added!');
+      toggleReviewForm(); // Hide the form after successful submission
     } catch (error: any) {
-      if (error.name === 'AbortError') {
-        console.log('Review submission aborted');
-      } else {
-        console.error('Error submitting review:', error.message, error.response?.data);
-        Alert.alert('Error', error.response?.data?.detail || 'Failed to submit review.');
-      }
+      Alert.alert('Error', 'Failed to submit review.');
     } finally {
       setSubmitting(false);
     }
   };
 
+  const animateStar = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 1.2, duration: 100, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+    ]).start();
+  };
+
+  const toggleReviewForm = () => {
+    if (showReviewForm) {
+      // Hide review form
+      Animated.parallel([
+        Animated.timing(reviewContainerAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fabAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(overlayOpacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setShowReviewForm(false);
+      });
+    } else {
+      // Show review form
+      setShowReviewForm(true);
+      Animated.parallel([
+        Animated.timing(reviewContainerAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fabAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(overlayOpacity, {
+          toValue: 0.5,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  };
+
+  // Calculate transform values for the review container
+  const translateY = reviewContainerAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [300, 0],
+  });
+
   return (
-    <ScrollView style={styles.reviewContainer}>
-      <View>
-        <Text>See what other tourists have to say</Text>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <FontAwesomeIcon icon={faArrowLeft} size={20} color={COLORS.white} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Reviews for {product.name}</Text>
       </View>
-      {loading ? (
-        <ActivityIndicator size="small" color="#FDD700" />
-      ) : error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : reviews.length > 0 ? (
-        reviews.map((review, index) => (
-          <View key={index} style={styles.reviewCard}>
-            <View style={styles.topCardContainer}>
-              <View style={styles.subTopCardContainer}>
-                <Image style={styles.avatar} source={require('../assets/img/avatartion.png')} />
-                <Text style={styles.reviewUsername}>{review.full_name}</Text>
+
+      {/* Reviews List */}
+      <ScrollView style={styles.scrollContainer}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#6B48FF" />
+        ) : reviews.length > 0 ? (
+          reviews.map((review, index) => (
+            <View key={index} style={styles.reviewCard}>
+              <View style={styles.reviewHeader}>
+                <Image source={require('../assets/img/avatartion.png')} style={styles.avatar} />
+                <View>
+                  <Text style={styles.reviewUsername}>{review.full_name}</Text>
+                  <View style={styles.starContainer}>
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <FontAwesomeIcon
+                        key={i}
+                        icon={faStar}
+                        size={14}
+                        color={i < review.rating ? '#E0A800' : '#E5E7EB'}
+                      />
+                    ))}
+                  </View>
+                </View>
+                <View style={styles.date}>
+                  <Text style={styles.reviewDate}>{formatDate(review.created_at)}</Text>
+                </View>
               </View>
-              <Text style={styles.reviewDate}>{formatDate(review.created_at)}</Text>
+
+              <Text style={styles.reviewText} numberOfLines={2}>{review.review_text}</Text>
             </View>
-            <View style={styles.starContainer}>
-              {Array.from({ length: Math.floor(review.rating) }).map((_, i) => (
-                <FontAwesomeIcon
-                  key={`${index}-${i}`}
-                  icon={faStar}
-                  size={12}
-                  color="#FDD700"
-                />
-              ))}
-            </View>
-            <Text style={styles.reviewComment}>{review.review_text}</Text>
-          </View>
-        ))
-      ) : (
-        <Text style={styles.noReviewsText}>No reviews available</Text>
+          ))
+        ) : (
+          <Text style={styles.noReviews}>No reviews yet. Be the first!</Text>
+        )}
+        
+        {/* Add extra space at the bottom for FAB clearance */}
+        <View style={{ height: 80 }} />
+      </ScrollView>
+
+      {/* Overlay */}
+      {showReviewForm && (
+        <Animated.View 
+          style={[
+            styles.overlay,
+            { opacity: overlayOpacity }
+          ]}
+          pointerEvents={showReviewForm ? "auto" : "none"}
+          onTouchStart={toggleReviewForm}
+        />
       )}
+
+      {/* Floating Action Button */}
       {user && !(user as any).guest && (
-        <View style={styles.addReviewContainer}>
-          <Text style={styles.sectionTitle}>Add Your Review</Text>
+        <Animated.View 
+          style={[
+            styles.fabContainer,
+            { 
+              transform: [
+                { scale: fabAnim }
+              ],
+              opacity: fabAnim
+            }
+          ]}
+        >
+          <TouchableOpacity
+            style={styles.fab}
+            onPress={toggleReviewForm}
+            activeOpacity={0.8}
+          >
+            <FontAwesomeIcon icon={faPencil} size={24} color={COLORS.white} />
+          </TouchableOpacity>
+        </Animated.View>
+      )}
+
+      {/* Review Input Form */}
+      {user && !(user as any).guest && showReviewForm && (
+        <Animated.View 
+          style={[
+            styles.footer,
+            {
+              transform: [
+                { translateY: translateY }
+              ]
+            }
+          ]}
+        >
+          <View style={styles.reviewFormHeader}>
+            <Text style={styles.ratingLabel}>Rate this product</Text>
+            <TouchableOpacity onPress={toggleReviewForm}>
+              <FontAwesomeIcon icon={faTimes} size={22} color={COLORS.gray} />
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.ratingContainer}>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <TouchableOpacity
+                key={star}
+                onPress={() => { setRating(star); animateStar(); }}
+                style={styles.starButton}
+              >
+                <Animated.View style={{ transform: [{ scale: star === rating ? scaleAnim : 1 }] }}>
+                  <FontAwesomeIcon
+                    icon={faStar}
+                    size={28}
+                    color={star <= rating ? '#E0A800' : '#E5E7EB'}
+                  />
+                </Animated.View>
+              </TouchableOpacity>
+            ))}
+          </View>
+          
           <TextInput
-            ref={reviewInputRef}
             style={styles.input}
             placeholder="Write your review here..."
-            placeholderTextColor={COLORS.gray}
+            placeholderTextColor={COLORS.lightgray}
             value={reviewText}
             onChangeText={setReviewText}
             multiline
+            numberOfLines={3}
+            maxLength={200}
           />
-          <View style={styles.ratingContainer}>
-            <Text style={styles.text}>Rating: </Text>
-            <View style={styles.starsRow}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <TouchableOpacity
-                  key={star}
-                  onPress={() => setRating(star)}
-                  style={styles.starButton}
-                >
-                  <FontAwesomeIcon
-                    icon={faStar}
-                    size={24}
-                    color={star <= rating ? '#FDD700' : '#E0E0E0'}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
+          
+          <View style={styles.characterCount}>
+            <Text style={styles.characterCountText}>{reviewText.length}/200</Text>
           </View>
+          
           <TouchableOpacity
+            style={[
+              styles.submitButton, 
+              (submitting || !reviewText.trim() || rating === 0) && styles.submitButtonDisabled
+            ]}
             onPress={submitReview}
-            disabled={submitting}
-            style={[styles.submitButton, submitting && styles.submitButtonDisabled]}
-            activeOpacity={0.8}
+            disabled={submitting || !reviewText.trim() || rating === 0}
           >
-            <Text style={styles.submitButtonText}>
-              {submitting ? "Submitting..." : "Submit Review"}
-            </Text>
+            {submitting ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.submitButtonText}>Submit Review</Text>
+            )}
           </TouchableOpacity>
-        </View>
+        </Animated.View>
       )}
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  reviewContainer: {
-    backgroundColor:COLORS.white,
-    paddingVertical:10
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
   },
-  topHeader: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottomWidth: 2,
-    borderBottomColor: COLORS.secondary,
-    paddingBottom: 5,
-    marginBottom: 10,
-    marginHorizontal: 20,
-  },
-  sectionTitle: {
-    fontSize: FONT_SIZE.large,
-    fontFamily: FONTS.bold,
-    color: '#333',
-    marginHorizontal: 20,
-  },
-  title: {
-    fontSize: FONT_SIZE.large,
-    fontFamily: FONTS.bold,
-    color: '#333',
-  },
-  subTitle: {
-    fontSize: FONT_SIZE.medium,
-    fontFamily: FONTS.regular,
-    color: COLORS.primary,
-  },
-  text: {
-    color: COLORS.black,
-  },
-  submitButton: {
-    marginTop: 10,
+    padding: 20,
     backgroundColor: COLORS.primary,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 5,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
-    marginHorizontal: 20,
+    elevation: 2,
+    borderBottomLeftRadius: 20,
   },
-  submitButtonDisabled: {
-    backgroundColor: COLORS.lightgray,
-    borderColor: "rgba(0, 0, 0, 0.1)",
-    marginHorizontal: 20,
-  },
-  submitButtonText: {
-    fontSize: 16,
+  headerTitle: {
+    fontSize: FONT_SIZE.large+2,
     fontFamily: FONTS.semibold,
-    color: "white",
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-    marginHorizontal: 20,
+    color: COLORS.white,
+    marginLeft: 16,
+  },
+  scrollContainer: {
+    padding: 16,
   },
   reviewCard: {
-    backgroundColor: COLORS.white,
-    padding: 16,
-    borderRadius: 8,
-    shadowColor: COLORS.black,
-    borderLeftColor: COLORS.primary,
-    borderLeftWidth: 4,
-    marginHorizontal: 5,
-    borderBottomColor: COLORS.lightgray,
-    borderBottomWidth: 1,
-    marginTop:5,
+    backgroundColor: COLORS.container,
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+    minHeight: 120,
   },
-  topCardContainer: {
+  reviewHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    marginBottom: 8,
   },
-  subTopCardContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-   
-},
-avatar:{
-    width:40,
-    height:40,
-    borderRadius:20,
-    borderWidth:2,
-    marginRight:5,
-},
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
+  },
   reviewUsername: {
-    fontSize: FONT_SIZE.medium,
+    fontSize: 16,
     fontFamily: FONTS.semibold,
-    marginBottom: 2,
     color: COLORS.black,
   },
   reviewDate: {
-    fontSize: FONT_SIZE.medium - 2,
+    fontSize: 12,
     fontFamily: FONTS.regular,
     color: COLORS.gray,
   },
-  reviewComment: {
-    fontSize: FONT_SIZE.small + 2,
-    marginVertical: 8,
-    color: COLORS.black,
+  date: {
+    marginLeft: 'auto',
+    right: 0,
+    top: 3,
+    position: 'absolute'
   },
   starContainer: {
     flexDirection: 'row',
-    gap: 4,
+    marginBottom: 8,
   },
-  noReviewsText: {
+  reviewText: {
+    marginTop: 10,   
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.regular,
+    color: COLORS.gray,
+  },
+  noReviews: {
     textAlign: 'center',
     color: COLORS.gray,
-    marginTop: 16,
-    marginHorizontal: 20,
+    fontSize: 14,
+    padding: 20,
   },
-
-  input: {
-    fontFamily:FONTS.regular,
-    borderRadius: 4,
-    padding: 10,
-    minHeight: 40,
+  // Overlay for background dimming
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#000',
+    zIndex: 1,
+  },
+  // Floating Action Button
+  fabContainer: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    zIndex: 2,
+  },
+  fab: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  // Review Form
+  footer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 3,
+  },
+  reviewFormHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  ratingLabel: {
+    fontSize: 16,
+    fontFamily: FONTS.semibold,
     color: COLORS.black,
-    marginHorizontal: 20,
-    backgroundColor:COLORS.white,
-    letterSpacing:0.1
-  },
-  addReviewContainer: {
-    marginVertical: 20,
-    backgroundColor: COLORS.container,
-    borderRadius: 12,
-    paddingVertical: 15,
-    marginHorizontal: 5,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 3, height: 5 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
   },
   ratingContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 10,
-    marginHorizontal: 20,
-  },
-  starsRow: {
-    flexDirection: 'row',
-    marginLeft: 8,
+    justifyContent: 'center',
+    marginBottom: 20,
   },
   starButton: {
-    padding: 5,
+    padding: 6,
   },
-  errorText: {
-    textAlign: 'center',
-    color: COLORS.red,
-    marginTop: 16,
-    marginHorizontal: 20,
-    fontSize: FONT_SIZE.medium,
+  input: {
+    borderColor: COLORS.lightgray,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 14,
+    fontFamily: FONTS.regular,
+    color: COLORS.black,
+    textAlignVertical: 'top',
+    height: 100,
+  },
+  characterCount: {
+    alignItems: 'flex-end',
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  characterCountText: {
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    color: COLORS.gray,
+  },
+  submitButton: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  submitButtonDisabled: {
+    backgroundColor: COLORS.lightgray,
+  },
+  submitButtonText: {
+    color: COLORS.white,
+    fontSize: FONT_SIZE.large,
+    letterSpacing: 0.2,
+    fontFamily: FONTS.semibold,
   },
 });
+
 export default ReviewScreen;
