@@ -24,44 +24,8 @@ import { COLORS } from '../assets/constants/constant';
 import styles from '../assets/style/storeDetailsStyle';
 import { BASE_URL } from '../config/config';
 import axios from 'axios';
+import { Product, Store, StoreDetailsProps } from '../../types/types';
 
-interface Product {
-    id: string;
-    name: string;
-    description: string;
-    category: string;
-    price: number | null;
-    image_urls: string[];
-    in_stock: boolean;
-    rating: number | null;
-    store_id: string;
-    average_rating?: string;
-    total_reviews?: number;
-    ar_asset_url?: string;
-    address?: string;
-}
-
-interface Store {
-    store_id: string;
-    name: string;
-    description: string;
-    latitude: number;
-    longitude: number;
-    rating: number | null;
-    store_image: string | null;
-    type: string | null;
-    operating_hours?: string;
-    phone?: string;
-}
-
-interface StoreDetailsProps {
-    route: {
-        params: {
-            store: Store;
-        };
-    };
-    navigation: any;
-}
 
 const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
     const { store } = route.params;
@@ -81,10 +45,18 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                 const storeProducts = response.data.products.filter(
                     (product: Product) => product.store_id === store.store_id
                 );
-                setProducts(storeProducts.map((product: Product) => ({
-                    ...product,
-                    rating: product.average_rating ? parseFloat(product.average_rating) : null,
-                })));
+                setProducts(
+                    storeProducts.map((product: Product) => ({
+                        ...product,
+                        // No need for parseFloat since average_rating is already a number
+                        rating:
+                            product.average_rating !== null &&
+                                product.average_rating !== undefined &&
+                                !isNaN(product.average_rating)
+                                ? product.average_rating
+                                : null,
+                    }))
+                );
             }
         } catch (err) {
             console.error('Error fetching products:', err);
@@ -94,12 +66,17 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
         }
     };
 
+
     const formatRating = (rating: number | null | undefined): string => {
-        return rating ? rating.toFixed(1) : '0';
+        // Ensure the rating is valid, otherwise return '0'
+        return rating !== null && rating !== undefined && !isNaN(rating)
+            ? rating.toFixed(1)
+            : '0';
     };
 
-    const formatPrice = (price: number | null | undefined): string => {
-        return price ? price.toFixed(2) : 'N/A';
+
+    const formatPrice = (price_min: number | null | undefined): string => {
+        return price_min ? price_min.toFixed(2) : 'N/A';
     };
 
     const navigateToProductDetails = (product: Product) => {
@@ -108,7 +85,7 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
 
     const renderProductCard = (product: Product) => (
         <TouchableOpacity
-            key={product.id} // Moved key here to the top-level element
+            key={product.id}
             onPress={() => navigateToProductDetails(product)}
             activeOpacity={0.8}
         >
@@ -136,7 +113,7 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                             <View style={styles.priceContainer}>
                                 <FontAwesomeIcon icon={faPesoSign} size={14} color={COLORS.secondary} />
                                 <Text style={styles.productPrice}>
-                                    {formatPrice(product.price)}
+                                    {formatPrice(product.price_min)}
                                 </Text>
                             </View>
                             <View style={styles.ratingContainer}>

@@ -94,8 +94,8 @@ const styles = StyleSheet.create({
     },
     arButtonText: {
         color: "#FFF",
-        fontSize: 18,
-        fontWeight: "600",
+        fontSize: FONT_SIZE.extraLarge,
+        fontFamily:FONTS.bold,
         marginLeft: 10,
     },
     sectionTitle: {
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
         color: "#333",
         marginBottom: 10,
         borderBottomWidth: 2,
-        borderBottomColor: COLORS.secondary,
+        borderBottomColor: COLORS.lightgray,
         paddingBottom: 5,
         marginHorizontal: 20,
     },
