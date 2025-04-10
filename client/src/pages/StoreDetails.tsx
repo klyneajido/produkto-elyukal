@@ -66,13 +66,13 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
         }
     };
 
-
     const formatRating = (rating: number | null | undefined): string => {
-        // Ensure the rating is valid, otherwise return '0'
-        return rating !== null && rating !== undefined && !isNaN(rating)
+        // Ensure the rating is a valid number, otherwise return '0'
+        return typeof rating === 'number' && !isNaN(rating) && rating !== null && rating !== undefined
             ? rating.toFixed(1)
             : '0';
     };
+    
 
 
     const formatPrice = (price_min: number | null | undefined): string => {
