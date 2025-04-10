@@ -159,7 +159,11 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
 
     // Truncate description to 100 characters
     const truncatedDescription = truncateText(product.description || '', 600);
-    const productInfoText = `${truncatedDescription}\n${product.in_stock ? 'Stock Available' : 'Sorry, Out of Stock'}\n₱${product.price?.toFixed(2)}`;
+    // Display price range using price_min and price_max
+    const priceRangeText = product.price_min && product.price_max ? 
+        `₱${product.price_min?.toFixed(2)} - ₱${product.price_max?.toFixed(2)}` : 
+        (product.price ? `₱${product.price?.toFixed(2)}` : 'Price not available');
+    const productInfoText = `${truncatedDescription}\n${product.in_stock ? 'Stock Available' : 'Sorry, Out of Stock'}\n${priceRangeText}`;
 
     return (
         <ViroARScene onTrackingUpdated={onInitialized}>
@@ -189,6 +193,7 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                                 setIsPinching(false);
                             }
                         }}
+
                         onError={(event) => console.error("3D Object Loading Error:", event)}
                     />
 
