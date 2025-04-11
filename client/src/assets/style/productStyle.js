@@ -227,6 +227,28 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: 'center',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontFamily:FONTS.regular,
+    fontSize: FONT_SIZE.large,
+    color: '#333',
+  },
+  resultsIndicator: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+  resultsText: {
+    fontSize: FONT_SIZE.medium,
+    color: '#666',
+    fontFamily:FONTS.regular,
+    fontStyle:'italic'
+  },
 });
 
 export default styles;

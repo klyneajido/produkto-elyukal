@@ -9,6 +9,7 @@ import {
   ScrollView,
   Modal,
   Animated,
+  ActivityIndicator,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
@@ -121,19 +122,35 @@ function fuzzySearch<T>(
 const Products: React.FC<ProductsProps> = ({ onScroll }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchText, setSearchText] = useState('');
+  const [inputText, setInputText] = useState(''); // New state for immediate input
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPriceRange, setSelectedPriceRange] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Debouncing logic
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchText(inputText); // Update searchText after debounce
+    }, 500); // 500ms debounce delay
+
+    // Cleanup timeout on inputText change or component unmount
+    return () => clearTimeout(handler);
+  }, [inputText]);
+
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get(`${BASE_URL}/products/fetch_products`);
         setProducts(response.data.products || []);
       } catch (e) {
-        setProducts([]); // Set empty array on error
+        setProducts([]);
         console.error('Failed to fetch products:', e);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchProducts();
@@ -206,6 +223,7 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
 
   const resetFilters = () => {
     setSearchText('');
+    setInputText(''); // Reset inputText as well
     setSelectedCategories([]);
     setSelectedPriceRange([]);
     setInStockOnly(false);
@@ -216,125 +234,143 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-<View style={styles.topHeader}>
-  <View style={styles.header}>
-    <Text style={styles.headerTitle}>Products</Text>
-    <Text style={styles.headerSubtitle}>Discover Local Products</Text>
-  </View>
-
-  <View style={styles.searchRow}>
-    <View style={styles.searchBarContainer}>
-      <FontAwesomeIcon
-        icon={faSearch}
-        size={16}
-        color="#888"
-        style={styles.searchIcon}
-      />
-      <TextInput
-        style={styles.searchBar}
-        onChangeText={setSearchText}
-        value={searchText}
-        placeholder="Search by name, store, or town"
-        placeholderTextColor="#888"
-      />
-    </View>
-
-    <TouchableOpacity
-      style={styles.filterButton}
-      onPress={() => setShowFilters(true)}
-    >
-      <FontAwesomeIcon icon={faSliders} size={20} color={COLORS.secondary} />
-    </TouchableOpacity>
-  </View>
-</View>
-
-
-        <Modal visible={showFilters} animationType="slide" transparent>
-          <View style={styles.filterModal}>
-            <View style={styles.filterContent}>
-              <View style={styles.filterHeader}>
-                <Text style={styles.filterTitle}>Filters</Text>
-                <TouchableOpacity onPress={() => setShowFilters(false)}>
-                  <FontAwesomeIcon icon={faTimes} size={24} color="#333" />
-                </TouchableOpacity>
-              </View>
-
-              <ScrollView>
-                <View style={styles.filterSection}>
-                  <Text style={styles.filterSubtitle}>Category</Text>
-                  {categories.map((category) => (
-                    <TouchableOpacity
-                      key={category}
-                      style={styles.filterOption}
-                      onPress={() => toggleCategory(category)}
-                    >
-                      <FontAwesomeIcon
-                        icon={selectedCategories.includes(category) ? faCheckSquare : faSquare}
-                        size={20}
-                        color="#666"
-                      />
-                      <Text style={styles.filterOptionText}>{category}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-
-                <View style={styles.filterSection}>
-                  <Text style={styles.filterSubtitle}>Price Range</Text>
-                  {priceRanges.map((range) => (
-                    <TouchableOpacity
-                      key={range.value}
-                      style={styles.filterOption}
-                      onPress={() => togglePriceRange(range.value)}
-                    >
-                      <FontAwesomeIcon
-                        icon={selectedPriceRange.includes(range.value) ? faCheckSquare : faSquare}
-                        size={20}
-                        color="#666"
-                      />
-                      <Text style={styles.filterOptionText}>{range.label}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-
-                <View style={styles.filterSection}>
-                  <Text style={styles.filterSubtitle}>Availability</Text>
-                  <TouchableOpacity
-                    style={styles.filterOption}
-                    onPress={() => setInStockOnly(!inStockOnly)}
-                  >
-                    <FontAwesomeIcon
-                      icon={inStockOnly ? faCheckSquare : faSquare}
-                      size={20}
-                      color="#666"
-                    />
-                    <Text style={styles.filterOptionText}>In Stock Only</Text>
-                  </TouchableOpacity>
-                </View>
-              </ScrollView>
-
-              <View style={styles.filterActions}>
-                <TouchableOpacity style={styles.resetButton} onPress={resetFilters}>
-                  <Text style={styles.resetButtonText}>Reset</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.applyButton}
-                  onPress={() => setShowFilters(false)}
-                >
-                  <Text style={styles.applyButtonText}>Apply</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+        <View style={styles.topHeader}>
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Products</Text>
+            <Text style={styles.headerSubtitle}>Discover Local Products</Text>
           </View>
-        </Modal>
 
-        <Animated.ScrollView
-          style={styles.productContainer}
-          showsVerticalScrollIndicator={false}
-          onScroll={onScroll}
-          scrollEventThrottle={16}
-        >
-          <ProductList products={filteredProducts} />
-        </Animated.ScrollView>
+          <View style={styles.searchRow}>
+            <View style={styles.searchBarContainer}>
+              <FontAwesomeIcon
+                icon={faSearch}
+                size={16}
+                color="#888"
+                style={styles.searchIcon}
+              />
+              <TextInput
+                style={styles.searchBar}
+                onChangeText={setInputText} // Update inputText instead of searchText
+                value={inputText} // Bind to inputText
+                placeholder="Search by name, store, or town"
+                placeholderTextColor="#888"
+              />
+            </View>
+
+            <TouchableOpacity
+              style={styles.filterButton}
+              onPress={() => setShowFilters(true)}
+            >
+              <FontAwesomeIcon icon={faSliders} size={20} color={COLORS.secondary} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Loading Indicator */}
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={COLORS.secondary} />
+            <Text style={styles.loadingText}>Loading products...</Text>
+          </View>
+        ) : (
+          <>
+            {/* Search Results Indicator */}
+            {searchText ? (
+              <View style={styles.resultsIndicator}>
+                <Text style={styles.resultsText}>
+                  Results for "{searchText}"
+                </Text>
+              </View>
+            ) : null}
+
+            <Modal visible={showFilters} animationType="slide" transparent>
+              <View style={styles.filterModal}>
+                <View style={styles.filterContent}>
+                  <View style={styles.filterHeader}>
+                    <Text style={styles.filterTitle}>Filters</Text>
+                    <TouchableOpacity onPress={() => setShowFilters(false)}>
+                      <FontAwesomeIcon icon={faTimes} size={24} color="#333" />
+                    </TouchableOpacity>
+                  </View>
+
+                  <ScrollView>
+                    <View style={styles.filterSection}>
+                      <Text style={styles.filterSubtitle}>Category</Text>
+                      {categories.map((category) => (
+                        <TouchableOpacity
+                          key={category}
+                          style={styles.filterOption}
+                          onPress={() => toggleCategory(category)}
+                        >
+                          <FontAwesomeIcon
+                            icon={selectedCategories.includes(category) ? faCheckSquare : faSquare}
+                            size={20}
+                            color="#666"
+                          />
+                          <Text style={styles.filterOptionText}>{category}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+
+                    <View style={styles.filterSection}>
+                      <Text style={styles.filterSubtitle}>Price Range</Text>
+                      {priceRanges.map((range) => (
+                        <TouchableOpacity
+                          key={range.value}
+                          style={styles.filterOption}
+                          onPress={() => togglePriceRange(range.value)}
+                        >
+                          <FontAwesomeIcon
+                            icon={selectedPriceRange.includes(range.value) ? faCheckSquare : faSquare}
+                            size={20}
+                            color="#666"
+                          />
+                          <Text style={styles.filterOptionText}>{range.label}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+
+                    <View style={styles.filterSection}>
+                      <Text style={styles.filterSubtitle}>Availability</Text>
+                      <TouchableOpacity
+                        style={styles.filterOption}
+                        onPress={() => setInStockOnly(!inStockOnly)}
+                      >
+                        <FontAwesomeIcon
+                          icon={inStockOnly ? faCheckSquare : faSquare}
+                          size={20}
+                          color="#666"
+                        />
+                        <Text style={styles.filterOptionText}>In Stock Only</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </ScrollView>
+
+                  <View style={styles.filterActions}>
+                    <TouchableOpacity style={styles.resetButton} onPress={resetFilters}>
+                      <Text style={styles.resetButtonText}>Reset</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.applyButton}
+                      onPress={() => setShowFilters(false)}
+                    >
+                      <Text style={styles.applyButtonText}>Apply</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+
+            <Animated.ScrollView
+              style={styles.productContainer}
+              showsVerticalScrollIndicator={false}
+              onScroll={onScroll}
+              scrollEventThrottle={16}
+            >
+              <ProductList products={filteredProducts} />
+            </Animated.ScrollView>
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
