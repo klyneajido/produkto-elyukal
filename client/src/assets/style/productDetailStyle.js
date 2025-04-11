@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     bottom: 20,
-    right: 20,
+    left: 150,
     backgroundColor: "rgba(0, 0, 0, 0.7)",
     padding: 10,
     borderRadius: 25,
@@ -293,10 +293,11 @@ const styles = StyleSheet.create({
   arButtonsContainer: {
     position: "absolute",
     bottom: 20,
-    left: 0,
-    right: 0,
+    alignSelf: "center",
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 110,
     padding: 20,
   },
   cameraButton: {
@@ -309,6 +310,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
+    overflow: "hidden",
   },
   cameraButtonInner: {
     width: 60,
@@ -316,6 +318,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
+    overflow: "hidden",
   },
   cameraButtonInnerCircle: {
     width: 56,
@@ -329,6 +332,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    overflow: "hidden",
   },
  
   similarContainer: {},

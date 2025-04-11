@@ -72,7 +72,7 @@ const ReviewScreen: React.FC = () => {
       setReviews(response.data);
       setReviewText('');
       setRating(0);
-      Alert.alert('Success', 'Review added!');
+      // Alert.alert('Success', 'Review added!!!!!');
       toggleReviewForm(); // Hide the form after successful submission
     } catch (error: any) {
       Alert.alert('Error', 'Failed to submit review.');
