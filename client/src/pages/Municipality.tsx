@@ -16,7 +16,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
     faSearch,
     faMapMarkerAlt,
-    faMapPin
+    faMapPin,
+    faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { BASE_URL } from '../config/config.ts';
@@ -84,32 +85,37 @@ const Municipalities: React.FC<MunicipalityProps> = ({
         navigation.navigate('MunicipalityDetail', {
             id: municipalityId,
             name: municipalityName,
-            image_url: municipalities.find(m => m.id === municipalityId)?.image_url 
+            image_url: municipalities.find(m => m.id === municipalityId)?.image_url
         });
     };
 
     const renderMunicipalityCard = ({ item }: { item: Municipality }) => (
         <TouchableOpacity
             key={item.id}
-            style={cardStyle}
+            style={[styles.card, { width: cardWidth }]}
             onPress={() => handleMunicipalityPress(item.id, item.name)}
-            activeOpacity={0.9}
+            activeOpacity={0.8}
         >
             <Image
                 source={{ uri: item.image_url }}
-                style={styles.municipalityImage}
+                style={styles.cardImage}
                 resizeMode="cover"
+                onError={() => console.log("Image load error - continuing silently")}
             />
-            <View style={styles.modernCardOverlay} />
-            <View style={styles.modernCardContent}>
-                <View style={styles.modernBadge}>
-                    <FontAwesomeIcon
-                        icon={faMapPin} 
-                        size={12}
-                        color={COLORS.gold}
-                    />
+            <View style={styles.cardOverlay} />
+            <View style={styles.locationBadge}>
+                <FontAwesomeIcon
+                    icon={faMapPin}
+                    size={10}
+                    color={COLORS.white}
+                />
+            </View>
+            <View style={styles.cardContent}>
+                <Text style={styles.cardTitle} numberOfLines={1}>{item.name}</Text>
+                <View style={styles.cardAction}>
+                    <Text style={styles.cardActionText}>Explore</Text>
+                    <FontAwesomeIcon icon={faChevronRight} size={12} color={COLORS.white} />
                 </View>
-                <Text style={styles.modernMunicipalityName}>{item.name}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -125,6 +131,11 @@ const Municipalities: React.FC<MunicipalityProps> = ({
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.modernHeader}>
+            <View style={styles.header}>
+        <Text style={styles.headerTitle}>Municipalities</Text>
+        <Text style={styles.headerSubtitle}>Discover local places</Text>
+      </View>
+
                 <View style={styles.modernSearchBarContainer}>
                     <FontAwesomeIcon
                         icon={faSearch}
@@ -143,30 +154,35 @@ const Municipalities: React.FC<MunicipalityProps> = ({
             </View>
 
             {loading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={COLORS.primary} />
-                    <Text style={styles.loadingText}>Loading municipalities...</Text>
-                </View>
-            ) : filteredMunicipalities.length > 0 ? (
-                <FlatList
-                    data={filteredMunicipalities}
-                    renderItem={renderMunicipalityCard}
-                    keyExtractor={(item) => item.id}
-                    numColumns={2}
-                    contentContainerStyle={styles.modernGridContainer}
-                    columnWrapperStyle={styles.modernRow}
-                    showsVerticalScrollIndicator={false}
-                    onScroll={onScroll}
-                    scrollEventThrottle={16} // Ensures smooth scroll handling
-                />
-            ) : (
-                <View style={styles.noResults}>
-                    <Text style={styles.noResultsText}>No municipalities found</Text>
-                    <Text style={styles.noResultsSubtext}>
-                        Try another search term or check back later
-                    </Text>
-                </View>
-            )}
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading municipalities...</Text>
+        </View>
+      ) : filteredMunicipalities.length > 0 ? (
+        <FlatList
+          data={filteredMunicipalities}
+          renderItem={renderMunicipalityCard}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          contentContainerStyle={styles.grid}
+          columnWrapperStyle={styles.row}
+          showsVerticalScrollIndicator={false}
+          onScroll={onScroll}
+          scrollEventThrottle={16}
+        />
+      ) : (
+        <View style={styles.centerContainer}>
+          <FontAwesomeIcon
+            icon={faSearch}
+            size={40}
+            color={COLORS.lightgray}
+          />
+          <Text style={styles.noResultsText}>No municipalities found</Text>
+          <Text style={styles.noResultsSubtext}>
+            Try another search term or check back later
+          </Text>
+        </View>
+      )}
         </SafeAreaView>
     );
 };
