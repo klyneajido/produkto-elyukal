@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import styles from '../assets/style/settingStyle';
 import {
     View,
     Text,
-    StyleSheet,
     Switch,
     TouchableOpacity,
     ScrollView,
-    Modal
+    Modal,
+    StatusBar,
+    Image,
+    SafeAreaView,
+    Platform,
+    Animated,
+    Pressable
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
@@ -18,47 +22,43 @@ import {
     faInfoCircle,
     faLock,
     faEnvelope,
-    faImage,
-    faCreditCard,
     faQuestionCircle,
-    faRunning
+    faRightFromBracket,
+    faChevronRight,
+    faMoon,
+    faGlobe,
+    faShoppingBag
 } from '@fortawesome/free-solid-svg-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types/types';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contextAuth.tsx';
+import styles from '../assets/style/settingStyle';
+import { COLORS } from '../assets/constants/constant.ts';
+import Footer from '../components/Footer.tsx';
 
 // Type guard to check if user is GuestUser
 const isGuestUser = (user: any): user is { guest: boolean } => {
     return user && 'guest' in user;
 };
 
-const LogoutModal = ({ modalVisible, setModalVisible, logoutUser }) => {
-    return (
-        <Modal transparent={true} visible={modalVisible} animationType="fade">
-            <View style={styles.modalBackground}>
-                <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Are you sure you want to logout?</Text>
-                    <View style={styles.modalActions}>
-                        <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                            <Text style={styles.cancelButtonText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.logoutButton} onPress={logoutUser}>
-                            <Text style={styles.logoutButtonText}>Logout</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        </Modal>
-    );
-};
+interface SettingItemProps {
+    icon: any;
+    title: string;
+    subtitle?: string;
+    onPress?: () => void;
+    rightComponent?: React.ReactNode;
+    showDivider?: boolean;
+}
 
 const SettingsScreen: React.FC = () => {
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+    const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+    const [logoutModalVisible, setLogoutModalVisible] = useState(false);
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-    const [modalVisible, setModalVisible] = useState(false);
     const { user } = useAuth();
+    const [profileAnimation] = useState(new Animated.Value(0));
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -69,138 +69,269 @@ const SettingsScreen: React.FC = () => {
             }
         };
         checkAuth();
+
+        // Animate profile section on load
+        Animated.timing(profileAnimation, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+        }).start();
     }, [user]);
 
-    const SettingItem = ({
-        icon,
-        title,
-        subtitle,
-        rightComponent
-    }: {
-        icon: any,
-        title: string,
-        subtitle?: string,
-        rightComponent?: React.ReactNode
-    }) => (
-        <View style={styles.settingItem}>
-            <View style={styles.settingItemLeft}>
-                <FontAwesomeIcon icon={icon} size={20} color="#ffa726" />
-                <View style={styles.settingTextContainer}>
-                    <Text style={styles.settingTitle}>{title}</Text>
-                    {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
-                </View>
-            </View>
-            {rightComponent}
-        </View>
-    );
-
-    const logout_user = async () => {
+    const logoutUser = async () => {
         await AsyncStorage.removeItem("token");
+        setLogoutModalVisible(false);
         navigation.navigate("Login");
     };
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.headerText}>Settings</Text>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <View style={styles.settingsSection}>
-                    <SettingItem
-                        icon={faUser}
-                        title="Account Details"
-                        subtitle="Manage personal information"
-                        rightComponent={
-                            <TouchableOpacity style={styles.actionButton}>
-                                <Text style={styles.actionButtonText}>Edit</Text>
-                            </TouchableOpacity>
-                        }
+    const SettingItem: React.FC<SettingItemProps> = ({
+        icon,
+        title,
+        subtitle,
+        onPress,
+        rightComponent,
+        showDivider = true
+    }) => (
+        <>
+            <TouchableOpacity
+                style={styles.settingItem}
+                onPress={onPress}
+                activeOpacity={0.7}
+            >
+                <View style={styles.settingItemLeft}>
+                    <View style={styles.iconContainer}>
+                        <FontAwesomeIcon icon={icon} size={18} color={COLORS.primary} />
+                    </View>
+                    <View style={styles.settingTextContainer}>
+                        <Text style={styles.settingTitle}>{title}</Text>
+                        {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
+                    </View>
+                </View>
+                {rightComponent || (
+                    <FontAwesomeIcon icon={faChevronRight} size={14} color="#A0A0A0" />
+                )}
+            </TouchableOpacity>
+            {showDivider && <View style={styles.divider} />}
+        </>
+    );
+
+    const LogoutModal = () => (
+        <Modal
+            transparent={true}
+            visible={logoutModalVisible}
+            animationType="fade"
+            statusBarTranslucent
+        >
+            <View style={styles.modalBackground}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalIconContainer}>
+                        <FontAwesomeIcon icon={faRightFromBracket} size={28} color="#FF6347" />
+                    </View>
+                    <Text style={styles.modalTitle}>Sign Out</Text>
+                    <Text style={styles.modalDescription}>
+                        Are you sure you want to sign out of your account?
+                    </Text>
+                    <View style={styles.modalActions}>
+                        <TouchableOpacity
+                            style={styles.cancelButton}
+                            onPress={() => setLogoutModalVisible(false)}
+                        >
+                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.logoutButton}
+                            onPress={logoutUser}
+                        >
+                            <Text style={styles.logoutButtonText}>Sign Out</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+    );
+
+    // User profile section with animation
+    const ProfileSection = () => {
+        const userImage = user?.profile_image || require('../assets/img/default_avatar.png');
+        const userName = user?.name || (isGuestUser(user) ? 'Guest User' : 'User');
+        const userEmail = user?.email || (isGuestUser(user) ? '' : 'user@example.com');
+
+        return (
+            <Animated.View
+                style={[
+                    styles.profileSection,
+                    {
+                        opacity: profileAnimation,
+                        transform: [{
+                            translateY: profileAnimation.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [20, 0]
+                            })
+                        }]
+                    }
+                ]}
+            >
+                <View style={styles.profileContent}>
+                    <Image
+                        source={typeof userImage === 'string' ? { uri: userImage } : userImage}
+                        style={styles.profileImage}
                     />
-                    <SettingItem
-                        icon={faEnvelope}
-                        title="Email Preferences"
-                        subtitle="Manage email notifications"
-                        rightComponent={
-                            <TouchableOpacity style={styles.actionButton}>
-                                <Text style={styles.actionButtonText}>Manage</Text>
-                            </TouchableOpacity>
-                        }
-                    />
-                    <SettingItem
-                        icon={faBell}
-                        title="App Notifications"
-                        subtitle="Manage app alert settings"
-                        rightComponent={
-                            <Switch
-                                value={notificationsEnabled}
-                                onValueChange={setNotificationsEnabled}
-                                trackColor={{ false: '#767577', true: '#ffa726' }}
-                            />
-                        }
-                    />
-                    <SettingItem
-                        icon={faLanguage}
-                        title="Language"
-                        subtitle="English (United States)"
-                        rightComponent={
-                            <TouchableOpacity style={styles.actionButton}>
-                                <Text style={styles.actionButtonText}>Change</Text>
-                            </TouchableOpacity>
-                        }
-                    />
+                    <View style={styles.profileInfo}>
+                        <Text style={styles.profileName}>{userName}</Text>
+                        {userEmail && <Text style={styles.profileEmail}>{userEmail}</Text>}
+                    </View>
                 </View>
 
+                <TouchableOpacity
+                    style={styles.editProfileButton}
+                    onPress={() => navigation.navigate("EditProfile")}
+                >
+                    <Text style={styles.editProfileText}>Edit</Text>
+                </TouchableOpacity>
+            </Animated.View>
+        );
+    };
+
+    return (
+        <SafeAreaView style={styles.container}>
+
+            {/* Header */}
+            <View style={styles.header}>
+                <Text style={styles.headerTitle}>Settings</Text>
+                <Text style={styles.headerSubtitle}>Set things how you like.</Text>
+            </View>
+
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+                {/* Profile Section */}
+                <ProfileSection />
+
+                {/* Account Settings */}
                 <View style={styles.settingsSection}>
+                    <Text style={styles.sectionTitle}>Account</Text>
+
+                    <SettingItem
+                        icon={faUser}
+                        title="Personal Information"
+                        subtitle="Manage your personal details"
+                        onPress={() => navigation.navigate('AccountDetails')}
+                    />
+
+                    <SettingItem
+                        icon={faEnvelope}
+                        title="Communication Preferences"
+                        subtitle="Manage email notifications and updates"
+                        onPress={() => navigation.navigate('EmailPreferences')}
+                    />
+
                     <SettingItem
                         icon={faShield}
                         title="Privacy & Security"
                         subtitle="Manage data and account security"
-                        rightComponent={
-                            <TouchableOpacity style={styles.actionButton}>
-                                <Text style={styles.actionButtonText}>Manage</Text>
-                            </TouchableOpacity>
-                        }
+                        onPress={() => navigation.navigate('PrivacySecurity')}
                     />
+
                     <SettingItem
                         icon={faLock}
-                        title="Change Password"
+                        title="Password"
                         subtitle="Update your account password"
-                        rightComponent={
-                            <TouchableOpacity style={styles.actionButton}>
-                                <Text style={styles.actionButtonText}>Change</Text>
-                            </TouchableOpacity>
-                        }
-                    />
-                    <SettingItem
-                        icon={faRunning}
-                        title="Logout"
-                        subtitle="Logout to this Account"
-                        rightComponent={
-                            <TouchableOpacity style={styles.actionButton} onPress={() => setModalVisible(true)}>
-                                <Text style={styles.actionButtonText}>Logout</Text>
-                            </TouchableOpacity>
-                        }
+                        onPress={() => navigation.navigate('ChangePassword')}
+                        showDivider={false}
                     />
                 </View>
 
+                {/* App Settings */}
                 <View style={styles.settingsSection}>
+                    <Text style={styles.sectionTitle}>Preferences</Text>
+
                     <SettingItem
-                        icon={faQuestionCircle}
-                        title="Help & Support"
-                        subtitle="Get assistance and contact support"
+                        icon={faBell}
+                        title="Notifications"
+                        subtitle={notificationsEnabled ? "Enabled" : "Disabled"}
                         rightComponent={
-                            <TouchableOpacity style={styles.actionButton}>
-                                <Text style={styles.actionButtonText}>Contact</Text>
-                            </TouchableOpacity>
+                            <Switch
+                                value={notificationsEnabled}
+                                onValueChange={setNotificationsEnabled}
+                                trackColor={{ false: '#D1D1D6', true: '#4CD964' }}
+                                thumbColor="#FFFFFF"
+                                ios_backgroundColor="#D1D1D6"
+                                style={styles.switch}
+                            />
                         }
                     />
+
+                    <SettingItem
+                        icon={faMoon}
+                        title="Dark Mode"
+                        subtitle={darkModeEnabled ? "Enabled" : "Disabled"}
+                        rightComponent={
+                            <Switch
+                                value={darkModeEnabled}
+                                onValueChange={setDarkModeEnabled}
+                                trackColor={{ false: '#D1D1D6', true: '#4CD964' }}
+                                thumbColor="#FFFFFF"
+                                ios_backgroundColor="#D1D1D6"
+                                style={styles.switch}
+                            />
+                        }
+                    />
+
+                    <SettingItem
+                        icon={faLanguage}
+                        title="Language"
+                        subtitle="English (United States)"
+                        onPress={() => navigation.navigate('LanguageSettings')}
+                    />
+
+                    <SettingItem
+                        icon={faGlobe}
+                        title="Region"
+                        subtitle="La union"
+                        onPress={() => navigation.navigate('RegionSettings')}
+                        showDivider={false}
+                    />
+                </View>
+
+                {/* About & Legal */}
+                <View style={styles.settingsSection}>
+                    <Text style={styles.sectionTitle}>About</Text>
+
                     <SettingItem
                         icon={faInfoCircle}
                         title="About App"
-                        subtitle="App version 1.0.0"
+                        subtitle="Version: Beta"
+                        onPress={() => navigation.navigate('AboutApp')}
+                        showDivider={false}
                     />
                 </View>
+
+                {/* Sign Out Button */}
+                <TouchableOpacity
+                    style={styles.signOutButton}
+                    onPress={() => setLogoutModalVisible(true)}
+                    activeOpacity={0.8}
+                >
+                    <Text style={styles.signOutText}>Sign Out</Text>
+                </TouchableOpacity>
+
+                <View style={styles.footerContainer}>
+                    <Footer />
+                    <View style={styles.footerLinks}>
+                        <TouchableOpacity>
+                            <Text style={styles.footerLink}>Privacy Policy</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.footerDot}>•</Text>
+                        <TouchableOpacity>
+                            <Text style={styles.footerLink}>Terms of Service</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
             </ScrollView>
-            <LogoutModal modalVisible={modalVisible} setModalVisible={setModalVisible} logoutUser={logout_user} />
-        </View>
+
+            <LogoutModal />
+        </SafeAreaView>
     );
 };
 
