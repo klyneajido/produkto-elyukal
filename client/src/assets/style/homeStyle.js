@@ -45,6 +45,23 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  header: {
+    paddingHorizontal: 5,
+    paddingTop: 5,
+    backgroundColor: COLORS.primary,
+    paddingBottom:15,
+  },
+  headerTitle: {
+    fontSize: FONT_SIZE.large,
+    fontFamily: FONTS.bold,
+    color: COLORS.white,
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: FONT_SIZE.small,
+    fontFamily: FONTS.regular,
+    color: COLORS.lightgray,
+  },
   searchIcon: {
     marginRight: 8,
   },

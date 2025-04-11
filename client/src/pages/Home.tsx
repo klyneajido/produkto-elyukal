@@ -145,6 +145,10 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
         <View style={styles.content}>
           {/* Top Section with Search */}
           <View style={styles.topContainer}>
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>Welcome to Produkto Elyukal!</Text>
+              <Text style={styles.headerSubtitle}>Explore the best of La Union</Text>
+            </View>
             <View style={styles.searchBarContainer}>
               <FontAwesomeIcon
                 icon={faSearch}

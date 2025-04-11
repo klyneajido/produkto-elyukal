@@ -216,29 +216,38 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.topHeader}>
-          <View style={styles.searchBarContainer}>
-            <FontAwesomeIcon
-              icon={faSearch}
-              size={16}
-              color="#888"
-              style={styles.searchIcon}
-            />
-            <TextInput
-              style={styles.searchBar}
-              onChangeText={setSearchText}
-              value={searchText}
-              placeholder="Search by name, store, or town"
-              placeholderTextColor="#888"
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.filterButton}
-            onPress={() => setShowFilters(true)}
-          >
-            <FontAwesomeIcon icon={faSliders} size={20} color={COLORS.secondary} />
-          </TouchableOpacity>
-        </View>
+<View style={styles.topHeader}>
+  <View style={styles.header}>
+    <Text style={styles.headerTitle}>Products</Text>
+    <Text style={styles.headerSubtitle}>Discover Local Products</Text>
+  </View>
+
+  <View style={styles.searchRow}>
+    <View style={styles.searchBarContainer}>
+      <FontAwesomeIcon
+        icon={faSearch}
+        size={16}
+        color="#888"
+        style={styles.searchIcon}
+      />
+      <TextInput
+        style={styles.searchBar}
+        onChangeText={setSearchText}
+        value={searchText}
+        placeholder="Search by name, store, or town"
+        placeholderTextColor="#888"
+      />
+    </View>
+
+    <TouchableOpacity
+      style={styles.filterButton}
+      onPress={() => setShowFilters(true)}
+    >
+      <FontAwesomeIcon icon={faSliders} size={20} color={COLORS.secondary} />
+    </TouchableOpacity>
+  </View>
+</View>
+
 
         <Modal visible={showFilters} animationType="slide" transparent>
           <View style={styles.filterModal}>

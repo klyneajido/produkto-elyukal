@@ -131,10 +131,10 @@ const Municipalities: React.FC<MunicipalityProps> = ({
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.modernHeader}>
-            <View style={styles.header}>
-        <Text style={styles.headerTitle}>Municipalities</Text>
-        <Text style={styles.headerSubtitle}>Discover local places</Text>
-      </View>
+                <View style={styles.header}>
+                    <Text style={styles.headerTitle}>Municipalities</Text>
+                    <Text style={styles.headerSubtitle}>Discover local places</Text>
+                </View>
 
                 <View style={styles.modernSearchBarContainer}>
                     <FontAwesomeIcon
@@ -154,35 +154,35 @@ const Municipalities: React.FC<MunicipalityProps> = ({
             </View>
 
             {loading ? (
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={styles.loadingText}>Loading municipalities...</Text>
-        </View>
-      ) : filteredMunicipalities.length > 0 ? (
-        <FlatList
-          data={filteredMunicipalities}
-          renderItem={renderMunicipalityCard}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          contentContainerStyle={styles.grid}
-          columnWrapperStyle={styles.row}
-          showsVerticalScrollIndicator={false}
-          onScroll={onScroll}
-          scrollEventThrottle={16}
-        />
-      ) : (
-        <View style={styles.centerContainer}>
-          <FontAwesomeIcon
-            icon={faSearch}
-            size={40}
-            color={COLORS.lightgray}
-          />
-          <Text style={styles.noResultsText}>No municipalities found</Text>
-          <Text style={styles.noResultsSubtext}>
-            Try another search term or check back later
-          </Text>
-        </View>
-      )}
+                <View style={styles.centerContainer}>
+                    <ActivityIndicator size="large" color={COLORS.primary} />
+                    <Text style={styles.loadingText}>Loading municipalities...</Text>
+                </View>
+            ) : filteredMunicipalities.length > 0 ? (
+                <FlatList
+                    data={filteredMunicipalities}
+                    renderItem={renderMunicipalityCard}
+                    keyExtractor={(item) => item.id}
+                    numColumns={2}
+                    contentContainerStyle={styles.grid}
+                    columnWrapperStyle={styles.row}
+                    showsVerticalScrollIndicator={false}
+                    onScroll={onScroll}
+                    scrollEventThrottle={16}
+                />
+            ) : (
+                <View style={styles.centerContainer}>
+                    <FontAwesomeIcon
+                        icon={faSearch}
+                        size={40}
+                        color={COLORS.lightgray}
+                    />
+                    <Text style={styles.noResultsText}>No municipalities found</Text>
+                    <Text style={styles.noResultsSubtext}>
+                        Try another search term or check back later
+                    </Text>
+                </View>
+            )}
         </SafeAreaView>
     );
 };

@@ -18,11 +18,30 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
-    flexDirection: 'row', 
-    alignItems: 'center', 
+  },
+  header: {
+    paddingHorizontal: 5,
+    paddingTop: 5,
+    backgroundColor: COLORS.primary,
+  },
+  headerTitle: {
+    fontSize: FONT_SIZE.large,
+    fontFamily: FONTS.bold,
+    color: COLORS.white,
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: FONT_SIZE.small,
+    fontFamily: FONTS.regular,
+    color: COLORS.lightgray,
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
   },
   searchBarContainer: {
-    flex: 1, 
+    flex: 1,
     height: 40,
     flexDirection: 'row',
     alignItems: 'center',
