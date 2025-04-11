@@ -60,10 +60,14 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
 
   //categories
   const categories: Category[] = [
-    { name: 'Handcraft', image: require('../assets/img/handcraft.png'), count: '50+', screen: 'Products' },
-    { name: 'Furniture', image: require('../assets/img/furniture.jpg'), count: '30+', screen: 'Products' },
-    { name: 'Food', image: require('../assets/img/food.jpg'), count: '20+', screen: 'Products' },
-    { name: 'Pottery', image: require('../assets/img/pottery.jpg'), count: '15+', screen: 'Products' },
+    { name: 'Handicrafts', image: require('../assets/img/handicrafts.jpg'), count: '50+', screen: 'Products' },
+    { name: 'Food Products', image: require('../assets/img/food_products.png'), count: '40+', screen: 'Products' },
+    { name: 'Textiles', image: require('../assets/img/textiles.jpg'), count: '30+', screen: 'Products' },
+    { name: 'Souvenirs', image: require('../assets/img/souvenirs.jpg'), count: '25+', screen: 'Products' },
+    { name: 'Agricultural Products', image: require('../assets/img/agricultural_products.jpg'), count: '20+', screen: 'Products' },
+    { name: 'Beverages', image: require('../assets/img/beverages.jpg'), count: '15+', screen: 'Products' },
+    { name: 'Clothing', image: require('../assets/img/clothing.jpg'), count: '35+', screen: 'Products' },
+    { name: 'Accessories', image: require('../assets/img/accessories.jpg'), count: '45+', screen: 'Products' },
   ];
 
 
@@ -73,18 +77,21 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
   ) => {
     navigation.navigate(screen, { category: categoryName } as any);
   };
-
   const onScrollEnd = (event: any) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.round(contentOffsetX / (width * 0.9));
+    const itemWidth = width * 0.9 + 10; // Item width + total margin
+    const index = Math.round(contentOffsetX / itemWidth);
     setActiveIndex(index);
-  }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prevIndex) => {
         const nextIndex = (prevIndex + 1) % categories.length;
-        scrollRef.current?.scrollTo({ x: nextIndex * width * 0.9, animated: true });
+        scrollRef.current?.scrollTo({
+          x: nextIndex * (width * 0.9 + 10), 
+          animated: true,
+        });
         return nextIndex;
       });
     }, 3000);
@@ -108,24 +115,6 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
     { number: '19', label: 'Municipalities' },
     { number: '45+', label: 'Local Stores' },
   ];
-
-  const locations = [
-    "Discover",
-    "Rosario",
-    "Sto. Tomas",
-    "Agoo",
-    "Aringay",
-    "Caba",
-    "Bauang",
-    "San Fernando City",
-    "San Juan",
-    "Bacnotan",
-    "Santol",
-    "San Gabriel",
-    "Bangar",
-    "Sudipen"
-  ];
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -167,45 +156,48 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
           </View>
           {/* Categories */}
           <View style={styles.carouselContainer}>
-            <ScrollView
-              ref={scrollRef}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              onMomentumScrollEnd={onScrollEnd}
-              style={styles.carouselScroll}
-            >
-              {categories.map((category, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => handleCategoryPress(category.screen, category.name)}
-                  style={styles.carouselItem}
-                >
-                  <Image
-                    source={category.image}
-                    style={styles.carouselImage}
-                  />
-                  <View style={styles.carouselOverlay}>
-                    <Text style={styles.carouselTitle}>{category.name}</Text>
-                    <Text style={styles.carouselSubtitle}>
-                      Explore {category.count} Items
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <View style={styles.paginationDots}>
-              {categories.map((_, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.dot,
-                    { backgroundColor: index === activeIndex ? '#ffa726' : '#ccc' },
-                  ]}
-                />
-              ))}
-            </View>
-          </View>
+  <ScrollView
+    ref={scrollRef}
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    onMomentumScrollEnd={onScrollEnd}
+    style={styles.carouselScroll}
+    contentContainerStyle={{
+      paddingHorizontal: (width - width * 0.9) / 2, // Center items by adding padding
+    }}
+    snapToInterval={width * 0.9 + 10} // Account for item width + total margin (5 + 5)
+    snapToAlignment="center"
+    decelerationRate="fast"
+  >
+    {categories.map((category, index) => (
+      <TouchableOpacity
+        key={index}
+        onPress={() => handleCategoryPress(category.screen, category.name)}
+        style={styles.carouselItem}
+      >
+        <Image source={category.image} style={styles.carouselImage} />
+        <View style={styles.carouselOverlay}>
+          <Text style={styles.carouselTitle}>{category.name}</Text>
+          <Text style={styles.carouselSubtitle}>
+            Explore {category.count} Items
+          </Text>
+        </View>
+      </TouchableOpacity>
+    ))}
+  </ScrollView>
+  <View style={styles.paginationDots}>
+    {categories.map((_, index) => (
+      <View
+        key={index}
+        style={[
+          styles.dot,
+          { backgroundColor: index === activeIndex ? '#ffa726' : '#ccc' },
+        ]}
+      />
+    ))}
+  </View>
+</View>
+
           {/* Stats Section */}
           <View style={styles.highlightBox}>
             <Text style={styles.highlightTitle}>Discover Local Artistry</Text>
