@@ -12,7 +12,6 @@ import axios from 'axios';
 
 type ProductListProps = {
   products: Product[];
-  id: number;
 };
 
 const ProductList: React.FC<ProductListProps> = ({ products = [] }) => {

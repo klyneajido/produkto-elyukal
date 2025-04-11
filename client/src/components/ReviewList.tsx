@@ -36,13 +36,15 @@ export default function ReviewList() {
                 });
                 setReviews(response.data);
             } catch (error: any) {
-                if (error.name === 'AbortError') {
-                    console.log('Review fetch aborted');
-                } else {
+                // Only handle the error if it's not an abort error
+                if (!axios.isCancel(error)) {
                     console.error('Error fetching reviews:', error.message, error.response?.data);
+                    // You might want to set some error state here to show to the user
                 }
             } finally {
-                setLoadingReviews(false);
+                if (!abortController.signal.aborted) {
+                    setLoadingReviews(false);
+                }
             }
         };
         fetchReviews();
