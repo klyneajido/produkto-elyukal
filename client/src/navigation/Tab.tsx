@@ -159,8 +159,6 @@ const TabNavigator: React.FC = () => {
         const activeScreen = nestedState && typeof nestedState.index === 'number' 
           ? nestedState.routes[nestedState.index]?.name 
           : undefined;
-        console.log('Current active screen:', activeScreen || 'Unknown');
-        console.log('Going back to previous screen');
         navigation.goBack();
         return true;
       }

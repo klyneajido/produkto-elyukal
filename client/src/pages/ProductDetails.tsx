@@ -10,6 +10,10 @@ import {
     Alert,
     ActivityIndicator,
     Switch,
+    Modal,
+    findNodeHandle,
+    UIManager,
+    Share,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -28,7 +32,7 @@ import {
 } from '@viro-community/react-viro';
 import { COLORS } from '../assets/constants/constant';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCameraRetro, faStore, faStar, faTag, faBox, faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCameraRetro, faStore, faStar, faTag, faBox, faExchangeAlt, faShoppingCart, faShare, faEllipsis, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import * as Animatable from 'react-native-animatable';
@@ -279,25 +283,6 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
     );
 };
 
-const mockMediaItems = [
-    {
-        uri: 'https://example.com/image1.jpg',
-        type: 'image' as const,
-        height: 300,
-    },
-    {
-        uri: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        type: 'youtube' as const,
-        thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg',
-        height: 300,
-    },
-    {
-        uri: 'https://example.com/image2.jpg',
-        type: 'image' as const,
-        height: 300,
-    },
-];
-
 const ProductDetails: React.FC = () => {
     const [showAR, setShowAR] = useState(false);
     const [isTakingPhoto, setIsTakingPhoto] = useState(false);
@@ -310,6 +295,30 @@ const ProductDetails: React.FC = () => {
     const { product } = route.params;
     const navigation = useNavigation<NavigationProp>();
     const arNavigatorRef: RefObject<ViroARSceneNavigator> = useRef(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const moreButtonRef = useRef<TouchableOpacity>(null);
+    const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+    const handleMoreButtonPress = () => {
+        if (moreButtonRef.current) {
+            console.log("handle more pressed");
+            const handle = findNodeHandle(moreButtonRef.current);
+            if (handle) {
+                console.log("found node handle");
+                UIManager.measure(handle, (x, y, width, height, pageX, pageY) => {
+                    console.log("measured position:", { x, y, width, height, pageX, pageY });
+                    setModalPosition({
+                        top: pageY + height + 10,
+                        left: pageX - 160 + width,
+                    });
+                    setIsModalVisible(true);
+                });
+            } else {
+                console.log("no node handle found");
+            }
+        } else {
+            console.log("no ref current");
+        }
+    };
 
     const mediaItems: MediaItem[] = product.image_urls?.map((url: string) => ({
         uri: url,
@@ -459,13 +468,32 @@ const ProductDetails: React.FC = () => {
         );
     }
 
-    const carouselProps = {
-        mediaItems,
-        initialIndex: 0,
-        productName: product.name || 'Unnamed Product',
-        averageRating: product.average_rating,
-        totalReviews: product.total_reviews,
-    };
+
+const handleShare = async () =>{
+    try{
+      const result = await Share.share({
+        message: "Check out this Product from La union!",
+        title: "Produkto Elyu-kal"
+      })
+      setIsModalVisible(false);
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type
+          console.log('Shared with activity type:', result.activityType);
+        } else {
+          // shared
+          console.log('Shared successfully');
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+        console.log('Share dismissed');
+      }
+    }
+    catch (error){
+        console.error('Error sharing:', error);
+    }
+}
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -482,30 +510,84 @@ const ProductDetails: React.FC = () => {
                         <Text style={{ textAlign: 'center', marginTop: 20 }}>No images available</Text>
                     )}
                 </Animatable.View>
-                <View style={styles.detailsContainer}>
+
+                <Animatable.View
+                    animation="fadeInUp"
+                    duration={800}
+                    delay={200}
+                    style={styles.detailsContainer}>
+                    {/* Price container */}
                     <View style={styles.pricingContainer}>
                         <View style={styles.priceRow}>
                             <Text style={styles.priceText}>₱{product.price_min?.toFixed(2)} - ₱{product.price_max?.toFixed(2)}</Text>
                         </View>
-                        <View style={styles.stockRow}>
-                            <FontAwesomeIcon icon={faBox} color="#FDD700" size={20} />
-                            <Text style={styles.stockText}>{product.in_stock ? 'In stock' : 'Out of stock'}</Text>
+                        <View style={styles.stockContainer}>
+                            <FontAwesomeIcon
+                                icon={faBox}
+                                color={product.in_stock ? "#4CAF50" : "#F44336"}
+                                size={16}
+                            />
+                            <Text style={styles.stockText}>
+                                {product.in_stock ? 'In stock' : 'Out of stock'}
+                            </Text>
                         </View>
                     </View>
 
-                    <TouchableOpacity style={styles.arButton} onPress={() => setShowAR(true)}>
-                        <Svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                            <Path
-                                d="M12 10.2308L3.08495 7.02346M12 10.2308L20.9178 7.03406M12 10.2308V20.8791M5.13498 18.5771L10.935 20.6242C11.3297 20.7635 11.527 20.8331 11.7294 20.8608C11.909 20.8853 12.091 20.8853 12.2706 20.8608C12.473 20.8331 12.6703 20.7635 13.065 20.6242L18.865 18.5771C19.6337 18.3058 20.018 18.1702 20.3018 17.9269C20.5523 17.7121 20.7459 17.4386 20.8651 17.1308C21 16.7823 21 16.3747 21 15.5595V8.44058C21 7.62542 21 7.21785 20.8651 6.86935C20.7459 6.56155 20.5523 6.28804 20.3018 6.0732C20.018 5.82996 19.6337 5.69431 18.865 5.42301L13.065 3.37595C12.6703 3.23665 12.473 3.167 12.2706 3.13936C12.091 3.11484 11.909 3.11484 11.7294 3.13936C11.527 3.167 11.3297 3.23665 10.935 3.37595L5.13498 5.42301C4.36629 5.69431 3.98195 5.82996 3.69824 6.0732C3.44766 6.28804 3.25414 6.56155 3.13495 6.86935C3 7.21785 3 7.62542 3 8.44058V15.5595C3 16.3747 3 16.7823 3.13495 17.1308C3.25414 17.4386 3.44766 17.7121 3.69824 17.9269C3.98195 18.1702 4.36629 18.3058 5.13498 18.5771Z"
-                                stroke="#fff"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </Svg>
+                    <View style={styles.actionButtons}>
+                        <TouchableOpacity style={styles.arButton} onPress={() => setShowAR(true)}>
+                            <Svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                <Path
+                                    d="M12 10.2308L3.08495 7.02346M12 10.2308L20.9178 7.03406M12 10.2308V20.8791M5.13498 18.5771L10.935 20.6242C11.3297 20.7635 11.527 20.8331 11.7294 20.8608C11.909 20.8853 12.091 20.8853 12.2706 20.8608C12.473 20.8331 12.6703 20.7635 13.065 20.6242L18.865 18.5771C19.6337 18.3058 20.018 18.1702 20.3018 17.9269C20.5523 17.7121 20.7459 17.4386 20.8651 17.1308C21 16.7823 21 16.3747 21 15.5595V8.44058C21 7.62542 21 7.21785 20.8651 6.86935C20.7459 6.56155 20.5523 6.28804 20.3018 6.0732C20.018 5.82996 19.6337 5.69431 18.865 5.42301L13.065 3.37595C12.6703 3.23665 12.473 3.167 12.2706 3.13936C12.091 3.11484 11.909 3.11484 11.7294 3.13936C11.527 3.167 11.3297 3.23665 10.935 3.37595L5.13498 5.42301C4.36629 5.69431 3.98195 5.82996 3.69824 6.0732C3.44766 6.28804 3.25414 6.56155 3.13495 6.86935C3 7.21785 3 7.62542 3 8.44058V15.5595C3 16.3747 3 16.7823 3.13495 17.1308C3.25414 17.4386 3.44766 17.7121 3.69824 17.9269C3.98195 18.1702 4.36629 18.3058 5.13498 18.5771Z"
+                                    stroke="#fff"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </Svg>
+                            <Text style={styles.arButtonText}>View in AR</Text>
+                        </TouchableOpacity>
 
-                        <Text style={styles.arButtonText}>View in AR</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity ref={moreButtonRef} style={[styles.moreButton, { opacity: 0.6 }]} onPress={handleMoreButtonPress}>
+                            <FontAwesomeIcon icon={faEllipsisV} size={16} color="#333333" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <Modal
+                        transparent={true}
+                        visible={isModalVisible}
+                        animationType="none"
+                        onRequestClose={() => setIsModalVisible(false)}
+                    >
+                        <TouchableOpacity
+                            style={styles.modalOverlay}
+                            activeOpacity={1}
+                            onPress={() => setIsModalVisible(false)}
+                        >
+                            <View style={[styles.optionsModal, { top: modalPosition.top, left: modalPosition.left }]}>
+                                <TouchableOpacity
+                                    style={styles.optionItem}
+                                    onPress={
+                                       handleShare
+                                    }
+                                >
+                                    <FontAwesomeIcon icon={faShare} size={14} color="#333333" />
+                                    <Text style={styles.optionText}>Share</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.optionItem, { borderBottomWidth: 0 }]}
+                                    onPress={() => {
+                                        handleComparePrices();
+                                        setIsModalVisible(false);
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faExchangeAlt} size={14} color="#333333" />
+                                    <Text style={styles.optionText}>
+                                        Compare Prices {similarProducts.length > 0 ? `(${similarProducts.length + 1} stores)` : ''}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </TouchableOpacity>
+                    </Modal>
 
                     <Text style={styles.sectionTitle}>Description</Text>
                     <Text style={styles.productDescription}>{product.description}</Text>
@@ -522,51 +604,36 @@ const ProductDetails: React.FC = () => {
                     ) : !storeData ? (
                         <Text style={{ fontSize: 16, color: '#666', textAlign: 'center' }}>No store information available.</Text>
                     ) : (
-                        <TouchableOpacity style={styles.storeCard} onPress={() => navigateToStoreDetails(storeData)}>
-                            <Image source={{ uri: storeData.store_image || 'https://via.placeholder.com/60' }} style={styles.storeImage} />
+                        <TouchableOpacity
+                            style={styles.storeCard}
+                            onPress={() => navigateToStoreDetails(storeData)}
+                            activeOpacity={0.7}
+                        >
+                            <Image
+                                source={{ uri: storeData.store_image || 'https://via.placeholder.com/60' }}
+                                style={styles.storeImage}
+                            />
                             <View style={styles.storeInfoContainer}>
                                 <Text style={styles.storeNameText}>{storeData.name}</Text>
                                 <View style={styles.storeDetailsRow}>
-                                    <FontAwesomeIcon icon={faStar} color="#FDD700" />
-                                    <Text style={styles.storeRatingText}>{storeData.rating || 'N/A'}</Text>
-                                    <Text style={styles.storeTypeText}>{storeData.type || 'Store'}</Text>
+                                    <FontAwesomeIcon icon={faStar} color="#FDD700" size={12} />
+                                    <Text style={styles.storeRatingText}>{storeData.rating || '0'}</Text>
+                                    <Text style={styles.storeTypeText}>{storeData.type || 'Retail Store'}</Text>
                                 </View>
                             </View>
-                            <FontAwesomeIcon icon={faStore} color="#FDD700" />
+                            <View style={styles.storeIconContainer}>
+                                <FontAwesomeIcon icon={faStore} color="#FDD700" size={18} />
+                            </View>
                         </TouchableOpacity>
                     )}
-
-                    <View style={styles.comparePricesSection}>
-                        <Text style={styles.sectionTitle}>Compare Prices at Other Stores</Text>
-                        {loadingSimilar ? (
-                            <View style={styles.loadingContainer}>
-                                <ActivityIndicator size="small" color={COLORS.primary} />
-                            </View>
-                        ) : similarProducts.length === 0 ? (
-                            <View style={styles.noStoresContainer}>
-                                <Text style={styles.noStoresText}>
-                                    No other stores offer "{product.name}".
-                                </Text>
-                            </View>
-                        ) : (
-                            <TouchableOpacity
-                                style={styles.compareButton}
-                                onPress={handleComparePrices}
-                                activeOpacity={0.8}
-                            >
-                                <FontAwesomeIcon icon={faExchangeAlt} size={16} color={COLORS.white} style={styles.compareButtonIcon} />
-                                <Text style={styles.compareButtonText}>
-                                    Compare Prices ({similarProducts.length + 1} stores)
-                                </Text>
-                            </TouchableOpacity>
-                        )}
-                    </View>
-                    <ReviewList />
                     <View style={styles.similarContainer}>
                         <Text style={styles.sectionTitle}>Similar Products</Text>
                         <SimilarProducts currentProduct={product} limit={5} />
                     </View>
-                </View>
+                    <View style={styles.reviewListContainer}>
+                        <ReviewList />
+                    </View>
+                </Animatable.View>
             </ScrollView>
         </SafeAreaView>
     );

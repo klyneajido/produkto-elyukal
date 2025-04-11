@@ -31,7 +31,7 @@ const ReviewScreen: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  
+
   // Animation values
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const reviewContainerAnim = useRef(new Animated.Value(0)).current;
@@ -182,14 +182,12 @@ const ReviewScreen: React.FC = () => {
         ) : (
           <Text style={styles.noReviews}>No reviews yet. Be the first!</Text>
         )}
-        
-        {/* Add extra space at the bottom for FAB clearance */}
         <View style={{ height: 80 }} />
       </ScrollView>
 
       {/* Overlay */}
       {showReviewForm && (
-        <Animated.View 
+        <Animated.View
           style={[
             styles.overlay,
             { opacity: overlayOpacity }
@@ -201,10 +199,10 @@ const ReviewScreen: React.FC = () => {
 
       {/* Floating Action Button */}
       {user && !(user as any).guest && (
-        <Animated.View 
+        <Animated.View
           style={[
             styles.fabContainer,
-            { 
+            {
               transform: [
                 { scale: fabAnim }
               ],
@@ -224,7 +222,7 @@ const ReviewScreen: React.FC = () => {
 
       {/* Review Input Form */}
       {user && !(user as any).guest && showReviewForm && (
-        <Animated.View 
+        <Animated.View
           style={[
             styles.footer,
             {
@@ -240,7 +238,7 @@ const ReviewScreen: React.FC = () => {
               <FontAwesomeIcon icon={faTimes} size={22} color={COLORS.gray} />
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.ratingContainer}>
             {[1, 2, 3, 4, 5].map((star) => (
               <TouchableOpacity
@@ -258,7 +256,7 @@ const ReviewScreen: React.FC = () => {
               </TouchableOpacity>
             ))}
           </View>
-          
+
           <TextInput
             style={styles.input}
             placeholder="Write your review here..."
@@ -269,14 +267,14 @@ const ReviewScreen: React.FC = () => {
             numberOfLines={3}
             maxLength={200}
           />
-          
+
           <View style={styles.characterCount}>
             <Text style={styles.characterCountText}>{reviewText.length}/200</Text>
           </View>
-          
+
           <TouchableOpacity
             style={[
-              styles.submitButton, 
+              styles.submitButton,
               (submitting || !reviewText.trim() || rating === 0) && styles.submitButtonDisabled
             ]}
             onPress={submitReview}
@@ -308,7 +306,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 20,
   },
   headerTitle: {
-    fontSize: FONT_SIZE.large+2,
+    fontSize: FONT_SIZE.large + 2,
     fontFamily: FONTS.semibold,
     color: COLORS.white,
     marginLeft: 16,
@@ -355,7 +353,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   reviewText: {
-    marginTop: 10,   
+    marginTop: 10,
     fontSize: FONT_SIZE.medium,
     fontFamily: FONTS.regular,
     color: COLORS.gray,
