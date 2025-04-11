@@ -181,7 +181,6 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
         0.4
       );
       filteredProducts = searchResults.map((result) => result.item);
-      console.log('After fuzzy search:', filteredProducts);
     }
 
     if (selectedCategories.length > 0) {

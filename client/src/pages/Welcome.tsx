@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontFamily: FONTS.light,
-        fontSize: FONT_SIZE.large,
+        fontSize: FONT_SIZE.medium+1,
         color: 'rgba(255, 255, 255, 0.9)',
         letterSpacing: 0.5,
     },

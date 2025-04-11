@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   modalDescription: {
     fontSize: 16,
     fontFamily: FONTS.regular,
-    color: COLORS.textSecondary,
+    color: COLORS.gray,
     marginBottom: 24,
     textAlign: 'center',
     lineHeight: 22,
@@ -256,12 +256,12 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 16,
     fontFamily: FONTS.medium,
-    color: COLORS.textSecondary,
+    color: COLORS.black,
   },
   logoutButton: {
     flex: 1,
     paddingVertical: 14,
-    backgroundColor: COLORS.danger,
+    backgroundColor: COLORS.alert,
     alignItems: 'center',
     borderRadius: 12,
     marginLeft: 8,
