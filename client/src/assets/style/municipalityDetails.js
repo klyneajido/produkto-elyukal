@@ -258,4 +258,7 @@ export default StyleSheet.create({
         marginVertical: 24,
         opacity: 0.2,
     },
+    footerContainer:{
+      marginTop:100,
+    },
 });

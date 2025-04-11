@@ -26,35 +26,10 @@ import axios from 'axios';
 import { BASE_URL } from '../config/config.ts';
 import styles from '../assets/style/municipalityDetails.js';
 import { COLORS } from '../assets/constants/constant.ts';
+import { Municipality, Product } from '../../types/types.ts';
+import Footer from '../components/Footer.tsx';
 
-// Interface for municipality data
-interface Municipality {
-    id: string;
-    name: string;
-    description: string;
-    image_url: string;
-    created_at?: string;
-}
 
-// Interface for product data
-interface Product {
-    id?: string;
-    name: string;
-    description: string;
-    category: string;
-    price?: number;
-    location_name: string;
-    address: string;
-    latitude: string;
-    longitude: string;
-    ar_asset_url: string;
-    image_urls: string[];
-    in_stock: boolean;
-    store_id: string;
-    town?: string;
-    average_rating?: number | null | string;
-    total_reviews?: number | null | string;
-}
 
 const MunicipalityDetail: React.FC = () => {
     const navigation = useNavigation<any>();
@@ -266,15 +241,10 @@ const MunicipalityDetail: React.FC = () => {
                                                             : 'No ratings yet'}
                                                     </Text>
                                                 </View>
-
-                                                {/* <Text style={styles.productDescription} numberOfLines={2} ellipsizeMode="tail">
-                                                    {product.description}
-                                                </Text> */}
-
                                                 {/* Price and Stock */}
                                                 <View style={styles.productInfoRow}>
                                                     <Text style={styles.productPrice}>
-                                                        ₱{product.price != null ? product.price.toFixed(2) : 'N/A'}
+                                                        ₱{product.price_min != null ? product.price_min.toFixed(2) : '0'}
                                                     </Text>
 
                                                     <View style={styles.stockBadge}>
@@ -303,6 +273,9 @@ const MunicipalityDetail: React.FC = () => {
                             </View>
                         )}
                     </View>
+                </View>
+                <View style={styles.footerContainer}>
+                    <Footer/>
                 </View>
             </ScrollView>
         </SafeAreaView>
