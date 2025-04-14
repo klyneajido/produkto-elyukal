@@ -74,23 +74,22 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: "rgba(219, 216, 216, 0.5)",
     paddingHorizontal: 6,
-    paddingVertical:3,
+    paddingVertical: 3,
   },
   infoContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
     marginVertical: 13,
-    
   },
   ratingText: {
     fontSize: 14,
     fontFamily: FONTS.regular,
     color: COLORS.gold,
     borderRadius: 15,
-    backgroundColor:  "rgba(219, 216, 216, 0.5)",
+    backgroundColor: "rgba(219, 216, 216, 0.5)",
     paddingHorizontal: 6,
-    paddingVertical:3,
+    paddingVertical: 3,
   },
   overlayType: {
     fontSize: 14,
@@ -143,77 +142,102 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   searchButton: {
-    backgroundColor: COLORS.primary, // Blue
+    backgroundColor: COLORS.primary,
   },
   satelliteButton: {
-    backgroundColor: COLORS.secondary, // Emerald Green
+    backgroundColor: COLORS.secondary,
   },
   filterButton: {
     backgroundColor: COLORS.accent,
   },
   clearRouteButton: {
-    backgroundColor: "#E74C3C", // Red
+    backgroundColor: "#E74C3C",
   },
-  searchContainer: {
+  // Updated Search Bar Styles
+  modernSearchContainer: {
     position: "absolute",
-    top: 20,
-    right: 80,
-    backgroundColor: "white",
-    borderRadius: 25,
-    overflow: "hidden",
-    shadowColor: COLORS.black,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    zIndex: 1,
+    top: 16,
+    left: 10,
+    right: 10,
+    zIndex: 10,
+    width: "80%",
+  },
+  modernSearchBar: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: "rgba(0, 0, 0, 0.05)",
   },
-  searchInput: {
-    height: 50,
-    width: 250,
-    paddingHorizontal: 15,
-    backgroundColor: "#fff",
-    fontSize: 16,
-    borderTopLeftRadius: 25,
-    borderBottomLeftRadius: 25,
+  modernSearchInput: {
+    flex: 1,
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.regular,
+    color: "#1A1A1A",
+    paddingVertical: 6,
+    paddingHorizontal: 8,
   },
-  searchCloseButton: {
-    width: 50,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
+  searchIcon: {
+    marginRight: 8,
   },
+  clearButton: {
+    padding: 6,
+    borderRadius: 12,
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
+  },
+  // Updated Search Results Styles
   searchResults: {
     position: "absolute",
-    top: 80,
-    right: 80,
-    width: 300,
-    backgroundColor: "white",
-    borderRadius: 15,
-    maxHeight: 200,
+    top: 76,
+    left: 10,
+    right: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.98)",
+    borderRadius: 16,
+    maxHeight: 300,
     shadowColor: COLORS.black,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    zIndex: 1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
+    zIndex: 9,
+    overflow: "hidden",
+    width:"80%",
   },
   searchResultItem: {
-    padding: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: "rgba(0, 0, 0, 0.05)",
+  },
+  searchResultImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    marginRight: 12,
+    backgroundColor: "#f0f0f0",
+  },
+  searchResultContent: {
+    flex: 1,
   },
   searchResultText: {
     fontSize: 16,
+    fontFamily: FONTS.semibold,
+    color: "#1A1A1A",
+  },
+  searchResultSubtitle: {
+    fontSize: 14,
+    fontFamily: FONTS.regular,
+    color: "#666666",
+    marginTop: 2,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -309,13 +333,11 @@ const styles = StyleSheet.create({
   routeInfoContainer: {
     flexDirection: "row",
     gap: 16,
-  
   },
   routeInfoItem: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent:'center',
-
+    justifyContent: "center",
     gap: 1,
   },
   routeInfoText: {
@@ -324,22 +346,22 @@ const styles = StyleSheet.create({
     color: "#666666",
   },
   myLocationButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 110,
     right: 16,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 30,
     width: 44,
     height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
     zIndex: 5,
-},
+  },
   locationWarningContainer: {
     backgroundColor: "#ffdddd",
     padding: 10,
@@ -485,7 +507,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-
   viewDetailsButton: {
     flex: 1,
     paddingVertical: 12,
@@ -500,4 +521,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
 export default styles;

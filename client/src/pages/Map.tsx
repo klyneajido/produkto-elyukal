@@ -643,31 +643,42 @@ const MapView = () => {
                 )}
             </View>
 
-            {/* Search Bar */}
+            {/* Modern Search Bar */}
             {showSearchBar && (
-                <View style={styles.searchContainer}>
-                    <TextInput
-                        ref={searchInputRef}
-                        style={styles.searchInput}
-                        placeholder="Search stores..."
-                        value={searchQuery}
-                        onChangeText={handleSearch}
-                        onFocus={() => {
-                            if (searchQuery.trim() !== '') {
-                                setShowSearchResults(true);
-                            }
-                        }}
-                    />
-                    <TouchableOpacity
-                        style={styles.searchCloseButton}
-                        onPress={clearSearch}
-                    >
+                <View style={styles.modernSearchContainer}>
+                    <View style={styles.modernSearchBar}>
                         <FontAwesomeIcon
-                            icon={faTimes}
-                            size={24}
+                            icon={faSearch}
+                            size={16}
                             color="#666"
+                            style={styles.searchIcon}
                         />
-                    </TouchableOpacity>
+                        <TextInput
+                            ref={searchInputRef}
+                            style={styles.modernSearchInput}
+                            placeholder="Search stores..."
+                            placeholderTextColor="#666"
+                            value={searchQuery}
+                            onChangeText={handleSearch}
+                            onFocus={() => {
+                                if (searchQuery.trim() !== '') {
+                                    setShowSearchResults(true);
+                                }
+                            }}
+                        />
+                        {searchQuery.length > 0 && (
+                            <TouchableOpacity
+                                style={styles.clearButton}
+                                onPress={clearSearch}
+                            >
+                                <FontAwesomeIcon
+                                    icon={faTimes}
+                                    size={16}
+                                    color="#666"
+                                />
+                            </TouchableOpacity>
+                        )}
+                    </View>
                 </View>
             )}
 
