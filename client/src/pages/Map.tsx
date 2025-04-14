@@ -24,12 +24,13 @@ import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
 import { BASE_URL } from '../config/config';
 import axios from 'axios';
 import { Store, RootStackParamList, RouteInfo } from '../../types/types';
+import IntentLauncher from 'react-native-intent-launcher';
+
 const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN || '';
 
 MapboxGL.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
 const directionsClient = MapboxDirections({ accessToken: MAPBOX_ACCESS_TOKEN });
-
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'StoreDetails'>;
 
@@ -41,7 +42,6 @@ const MapView = () => {
     const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/streets-v11');
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
     const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
-    const [showPermissionModal, setShowPermissionModal] = useState(false);
     const [isLocationPermissionGranted, setIsLocationPermissionGranted] = useState(false);
     const [showLocationError, setShowLocationError] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -125,14 +125,79 @@ const MapView = () => {
     const checkInitialPermission = async () => {
         if (Platform.OS === 'android') {
             try {
-                const result = await PermissionsAndroid.check(
+                const granted = await PermissionsAndroid.check(
                     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
                 );
-                setIsLocationPermissionGranted(result);
+                setIsLocationPermissionGranted(granted);
+                
+                if (!granted) {
+                    requestLocationPermission();
+                }
             } catch (err) {
                 console.warn('Error checking initial permission:', err);
             }
         }
+    };
+
+    const requestLocationPermission = async () => {
+        if (Platform.OS === 'android') {
+            try {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                    {
+                        title: "Location Permission",
+                        message: "PRODUKTO-ELYUKAL needs access to your location " +
+                                "to provide navigation services and show your position on the map.",
+                        buttonNeutral: "Ask Me Later",
+                        buttonNegative: "Cancel",
+                        buttonPositive: "OK"
+                    }
+                );
+                
+                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                    console.log("Location permission granted");
+                    setIsLocationPermissionGranted(true);
+                    return true;
+                } else {
+                    console.log("Location permission denied");
+                    setIsLocationPermissionGranted(false);
+                    setShowLocationError(true);
+                    return false;
+                }
+            } catch (err) {
+                console.warn(err);
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const checkAndRequestLocationServices = async () => {
+        if (Platform.OS !== 'android') return true;
+        
+        if (userLocation && isLocationEnabled) {
+            return true;
+        }
+        
+        Alert.alert(
+            'Location Services Disabled',
+            'Please enable location services to use navigation features.',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Open Settings',
+                    onPress: () => {
+                        IntentLauncher.startActivity({
+                            action: 'android.settings.LOCATION_SOURCE_SETTINGS'
+                        });
+                    }
+                }
+            ]
+        );
+        return false;
     };
 
     const fetchRoute = async (destination: [number, number]) => {
@@ -201,44 +266,76 @@ const MapView = () => {
 
     const handleNavigatePress = async () => {
         if (!selectedStore) return;
-        setShowPermissionModal(true);
-    };
-
-    const handlePermissionResponse = async (granted: boolean) => {
-        setShowPermissionModal(false);
-
-        if (granted) {
-            setIsLocationPermissionGranted(true);
-            if (userLocation && selectedStore) {
-                try {
-                    const destination = selectedStore.coordinate || [selectedStore.longitude, selectedStore.latitude];
-
-                    const response = await directionsClient.getDirections({
-                        profile: 'driving',
-                        geometries: 'geojson',
-                        waypoints: [
-                            { coordinates: userLocation },
-                            { coordinates: destination as [number, number] }
-                        ]
-                    }).send();
-
-                    if (response.body.routes.length > 0) {
-                        const route = response.body.routes[0];
-                        setRouteInfo({
-                            geometry: route.geometry,
-                            duration: route.duration,
-                            distance: route.distance
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error fetching route:', error);
-                    Alert.alert('Error', 'Unable to fetch route. Please try again.');
+        
+        // If location permission and services are already enabled, proceed directly
+        if (isLocationPermissionGranted && userLocation && isLocationEnabled) {
+            try {
+                const destination = selectedStore.coordinate || [selectedStore.longitude, selectedStore.latitude];
+                
+                const response = await directionsClient.getDirections({
+                    profile: 'driving',
+                    geometries: 'geojson',
+                    waypoints: [
+                        { coordinates: userLocation },
+                        { coordinates: destination as [number, number] }
+                    ]
+                }).send();
+                
+                if (response.body.routes.length > 0) {
+                    const route = response.body.routes[0];
+                    setRouteInfo({
+                        geometry: route.geometry,
+                        duration: route.duration,
+                        distance: route.distance
+                    });
                 }
-            } else {
-                setShowLocationError(true);
+            } catch (error) {
+                console.error('Error fetching route:', error);
+                Alert.alert('Error', 'Unable to fetch route. Please try again.');
+            }
+            return;
+        }
+
+        // Check permission if not granted
+        if (!isLocationPermissionGranted) {
+            const granted = await requestLocationPermission();
+            if (!granted) return;
+        }
+        
+        // Check location services if not enabled
+        const locationServicesEnabled = await checkAndRequestLocationServices();
+        if (!locationServicesEnabled) {
+            setShowLocationError(true);
+            return;
+        }
+        
+        // If we have user location and selected store after checks, try to fetch route
+        if (userLocation && selectedStore) {
+            try {
+                const destination = selectedStore.coordinate || [selectedStore.longitude, selectedStore.latitude];
+                
+                const response = await directionsClient.getDirections({
+                    profile: 'driving',
+                    geometries: 'geojson',
+                    waypoints: [
+                        { coordinates: userLocation },
+                        { coordinates: destination as [number, number] }
+                    ]
+                }).send();
+                
+                if (response.body.routes.length > 0) {
+                    const route = response.body.routes[0];
+                    setRouteInfo({
+                        geometry: route.geometry,
+                        duration: route.duration,
+                        distance: route.distance
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching route:', error);
+                Alert.alert('Error', 'Unable to fetch route. Please try again.');
             }
         } else {
-            setIsLocationPermissionGranted(false);
             setShowLocationError(true);
         }
     };
@@ -310,7 +407,6 @@ const MapView = () => {
 
     const renderAnnotations = () => (
         filteredStores.map((store: Store) => {
-            // Determine coordinate for marker
             const coordinate = store.coordinate || [store.longitude, store.latitude];
 
             return (
@@ -341,38 +437,6 @@ const MapView = () => {
         })
     );
 
-    const renderPermissionModal = () => (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={showPermissionModal}
-            onRequestClose={() => setShowPermissionModal(false)}
-        >
-            <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Location Permission Required</Text>
-                    <Text style={styles.modalText}>
-                        PRODUKTO-ELYUKAL needs access to your location to provide navigation services and show your position on the map.
-                    </Text>
-                    <View style={styles.modalButtons}>
-                        <TouchableOpacity
-                            style={[styles.modalButton, styles.modalButtonCancel]}
-                            onPress={() => handlePermissionResponse(false)}
-                        >
-                            <Text style={styles.modalButtonText}>Deny</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.modalButton, styles.modalButtonAllow]}
-                            onPress={() => handlePermissionResponse(true)}
-                        >
-                            <Text style={styles.modalButtonText}>Allow</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        </Modal>
-    );
-
     const renderLocationErrorModal = () => {
         if (!showLocationError) return null;
 
@@ -395,7 +459,9 @@ const MapView = () => {
                     <TouchableOpacity
                         style={styles.locationErrorButton}
                         onPress={() => {
-                            Linking.openSettings();
+                            IntentLauncher.startActivity({
+                                action: 'android.settings.LOCATION_SOURCE_SETTINGS'
+                            });
                             setShowLocationError(false);
                         }}
                     >
@@ -414,58 +480,57 @@ const MapView = () => {
 
         return (
             <View style={styles.overlay}>
-            <TouchableOpacity style={styles.closeButton} onPress={handleCloseOverlay}>
-              <Text style={styles.closeButtonText}>×</Text>
-            </TouchableOpacity>
-            
-            <Image
-              source={imageSource}
-              style={styles.overlayImage}
-              resizeMode="cover"
-            />
-            
-            <Text style={styles.overlayTitle}>{selectedStore.name}</Text>
-          
-            
-            <View style={styles.infoContainer}>
-            <Text style={styles.overlaySubtitle}>{selectedStore.type || 'General Store'}</Text>
-              <Text style={styles.ratingText}>
-                {selectedStore.rating.toFixed(1)} ★
-              </Text>
-              {routeInfo && (
-                <View style={styles.routeInfoContainer}>
-                  <View style={styles.routeInfoItem}>
-                    <FontAwesomeIcon icon={faClock} size={16} color="#666666" />
-                    <Text style={styles.routeInfoText}>
-                      {`${Math.round(routeInfo.duration / 60)} min`}
+                <TouchableOpacity style={styles.closeButton} onPress={handleCloseOverlay}>
+                    <Text style={styles.closeButtonText}>×</Text>
+                </TouchableOpacity>
+                
+                <Image
+                    source={imageSource}
+                    style={styles.overlayImage}
+                    resizeMode="cover"
+                />
+                
+                <Text style={styles.overlayTitle}>{selectedStore.name}</Text>
+                
+                <View style={styles.infoContainer}>
+                    <Text style={styles.overlaySubtitle}>{selectedStore.type || 'General Store'}</Text>
+                    <Text style={styles.ratingText}>
+                        {selectedStore.rating.toFixed(1)} ★
                     </Text>
-                  </View>
-                  <View style={styles.routeInfoItem}>
-                    <FontAwesomeIcon icon={faRoad} size={16} color="#666666" />
-                    <Text style={styles.routeInfoText}>
-                      {`${(routeInfo.distance / 1000).toFixed(1)} km`}
-                    </Text>
-                  </View>
+                    {routeInfo && (
+                        <View style={styles.routeInfoContainer}>
+                            <View style={styles.routeInfoItem}>
+                                <FontAwesomeIcon icon={faClock} size={16} color="#666666" />
+                                <Text style={styles.routeInfoText}>
+                                    {`${Math.round(routeInfo.duration / 60)} min`}
+                                </Text>
+                            </View>
+                            <View style={styles.routeInfoItem}>
+                                <FontAwesomeIcon icon={faRoad} size={16} color="#666666" />
+                                <Text style={styles.routeInfoText}>
+                                    {`${(routeInfo.distance / 1000).toFixed(1)} km`}
+                                </Text>
+                            </View>
+                        </View>
+                    )}
                 </View>
-              )}
+                
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                        style={styles.viewDetailsButton}
+                        onPress={() => navigation.navigate('StoreDetails', { store: selectedStore })}
+                    >
+                        <Text style={styles.viewDetailsButtonText}>Details</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.navigateButton}
+                        onPress={handleNavigatePress}
+                    >
+                        <FontAwesomeIcon icon={faDirections} size={20} color="#fff" />
+                        <Text style={styles.navigateButtonText}>Navigate</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-            
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.viewDetailsButton}
-                onPress={() => navigation.navigate('StoreDetails', { store: selectedStore })}
-              >
-                <Text style={styles.viewDetailsButtonText}>Details</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.navigateButton}
-                onPress={handleNavigatePress}
-              >
-                <FontAwesomeIcon icon={faDirections} size={20} color="#fff" />
-                <Text style={styles.navigateButtonText}>Navigate</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
         );
     };
 
@@ -569,7 +634,6 @@ const MapView = () => {
                     <FontAwesomeIcon icon={faFilter} size={16} color="#fff" />
                 </TouchableOpacity>
 
-                {/* Clear Route Button - only show when route is visible */}
                 {routeInfo && (
                     <TouchableOpacity
                         style={[styles.controlButton, styles.clearRouteButton]}
@@ -610,7 +674,7 @@ const MapView = () => {
             {/* Search Results */}
             {showSearchResults && filteredStores.length > 0 && (
                 <ScrollView style={styles.searchResults}>
-                    {filteredStores.map((store: Store, index) => ( // Explicitly typed store as Store
+                    {filteredStores.map((store: Store, index) => (
                         <TouchableOpacity
                             key={store.store_id}
                             style={[
@@ -656,7 +720,6 @@ const MapView = () => {
 
             {renderStoreOverlay()}
             {renderLocationErrorModal()}
-            {renderPermissionModal()}
         </SafeAreaView>
     );
 };

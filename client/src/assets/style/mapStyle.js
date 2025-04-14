@@ -309,18 +309,37 @@ const styles = StyleSheet.create({
   routeInfoContainer: {
     flexDirection: "row",
     gap: 16,
-    marginBottom: 20,
+  
   },
   routeInfoItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    justifyContent:'center',
+
+    gap: 1,
   },
   routeInfoText: {
     fontSize: 13,
     fontFamily: FONTS.regular,
     color: "#666666",
   },
+  myLocationButton: {
+    position: 'absolute',
+    bottom: 110,
+    right: 16,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+    zIndex: 5,
+},
   locationWarningContainer: {
     backgroundColor: "#ffdddd",
     padding: 10,

@@ -198,7 +198,7 @@ const LoginScreen: React.FC = () => {
                                 containerSize={containerSize}
                             />
                         ))}
-                        <Text style={styles.text}>Welcome back.</Text>
+                        <Text style={styles.text}>Naragsak nga Isasangbay!</Text>
                         <Text style={styles.subText}>Sign In & Pick Up Where You Left Off!</Text>
                     </LinearGradient>
                 </View>

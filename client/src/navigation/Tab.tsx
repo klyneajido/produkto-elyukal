@@ -1,19 +1,22 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, StyleSheet, Dimensions, Animated, NativeSyntheticEvent, NativeScrollEvent, BackHandler, Text, TouchableOpacity, Modal } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHome, faCog, faMap, faBox, faCity } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { COLORS } from '../assets/constants/constant';
+
 import Home from '../pages/Home';
 import Products from '../pages/Products';
 import Map from '../pages/Map';
 import Settings from '../pages/Settings';
 import Municipalities from '../pages/Municipality';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { COLORS } from '../assets/constants/constant';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faBuilding, faHome, faCube, faMap, faCog } from '@fortawesome/free-solid-svg-icons';
 
 const Tab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
+
+const NAVBAR_TIMER_DELAY = 1500; // Centralized timing constant
 
 const ExitModal: React.FC<{ visible: boolean, onCancel: () => void, onExit: () => void }> = ({ visible, onCancel, onExit }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -60,55 +63,86 @@ const TabNavigator: React.FC = () => {
   const [isExitModalVisible, setIsExitModalVisible] = useState(false);
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
+  // Refs for scroll management
   const lastScrollY = useRef(0);
   const isScrollingDown = useRef(false);
-  const scrollTimer = useRef<NodeJS.Timeout | null>(null);
+  const scrollTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isTouching = useRef(false);
+  
+  // Clean up timer on unmount
   useEffect(() => {
     return () => {
-      if (scrollTimer.current) {
-        clearTimeout(scrollTimer.current);
+      if (scrollTimerRef.current) {
+        clearTimeout(scrollTimerRef.current);
       }
     };
   }, []);
 
+  // Reset the show navbar timer - centralized function
+  const resetNavbarTimer = useCallback(() => {
+    if (scrollTimerRef.current) {
+      clearTimeout(scrollTimerRef.current);
+    }
+    
+    scrollTimerRef.current = setTimeout(() => {
+      if (!isNavVisible) {
+        showNavbar();
+      }
+    }, NAVBAR_TIMER_DELAY);
+  }, [isNavVisible]);
+
   const showNavbar = useCallback(() => {
+    // Cancel any existing timer when manually showing navbar
+    if (scrollTimerRef.current) {
+      clearTimeout(scrollTimerRef.current);
+      scrollTimerRef.current = null;
+    }
+    
+    // Set the state first to ensure consistent state
+    setIsNavVisible(true);
+    
     Animated.spring(tabBarTranslate, {
       toValue: 0,
       useNativeDriver: true,
       tension: 80,
       friction: 12,
-    }).start(() => setIsNavVisible(true));
+    }).start();
   }, [tabBarTranslate]);
 
   const hideNavbar = useCallback(() => {
+    // Cancel any existing timer when hiding navbar
+    if (scrollTimerRef.current) {
+      clearTimeout(scrollTimerRef.current);
+      scrollTimerRef.current = null;
+    }
+    
+    // Set the state first to ensure consistent state
+    setIsNavVisible(false);
+    
     Animated.spring(tabBarTranslate, {
       toValue: 100,
       useNativeDriver: true,
       tension: 80,
       friction: 12,
-    }).start(() => setIsNavVisible(false));
+    }).start();
   }, [tabBarTranslate]);
 
   const handleTouchStart = useCallback(() => {
     isTouching.current = true;
-    if (scrollTimer.current) {
-      clearTimeout(scrollTimer.current);
-      scrollTimer.current = null;
+    
+    // Clear any existing timers when user touches screen
+    if (scrollTimerRef.current) {
+      clearTimeout(scrollTimerRef.current);
+      scrollTimerRef.current = null;
     }
   }, []);
 
   const handleTouchEnd = useCallback(() => {
     isTouching.current = false;
-    if (scrollTimer.current) {
-      clearTimeout(scrollTimer.current);
-    }
-    scrollTimer.current = setTimeout(() => {
-      if (!isNavVisible) {
-        showNavbar();
-      }
-    }, 1500);
-  }, [isNavVisible, showNavbar]);
+    
+    // Reset the timer when touch ends to show navbar after delay
+    resetNavbarTimer();
+  }, [resetNavbarTimer]);
 
   const handleScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -116,81 +150,74 @@ const TabNavigator: React.FC = () => {
       const diff = currentScrollY - lastScrollY.current;
       lastScrollY.current = currentScrollY;
 
-      if (Math.abs(diff) < 3) return;
+      // Ignore small movements (threshold increased for better stability)
+      if (Math.abs(diff) < 5) return;
 
       const newIsScrollingDown = diff > 0;
+      
+      // Only hide when actively scrolling down
       if (newIsScrollingDown && isNavVisible) {
         hideNavbar();
-        if (scrollTimer.current) {
-          clearTimeout(scrollTimer.current);
-          scrollTimer.current = null;
-        }
-      } else if (!newIsScrollingDown && !isNavVisible) {
+      } 
+      // Show when scrolling up
+      else if (!newIsScrollingDown && !isNavVisible) {
         showNavbar();
       }
+      
       isScrollingDown.current = newIsScrollingDown;
 
-      if (!isTouching.current) {
-        if (scrollTimer.current) {
-          clearTimeout(scrollTimer.current);
-        }
-        scrollTimer.current = setTimeout(() => {
-          if (!isNavVisible) {
-            showNavbar();
-          }
-        }, 1500);
+      // If user isn't touching (could be momentum scroll), reset timer
+      if (!isTouching.current && isScrollingDown.current) {
+        resetNavbarTimer();
       }
     },
-    [isNavVisible, hideNavbar, showNavbar]
+    [isNavVisible, hideNavbar, showNavbar, resetNavbarTimer]
   );
+
+  const handleMomentumScrollEnd = useCallback(() => {
+    // Always reset timer when scroll momentum ends
+    resetNavbarTimer();
+  }, [resetNavbarTimer]);
 
   useEffect(() => {
     const backAction = () => {
       const navState = navigation.getState();
       const tabState = navState.routes.find((r) => r.name === 'Tabs')?.state;
       const currentTabRouteName = tabState?.routes[tabState.index || 0]?.name || 'Home';
-
-      console.log('Back button pressed. Current tab route:', currentTabRouteName);
-      console.log('Can go back:', navigation.canGoBack());
-
+      
       if (navigation.canGoBack()) {
-        const currentRoute = navState.routes[navState.index];
-        const nestedState = currentRoute.state;
-        const activeScreen = nestedState && typeof nestedState.index === 'number' 
-          ? nestedState.routes[nestedState.index]?.name 
-          : undefined;
         navigation.goBack();
         return true;
       }
 
       if (currentTabRouteName !== 'Home') {
-        console.log('Navigating to Home from:', currentTabRouteName);
         navigation.navigate('Home');
         return true;
       }
 
-      console.log('Already on Home, showing exit modal');
       setIsExitModalVisible(true);
       return true;
     };
 
-    console.log('Registering BackHandler listener');
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-    return () => {
-      console.log('Removing BackHandler listener');
-      backHandler.remove();
-    };
+    return () => backHandler.remove();
   }, [navigation]);
 
   const handleCancelExit = () => {
     setIsExitModalVisible(false);
-    console.log('Cancel pressed, staying on Home');
   };
 
   const handleConfirmExit = () => {
     setIsExitModalVisible(false);
-    console.log('Exit pressed, attempting to close app');
     BackHandler.exitApp();
+  };
+
+  // Prepare shared props for scrollable screens
+  const scrollableScreenProps = {
+    onScroll: handleScroll,
+    onTouchStart: handleTouchStart,
+    onTouchEnd: handleTouchEnd,
+    onMomentumScrollEnd: handleMomentumScrollEnd
   };
 
   return (
@@ -208,7 +235,7 @@ const TabNavigator: React.FC = () => {
               borderRadius: 30,
               shadowColor: '#000',
               shadowOpacity: 0.1,
-              shadowOffset: { width: 0, height: 10 },
+              shadowOffset: { width: 0, height: 5 },
               shadowRadius: 10,
               elevation: 5,
               width: width - 40,
@@ -226,7 +253,7 @@ const TabNavigator: React.FC = () => {
               <View style={styles.iconContainer}>
                 <FontAwesomeIcon
                   icon={faHome}
-                  size={24}
+                  size={26}
                   color={focused ? COLORS.primary : '#bdbdbd'}
                 />
               </View>
@@ -234,19 +261,7 @@ const TabNavigator: React.FC = () => {
           }}
           name="Home"
           children={() => (
-            <Home
-              onScroll={handleScroll}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-              onMomentumScrollEnd={() => {
-                if (!isNavVisible) {
-                  if (scrollTimer.current) {
-                    clearTimeout(scrollTimer.current);
-                  }
-                  scrollTimer.current = setTimeout(showNavbar, 1500);
-                }
-              }}
-            />
+            <Home {...scrollableScreenProps} />
           )}
         />
         <Tab.Screen
@@ -255,8 +270,8 @@ const TabNavigator: React.FC = () => {
             tabBarIcon: ({ focused }) => (
               <View style={styles.iconContainer}>
                 <FontAwesomeIcon
-                  icon={faBox}
-                  size={24}
+                  icon={faCube}
+                  size={26}
                   color={focused ? COLORS.primary : '#bdbdbd'}
                 />
               </View>
@@ -266,17 +281,7 @@ const TabNavigator: React.FC = () => {
           children={({ navigation }) => (
             <Products
               navigation={navigation}
-              onScroll={handleScroll}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-              onMomentumScrollEnd={() => {
-                if (!isNavVisible) {
-                  if (scrollTimer.current) {
-                    clearTimeout(scrollTimer.current);
-                  }
-                  scrollTimer.current = setTimeout(showNavbar, 1500);
-                }
-              }}
+              {...scrollableScreenProps}
             />
           )}
         />
@@ -287,7 +292,7 @@ const TabNavigator: React.FC = () => {
               <View style={styles.iconContainer}>
                 <FontAwesomeIcon
                   icon={faMap}
-                  size={24}
+                  size={26}
                   color={focused ? COLORS.primary : '#bdbdbd'}
                 />
               </View>
@@ -302,8 +307,8 @@ const TabNavigator: React.FC = () => {
             tabBarIcon: ({ focused }) => (
               <View style={styles.iconContainer}>
                 <FontAwesomeIcon
-                  icon={faCity}
-                  size={24}
+                  icon={faBuilding}
+                  size={26}
                   color={focused ? COLORS.primary : '#bdbdbd'}
                 />
               </View>
@@ -311,19 +316,7 @@ const TabNavigator: React.FC = () => {
           }}
           name="Municipalities"
           children={() => (
-            <Municipalities
-              onScroll={handleScroll}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-              onMomentumScrollEnd={() => {
-                if (!isNavVisible) {
-                  if (scrollTimer.current) {
-                    clearTimeout(scrollTimer.current);
-                  }
-                  scrollTimer.current = setTimeout(showNavbar, 1500);
-                }
-              }}
-            />
+            <Municipalities {...scrollableScreenProps} />
           )}
         />
         <Tab.Screen
@@ -333,7 +326,7 @@ const TabNavigator: React.FC = () => {
               <View style={styles.iconContainer}>
                 <FontAwesomeIcon
                   icon={faCog}
-                  size={24}
+                  size={26}
                   color={focused ? COLORS.primary : '#bdbdbd'}
                 />
               </View>
