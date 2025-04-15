@@ -22,12 +22,24 @@ import {
 import axios from 'axios';
 import { BASE_URL } from '../config/config.ts';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import styles from '../assets/style/municipalityStyle.js';
 import { COLORS } from '../assets/constants/constant.ts';
 import { Animated } from '@rnmapbox/maps';
 import { Municipality, MunicipalityProps } from '../../types/types.ts';
 
+// Define the navigation stack param list
+type RootStackParamList = {
+  MunicipalityDetail: {
+    id: string;
+    name: string;
+    image_url?: string;
+  };
+  // Add other routes as needed
+};
 
+// Define the navigation prop type
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const Municipalities: React.FC<MunicipalityProps> = ({
     onScroll
@@ -37,7 +49,7 @@ const Municipalities: React.FC<MunicipalityProps> = ({
     const [searchText, setSearchText] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp>();
 
     // Calculate card width for 2 columns with proper spacing
     const screenWidth = Dimensions.get('window').width;
@@ -45,7 +57,7 @@ const Municipalities: React.FC<MunicipalityProps> = ({
 
     // Update the styles object with dynamic card width
     const cardStyle = {
-        ...styles.municipalityCard,
+        ...styles.card,
         width: cardWidth,
         height: 160, // Slightly reduced height for modern look
     };
@@ -61,9 +73,8 @@ const Municipalities: React.FC<MunicipalityProps> = ({
                 setFilteredMunicipalities(fetchedMunicipalities);
                 setLoading(false);
             } catch (e) {
-                setError('Error fetching municipalities');
+                setError('We couldn’t load the municipalities right now. Please try again later.');
                 setLoading(false);
-                console.error('Fetch Error:', e);
             }
         };
 
@@ -82,10 +93,11 @@ const Municipalities: React.FC<MunicipalityProps> = ({
     }, [searchText, municipalities]);
 
     const handleMunicipalityPress = (municipalityId: string, municipalityName: string) => {
+        const municipality = municipalities.find(m => m.id === municipalityId);
         navigation.navigate('MunicipalityDetail', {
             id: municipalityId,
             name: municipalityName,
-            image_url: municipalities.find(m => m.id === municipalityId)?.image_url
+            image_url: municipality?.image_url,
         });
     };
 
@@ -120,14 +132,6 @@ const Municipalities: React.FC<MunicipalityProps> = ({
         </TouchableOpacity>
     );
 
-    if (error) {
-        return (
-            <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-            </View>
-        );
-    }
-
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.modernHeader}>
@@ -157,6 +161,12 @@ const Municipalities: React.FC<MunicipalityProps> = ({
                 <View style={styles.centerContainer}>
                     <ActivityIndicator size="large" color={COLORS.primary} />
                     <Text style={styles.loadingText}>Loading municipalities...</Text>
+                </View>
+            ) : error ? (
+                <View style={styles.centerContainer}>
+                    <Text style={[styles.noResultsText]}>
+                        {error}
+                    </Text>
                 </View>
             ) : filteredMunicipalities.length > 0 ? (
                 <FlatList

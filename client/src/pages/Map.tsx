@@ -25,6 +25,7 @@ import { BASE_URL } from '../config/config';
 import axios from 'axios';
 import { Store, RootStackParamList, RouteInfo } from '../../types/types';
 import IntentLauncher from 'react-native-intent-launcher';
+import { COLORS } from '../assets/constants/constant.ts';
 
 const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN || '';
 
@@ -70,6 +71,7 @@ const MapView = () => {
     const fetchStores = async () => {
         try {
             setLoading(true);
+            setError(null);
             const response = await axios.get(`${BASE_URL}/stores/fetch_stores`);
 
             if (response.data && response.data.length > 0) {
@@ -108,10 +110,12 @@ const MapView = () => {
                         animationDuration: 0,
                     });
                 }
+            } else {
+                setError('No stores found at the moment.');
             }
         } catch (err: any) {
-            console.error('Error fetching stores:', err);
-            setError('Failed to load store data. Please try again later.');
+            console.log('Error fetching stores:', err);
+            setError('Oops! We couldn’t load the stores right now. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -533,37 +537,6 @@ const MapView = () => {
         );
     };
 
-    // Loading state
-    if (loading) {
-        return (
-            <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-                <ActivityIndicator size="large" color="#4A90E2" />
-                <Text style={{ marginTop: 10, fontSize: 16 }}>Loading stores...</Text>
-            </SafeAreaView>
-        );
-    }
-
-    // Error state
-    if (error) {
-        return (
-            <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
-                <Text style={{ fontSize: 18, color: '#E74C3C', marginBottom: 15 }}>Error</Text>
-                <Text style={{ fontSize: 16, textAlign: 'center' }}>{error}</Text>
-                <TouchableOpacity
-                    style={{
-                        marginTop: 20,
-                        backgroundColor: '#4A90E2',
-                        padding: 12,
-                        borderRadius: 8
-                    }}
-                    onPress={fetchStores}
-                >
-                    <Text style={{ color: '#fff', fontSize: 16 }}>Retry</Text>
-                </TouchableOpacity>
-            </SafeAreaView>
-        );
-    }
-
     return (
         <SafeAreaView style={styles.container}>
             <MapboxGL.MapView
@@ -586,7 +559,7 @@ const MapView = () => {
                     centerCoordinate={initialCamera.centerCoordinate}
                 />
 
-                {renderAnnotations()}
+                {!error && renderAnnotations()}
 
                 {routeInfo && (
                     <MapboxGL.ShapeSource
@@ -727,6 +700,29 @@ const MapView = () => {
                     </View>
                 </TouchableOpacity>
             </Modal>
+
+            {/* Error Message */}
+            {error && (
+                <View style={styles.errorContainer}>
+                    <Text style={[styles.errorText]}>
+                        {error}
+                    </Text>
+                    <TouchableOpacity
+                        style={styles.retryButton}
+                        onPress={fetchStores}
+                    >
+                        <Text style={styles.retryButtonText}>Try Again</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
+            {/* Loading Overlay */}
+            {loading && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color={COLORS.primary} />
+                    <Text style={styles.loadingText}>Loading stores...</Text>
+                </View>
+            )}
 
             {renderStoreOverlay()}
             {renderLocationErrorModal()}

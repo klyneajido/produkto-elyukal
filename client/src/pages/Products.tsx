@@ -148,7 +148,7 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
         setProducts(response.data.products || []);
       } catch (e) {
         setProducts([]);
-        console.error('Failed to fetch products:', e);
+        console.log('Failed to fetch products:', e);
       } finally {
         setIsLoading(false);
       }

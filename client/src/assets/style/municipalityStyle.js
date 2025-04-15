@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
-  
   },
   modernSearchBarContainer: {
     flexDirection: "row",
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
   grid: {
     paddingHorizontal: 16,
     paddingBottom: 24,
-    paddingTop:10,
+    paddingTop: 10,
   },
   row: {
     justifyContent: "space-between",
@@ -185,11 +184,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   noResultsText: {
-    fontSize: FONT_SIZE.large,
-    fontFamily: FONTS.medium,
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.regular,
     color: COLORS.gray,
-    marginTop: 16,
-    marginBottom: 8,
     textAlign: "center",
   },
   noResultsSubtext: {

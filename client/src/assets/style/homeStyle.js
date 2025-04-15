@@ -178,8 +178,35 @@ const styles = StyleSheet.create({
   exploreText:{
     fontFamily:FONTS.semibold,
     letterSpacing:0.2,
-    
-
+  
+  },
+  searchResultsContainer: {
+    position: 'absolute',
+    top: 125,
+    left: 25,
+    right: 25,
+    backgroundColor: COLORS.white,
+    borderRadius: 8,
+    maxHeight: 200,
+    elevation: 5, 
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    zIndex: 1000, 
+  },
+  searchResultsList: {
+    flexGrow: 0,
+  },
+  searchResultItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  searchResultLoader: {
+    borderWidth:1,
+    paddingVertical:10,
   },
   highlightBox: {
     backgroundColor: "rgba(0,0,0,0.03)",
@@ -430,23 +457,7 @@ copyright: {
   opacity: 0.5,
   textAlign: 'center',
 },
-calendarOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-  },
-  calendarContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
+
   closeButton: {
     marginTop: 10,
     padding: 10,
@@ -457,6 +468,112 @@ calendarOverlay: {
     color: '#fff',
     fontWeight: 'bold',
   },
+  // Add these new styles to your existing homeStyle.js file
+
+// Error handling styles
+errorContainer: {
+  position: 'absolute',
+  top: 125,
+  left: 0,
+  right: 0,
+  backgroundColor: '#ff5252',
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  zIndex: 1000,
+  elevation: 6,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+},
+errorNetwork: {
+  backgroundColor: '#ff9800', // Orange for network issues
+},  
+errorAuth: {
+  backgroundColor: '#f44336', // Red for authentication issues
+},
+errorSearch: {
+  backgroundColor: '#9c27b0', // Purple for search issues
+},
+errorGeneral: {
+  backgroundColor: '#607d8b', // Blue-gray for general issues
+},
+errorContent: {
+  flex: 1,
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+errorIcon: {
+  marginRight: 10,
+},
+errorText: {
+  color: 'white',
+  fontFamily: FONTS.medium,
+  fontSize: FONT_SIZE.medium,
+  flex: 1,
+},
+errorDismiss: {
+  padding: 6,
+},
+
+// Search results improvements
+searchResultsContainer: {
+  position: 'absolute',
+  top: 125,
+  left: 25,
+  right: 25,
+  backgroundColor: COLORS.white,
+  borderRadius: 12,
+  maxHeight: 250, // Increased height
+  elevation: 5, 
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 3 },
+  shadowOpacity: 0.2,
+  shadowRadius: 6,
+  zIndex: 1000,
+  borderWidth: 1,
+  borderColor: 'rgba(0,0,0,0.05)',
+},
+searchResultsList: {
+  flexGrow: 0,
+  paddingVertical: 5,
+},
+searchResultItem: {
+  paddingVertical: 12,
+  paddingHorizontal: 15,
+  borderBottomWidth: 1,
+  borderBottomColor: 'rgba(0,0,0,0.05)',
+},
+searchResultText: {
+  fontSize: FONT_SIZE.medium,
+  fontFamily: FONTS.regular,
+   paddingHorizontal: 15,
+    paddingVertical: 10,
+  letterSpacing: 0.1,
+  color: '#333',
+},
+searchResultType: {
+  fontSize: FONT_SIZE.small,
+  color: COLORS.primary,
+  fontFamily: FONTS.medium,
+},
+searchResultLoader: {
+  padding: 15,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+noResultsText: {
+  fontSize: FONT_SIZE.medium,
+  fontFamily: FONTS.regular,
+  color: COLORS.gray,
+  textAlign: 'center',
+  paddingVertical: 20,
+  paddingHorizontal: 15,
+  fontStyle: 'italic',
+}
 });
 
 export default styles;
