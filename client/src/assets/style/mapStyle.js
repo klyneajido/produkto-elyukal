@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     left: 10,
     right: 10,
     backgroundColor: "rgba(255, 255, 255, 0.98)",
-    borderRadius: 16,
+    borderRadius: 10,
     maxHeight: 300,
     shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 4 },

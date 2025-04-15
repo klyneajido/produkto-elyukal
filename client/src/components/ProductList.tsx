@@ -1,6 +1,5 @@
-// ProductList.tsx - Updated with better error handling
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, ScrollViewProps } from 'react-native';
+import React, { useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
@@ -9,25 +8,57 @@ import { Product, RootStackParamList } from '../../types/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { BASE_URL } from '../config/config';
 import axios from 'axios';
+import FastImage from 'react-native-fast-image';
+import throttle from 'lodash/throttle';
 
 type ProductListProps = {
   products: Product[];
+  onScroll?: ScrollViewProps['onScroll'];
 };
 
-const ProductList: React.FC<ProductListProps> = ({ products = [] }) => {
+const ProductCard = React.memo(({ product, onPress }: { product: Product; onPress: () => void }) => (
+  <TouchableOpacity style={styles.card} onPress={onPress}>
+    <FastImage
+      style={styles.productImage}
+      source={{
+        uri: product.image_urls[0],
+        priority: FastImage.priority.normal,
+      }}
+      resizeMode={FastImage.resizeMode.cover}
+      onError={() => console.log("Image load error - continuing silently")}
+    />
+    <View style={styles.starContainer}>
+      <View style={styles.ratings}>
+        <FontAwesomeIcon icon={faStar} color="#FFD700" size={12} />
+        <Text style={styles.starText}> {product.average_rating || '0'} ({product.total_reviews || 0})</Text>
+      </View>
+    </View>
+    <View style={styles.cardContent}>
+      <Text style={styles.cardText} numberOfLines={1}>
+        {product.name || "Unnamed Product"}
+      </Text>
+      <Text style={styles.locationText} numberOfLines={1}>
+        {product.address || 'Address not available'}
+      </Text>
+    </View>
+  </TouchableOpacity>
+));
+
+const ProductList: React.FC<ProductListProps> = ({ products = [], onScroll }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const increment_views = async (productId: number) => {
-    try {
-      await axios.put(`${BASE_URL}/products/add_view_to_product/${productId}`);
-    }
-    catch (error: any) {
-      // Silent error handling - don't show to user
-      console.log("View increment failed silently");
-    }
-  };
-  
-  // Display empty state when no products are available
+  const increment_views = useMemo(
+    () =>
+      throttle(async (productId: number) => {
+        try {
+          await axios.put(`${BASE_URL}/products/add_view_to_product/${productId}`);
+        } catch (error: any) {
+          console.log("View increment failed silently");
+        }
+      }, 1000),
+    []
+  );
+
   if (!products || products.length === 0) {
     return (
       <View style={styles.emptyContainer}>
@@ -35,42 +66,31 @@ const ProductList: React.FC<ProductListProps> = ({ products = [] }) => {
       </View>
     );
   }
-  
+
+  const renderItem = ({ item: product }: { item: Product }) => (
+    <ProductCard
+      product={product}
+      onPress={() => {
+        increment_views(product.id);
+        navigation.navigate('ProductDetails', { product });
+      }}
+    />
+  );
+
   return (
     <View style={styles.container}>
-      <View style={styles.productGrid}>
-        {products.map((product) => (
-          <TouchableOpacity
-            key={product.id}
-            style={styles.card}
-            onPress={() => {
-              increment_views(product.id);
-              navigation.navigate('ProductDetails', { product });
-            }}
-          >
-            <Image
-              source={{ uri: product.image_urls[0] }}
-              style={styles.productImage}
-              // Add fallback handling for image errors
-              onError={() => console.log("Image load error - continuing silently")}
-            />
-            <View style={styles.starContainer}>
-              <View style={styles.ratings}>
-                <FontAwesomeIcon icon={faStar} color="#FFD700" size={12} />
-                <Text style={styles.starText}> {product.average_rating || '0'} ({product.total_reviews || 0})</Text>
-              </View>
-            </View>
-            <View style={styles.cardContent}>
-              <Text style={styles.cardText} numberOfLines={1}>
-                {product.name || "Unnamed Product"}
-              </Text>
-              <Text style={styles.locationText} numberOfLines={1}>
-                {product.address || 'Address not available'}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <FlatList
+        data={products}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        numColumns={2}
+        columnWrapperStyle={styles.productGrid}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={10}
+        windowSize={5}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+      />
     </View>
   );
 };
@@ -82,8 +102,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
   },
   productGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
   card: {
@@ -103,7 +121,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '70%',
     resizeMode: 'cover',
-    backgroundColor: COLORS.lightgray, // Fallback background color
+    backgroundColor: COLORS.lightgray,
   },
   cardContent: {
     padding: 8,

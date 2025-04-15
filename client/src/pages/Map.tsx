@@ -377,7 +377,6 @@ const MapView = () => {
             setFilteredStores(stores);
         }
         setShowSearchResults(false);
-        setShowSearchBar(false);
     };
 
     const handleSearchButtonPress = () => {

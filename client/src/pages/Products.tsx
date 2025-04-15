@@ -249,8 +249,8 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
               />
               <TextInput
                 style={styles.searchBar}
-                onChangeText={setInputText} // Update inputText instead of searchText
-                value={inputText} // Bind to inputText
+                onChangeText={setInputText}
+                value={inputText}
                 placeholder="Search by name, store, or town"
                 placeholderTextColor="#888"
               />
@@ -360,14 +360,11 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
               </View>
             </Modal>
 
-            <Animated.ScrollView
+            <View
               style={styles.productContainer}
-              showsVerticalScrollIndicator={false}
-              onScroll={onScroll}
-              scrollEventThrottle={16}
             >
-              <ProductList products={filteredProducts} />
-            </Animated.ScrollView>
+              <ProductList products={filteredProducts} onScroll={onScroll} />
+            </View>
           </>
         )}
       </View>
