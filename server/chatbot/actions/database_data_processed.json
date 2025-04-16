@@ -1,0 +1,756 @@
+{
+  "municipalities": [
+    {
+      "id": "13",
+      "name": "Bagulin",
+      "description": "Bagulin is a mountainous municipality in La Union, characterized by its cool climate and lush landscapes. The town is renowned for its soft broom (walis tambo) production, crafted from tiger grass grown in the area. These brooms are a common household item and are known for their durability and effectiveness."
+    },
+    {
+      "id": "16",
+      "name": "San Gabriel",
+      "description": "San Gabriel is an adventure-seeker’s paradise, known for its rugged landscapes, hidden waterfalls, and eco-tourism destinations. The town is home to Tangadan Falls, one of La Union’s most famous natural attractions, where visitors can enjoy cliff jumping, swimming, and bamboo rafting. San Gabriel’s highlands also make it an ideal place for growing coffee, citrus fruits, and root crops. With its breathtaking mountain views, rich agricultural land, and outdoor activities, San Gabriel offers an unforgettable experience for nature lovers."
+    },
+    {
+      "id": "18",
+      "name": "Santol",
+      "description": "Nestled in the highlands of La Union, Santol is a cool, mountainous town known for its lush forests and indigenous culture. Home to the Kankanaey and Ibaloi ethnic groups, Santol preserves its rich traditions, including weaving and highland farming. The town’s fertile soil produces a variety of upland crops such as coffee, bananas, sweet potatoes, and ginger. With its breathtaking mountain views, waterfalls, and unspoiled nature, Santol is perfect for those seeking an off-the-beaten-path adventure.\""
+    },
+    {
+      "id": "2",
+      "name": "San Juan",
+      "description": "Surfing capital of the North, popular beach destination"
+    },
+    {
+      "id": "1",
+      "name": "San Fernando",
+      "description": "San Fernando City is the capital of La Union and serves as the political, economic, and cultural center of the province. It's a highly urbanized area with government offices, hospitals, schools, and commercial establishments. The city is also a hub for transportation, connecting the northern and central parts of Luzon. Despite its urban character, San Fernando still preserves its coastal charm with beaches like Poro Point and historical sites such as the Ma-Cho Temple. One of the well-known products of San Fernando is dried fish, particularly \"danggit\" and other sun-dried varieties, which are commonly sold in its public markets and brought home by visitors as local delicacies."
+    },
+    {
+      "id": "10",
+      "name": "Aringay",
+      "description": "Aringay is a coastal town in La Union, known for its agriculture and aquaculture. It was once part of Pangasinan and became a municipality in 1741. The town has 24 barangays, each with its own local products. Aringay is famous for its bangus (milkfish), especially from barangay Dulao. Other notable products include oysters from Alaska, bananas from Basca, and buyos (a native rice delicacy) from San Benito Sur. The town also produces root crops, vegetables, and corn. Aringay's beaches and historical sites attract visitors, adding to its local economy. "
+    },
+    {
+      "id": "14",
+      "name": "Pugo",
+      "description": "Pugo is a municipality in La Union characterized by its scenic landscapes and traditional crafts. The town is known for its furnishing products, including handcrafted furniture made from local materials. These products reflect the town's commitment to quality craftsmanship and support the local economy."
+    },
+    {
+      "id": "3",
+      "name": "Bauang",
+      "description": "Bauang is a coastal municipality in La Union, famous for its grape farms. The town's climate and soil conditions are ideal for grape cultivation, making it a unique area for viticulture in the Philippines. Bauang's grapes are used for fresh consumption and wine production, attracting tourists and contributing to the local economy.​"
+    },
+    {
+      "id": "5",
+      "name": "Luna",
+      "description": "Luna is a coastal town in La Union, distinguished by its pebble beaches. The unique pebbles found along Luna's shores are smooth and multicolored, attracting visitors and collectors. These pebbles are also used in landscaping and construction, making them a valuable natural resource for the municipality."
+    },
+    {
+      "id": "12",
+      "name": "Naguilian",
+      "description": "Naguilian is an inland municipality in La Union, known for its production of basi, a traditional Ilocano sugarcane wine. Basi from Naguilian is made using age-old fermentation techniques, resulting in a distinct flavor that is cherished in the region. The town celebrates this heritage with the annual Basi Festival, highlighting its cultural significance.​\r\nProvincial Government of La Union\r\n+5\r\n"
+    },
+    {
+      "id": "15",
+      "name": "Rosario",
+      "description": "Rosario is a municipality in La Union that serves as a gateway to the province from the south. The town is recognized for its furniture-making industry, with local artisans producing a variety of wooden furniture pieces. Rosario's furniture is known for its durability and design, contributing to the town's economic development."
+    },
+    {
+      "id": "19",
+      "name": "Sudipen",
+      "description": "Sudipen, the northernmost town of La Union, is a quiet and scenic municipality known for its rich bamboo industry. Skilled artisans craft high-quality bamboo furniture and home decor, which are sought after for their durability and craftsmanship. The town’s fertile land also supports rice and vegetable farming. Adventure seekers can explore Sudipen’s natural wonders, including scenic rivers and forests ideal for trekking and eco-tourism."
+    },
+    {
+      "id": "20",
+      "name": "Tubao",
+      "description": "Tubao is a landlocked town known for its fertile farmlands and thriving agricultural industry. The town produces rice, corn, and vegetables, making it one of La Union’s key farming communities. Tubao is also home to the historic Tubao Church, a significant landmark reflecting the town’s deep-rooted faith and cultural heritage. With its peaceful rural charm and strong agricultural economy, Tubao offers a glimpse into the simple yet rich countryside life of La Union."
+    },
+    {
+      "id": "7",
+      "name": "Balaoan",
+      "description": "Balaoan is a municipality in La Union with a diverse economy that includes agriculture and marine activities. The town is particularly known for its sea urchin (uni) harvests, which are a delicacy in local cuisine. Sea urchins from Balaoan are harvested from its coastal waters and are a significant source of income for local fishermen.​\r\n"
+    },
+    {
+      "id": "11",
+      "name": "Burgos",
+      "description": "Burgos is a landlocked town in eastern La Union, named after Father José Burgos. It has a small population of around 9,000 people and is mostly rural, with farming as the main livelihood. The area is hilly, and many residents grow rice and fruits like pineapples and bananas. Burgos is best known for its colored soft brooms made from tiger grass. These brooms are sold along the Baguio-Bauang Highway and are popular in Baguio and Metro Manila. The town also produces rice wine called tapey and native delicacies like binudbudan. Burgos is about 29 kilometers from San Fernando and is one of the least populated municipalities in La Union. "
+    },
+    {
+      "id": "4",
+      "name": "Agoo",
+      "description": "​Agoo is a first-class municipality in La Union, known for its rich history and cultural heritage. It is one of the oldest towns in the province and serves as a gateway to the Ilocos Region. The town is famous for its mushroom production, which has become a significant source of livelihood for many residents. Mushrooms from Agoo are known for their quality and are distributed to various markets in the region.​\r\n"
+    },
+    {
+      "id": "6",
+      "name": "Bacnotan",
+      "description": "Bacnotan is a coastal town in La Union, recognized for its natural beauty and agricultural activities. The municipality is known for its honey production, with local beekeepers harvesting honey that is both pure and flavorful. Bacnotan honey is sought after for its quality and is a staple product in local markets."
+    },
+    {
+      "id": "8",
+      "name": "Bangar",
+      "description": "Bangar is a historic town in La Union, celebrated for its traditional crafts and industries. It is especially known for handloom weaving, producing inabel fabrics that are integral to Ilocano culture. These woven textiles are used for clothing, blankets, and other household items, showcasing the town's rich artisanal heritage."
+    },
+    {
+      "id": "9",
+      "name": "Caba",
+      "description": "Caba is a municipality in La Union known for its bamboo industry. Local artisans craft various products from bamboo, including furniture, home decor, and utensils. The bamboo products from Caba are appreciated for their craftsmanship and sustainability, supporting both the economy and environmental conservation."
+    },
+    {
+      "id": "17",
+      "name": "Santo Tomas",
+      "description": "Santo Tomas is a municipality in La Union known for its dried fish industry. The town's coastal location provides abundant fish, which are sun-dried to produce daing, a popular Filipino delicacy. Santo Tomas celebrates this industry with the annual Daing Festival, showcasing its importance to the local economy."
+    }
+  ],
+  "products": [
+    {
+      "name": "Wooden Rocking Chair",
+      "category": "Handicrafts",
+      "description": "Bring timeless comfort and craftsmanship into your home with this beautifully handcrafted wooden rocking chair from Lambert’s Furniture Shop, a trusted local name in Rosario, La Union. Made with durable, high-quality hardwood sourced from sustainable local suppliers, this rocking chair showcases natural grain patterns, a warm polished finish, and smooth, gentle curves designed for relaxation.",
+      "price_range": "₱1100.0-5000.0",
+      "availability": "Year-round",
+      "town": "Rosario",
+      "store_id": "6a738b8b-dccb-45e7-af00-338ca3506582",
+      "store_name": "Lambert's Furniture Shop"
+    },
+    {
+      "name": "Wooden Trophy",
+      "category": "Handicrafts",
+      "description": "Wooden Trophy for Silaw -175th La Union Foundation Anniversary.\r\nMade from 3 different types of wood and can be customized to your needs. From Heisabelle Wood Works, Sudipen, La Union.",
+      "price_range": "₱800.0-3000.0",
+      "availability": "Year-round",
+      "town": "San Juan",
+      "store_id": "4a4a4511-88cc-4bad-ba3d-97c02baa9a38",
+      "store_name": "Heisabelle Wood Works"
+    },
+    {
+      "name": "Rolled Edge Bamboo Platter",
+      "category": "Handicrafts",
+      "description": "Looking at a beautiful and creatively presented dish makes a good upgrade.\r\nThe plate itself becomes an artistic canvas filled with color, print and textures.\r\nThis platter made from bamboo will play an artistic and creative role for your food platting.",
+      "price_range": "₱400.0-600.0",
+      "availability": "Year-round",
+      "town": "San Fernando",
+      "store_id": "040cab3b-e270-4181-832e-0bad3d0603ce",
+      "store_name": "Kultur Siak - OTOP Hub La Union"
+    },
+    {
+      "name": "Bamboo Wicker Table Lamp",
+      "category": "Handicrafts",
+      "description": "Bamboo Wicker Table Lamp available in 30-40cm\r\nLampshade can offer various benefits for you and your home choosing the right lampshade for you can be very complicated.\r\nTry this bamboo lampshade for a good ambient light. Through adding style to your base, it is also a decorative thing to take into consideration for your interior design. One more good thing? It’s eco-friendly. From Bacnotan, La Union.",
+      "price_range": "₱1600.0-1800.0",
+      "availability": "Year-round",
+      "town": "San Fernando",
+      "store_id": "040cab3b-e270-4181-832e-0bad3d0603ce",
+      "store_name": "Kultur Siak - OTOP Hub La Union"
+    },
+    {
+      "name": "Coconut Cups",
+      "category": "Handicrafts",
+      "description": "Coconut Cups made from local coconuts with wooden stand. \r\nSold per piece or as set.",
+      "price_range": "₱150.0-1500.0",
+      "availability": "Year-round",
+      "town": "Tubao",
+      "store_id": "16d95e01-be99-4abb-9e21-93706a13b903",
+      "store_name": "J & S Furniture and Handicrafts"
+    },
+    {
+      "name": "Fresh Grapes",
+      "category": "Agricultural Products",
+      "description": "Gapuz Grape Farm offers fresh, locally grown grapes from Bauang, La Union. Known for their sweet taste and vibrant color, these grapes are handpicked and perfect for both eating and making wine. Visitors can enjoy grape picking during the harvest season and experience the farm's rich tradition of grape cultivation.",
+      "price_range": "₱100.0-250.0",
+      "availability": "Year-round",
+      "town": "Bauang",
+      "store_id": "a226e8f5-3ff9-4930-8110-d5f7f2902634",
+      "store_name": "Gapuz Grape Farm"
+    },
+    {
+      "name": "Handmade Clay Potter",
+      "category": "Handicrafts",
+      "description": "This handmade clay pot from San Juan, La Union is a beautiful blend of tradition and artistry, crafted by local artisans using locally-sourced red clay and time-honored techniques passed down through generations. Each piece is carefully molded by hand, then kiln-fired to achieve a sturdy, natural finish that highlights its earthy charm. No two pots are exactly alike, making each one a unique expression of Filipino craftsmanship. Ideal for holding indoor plants, dried flowers, or simply as a rustic decorative piece, this eco-friendly clay pot brings a touch of warmth and cultural heritage to any space. Proudly made in one of La Union’s creative hubs, it serves as both a functional item and a meaningful souvenir.",
+      "price_range": "₱300.0-1200.0",
+      "availability": "Year-round",
+      "town": "San Juan",
+      "store_id": "b9eadbc5-875a-4c01-b467-2c74b3f042f5",
+      "store_name": "Dan's Pottery Shop"
+    },
+    {
+      "name": "Naguilian Basi (Sugarcane Wine)",
+      "category": "Food Products",
+      "description": "Naguilian Basi from the Naguilian Public Market is a locally crafted sugarcane wine that embodies the rich heritage of La Union. Made using time-honored fermentation techniques, it has a deep amber hue and a bold, slightly tangy flavor with a well-balanced sweetness. This traditional Ilocano drink is aged in earthen jars, giving it a distinct aroma and a smooth yet complex taste. Sourced directly from local producers, the Basi sold at Naguilian Public Market represents the authenticity and craftsmanship of the town, where sugarcane wine-making has been a tradition for generations. Whether enjoyed as a cultural experience or a unique souvenir, Naguilian Basi carries the legacy of the region’s skilled artisans and its deep-rooted history in Filipino culture.",
+      "price_range": "₱120.0-200.0",
+      "availability": "Year-round",
+      "town": "Naguilian",
+      "store_id": "24244a9f-b060-476e-ab87-3cc9a196fcd7",
+      "store_name": "Naguilian Public Market"
+    },
+    {
+      "name": "Labtang Basket",
+      "category": "Handicrafts",
+      "description": "Celebrate Filipino tradition with the Labtang Basket, a handwoven masterpiece proudly crafted by local artisans in Rosario, La Union. Made from natural labtang vine—a sturdy, flexible native material—each basket tells a story of patience, skill, and heritage passed down through generations. Its earthy tones and tight, intricate weave make it not just functional but also a beautiful addition to any home. Whether used for carrying goods, storing household items, or as rustic décor, this basket showcases the art of traditional Ilocano weaving at its finest.",
+      "price_range": "₱200.0-600.0",
+      "availability": "Year-round",
+      "town": "Rosario",
+      "store_id": "86e46ee3-c6f1-4c93-a443-f58871828071",
+      "store_name": "OL's Labtang "
+    },
+    {
+      "name": "Moreno Cafe Wine",
+      "category": "Beverages",
+      "description": "Lomboy Farm’s Don Avelino Moreno Café Wine is a unique fusion of rich coffee and fine wine, crafted with the dedication and expertise of Lomboy Farm, a pioneer in fruit winemaking in the Philippines. This specialty wine blends the deep, roasted flavors of premium coffee with the smooth, full-bodied character of carefully fermented fruits, resulting in a bold yet balanced taste. Each sip delivers an aromatic mix of bittersweet coffee notes and subtle fruity undertones, creating a sophisticated drinking experience. Named in honor of Don Avelino Moreno, this café wine reflects both tradition and innovation, making it a standout choice for those who appreciate distinctive, locally crafted wines.",
+      "price_range": "₱350.0-500.0",
+      "availability": "Year-round",
+      "town": "Bauang",
+      "store_id": "854d44ff-8534-4f12-832c-419f3d57fe63",
+      "store_name": "Lomboy Grape Farm"
+    },
+    {
+      "name": "Inabel Towel",
+      "category": "Clothing",
+      "description": "The RP Lucina Loom Weaving Towel is a handcrafted textile made using traditional Ilocano weaving techniques. Woven with intricate patterns and vibrant colors, it showcases the rich cultural heritage of La Union. Made from high-quality cotton or a cotton-blend, it offers durability, softness, and excellent absorbency. The towel’s design reflects the craftsmanship of local artisans, incorporating geometric and nature-inspired motifs. Ideal for everyday use or as a decorative piece, it embodies both function and artistry, preserving the legacy of loom weaving in the region.",
+      "price_range": "₱100.0-200.0",
+      "availability": "Year-round",
+      "town": "Bangar",
+      "store_id": "110789dd-1012-40d9-8d40-618945df6887",
+      "store_name": "R.P. Lucina's Loom Weaving"
+    },
+    {
+      "name": "Dried Fish",
+      "category": "Food Products",
+      "description": "Santo Tomas La Union daing is a traditional Filipino delicacy made from sun-dried fish, typically sourced fresh from the coastal waters of Santo Tomas, La Union. Known for its savory, slightly salty flavor and crispy texture when fried, daing from this town is popular for its quality and taste. It is often enjoyed with rice and vinegar dipping sauce, making it a staple in many Filipino households. The town's dedication to preserving this culinary heritage makes its daing a sought-after product in local and regional markets",
+      "price_range": "₱50.0-150.0",
+      "availability": "Year-round",
+      "town": "Santo Tomas",
+      "store_id": "2b8ede81-615a-4197-ba23-eff9a88807a6",
+      "store_name": "Santo Tomas Daing Delicacy Store"
+    },
+    {
+      "name": "Centerpiece Chair ",
+      "category": "Handicrafts",
+      "description": "Woven centerpiece chair from Balaoan, La Union.",
+      "price_range": "₱700.0-1200.0",
+      "availability": "Year-round",
+      "town": "Balaoan",
+      "store_id": "57661d9d-271b-4b2b-98f5-e47dc993ae95",
+      "store_name": "Fe Handicraft Trading"
+    },
+    {
+      "name": "Woven Table Desk Lamp",
+      "category": "Handicrafts",
+      "description": "Table Desk Light perfect as the center piece for your desks or side tables, providing perfect light and ambiance to your home.",
+      "price_range": "₱400.0-700.0",
+      "availability": "Year-round",
+      "town": "Balaoan",
+      "store_id": "57661d9d-271b-4b2b-98f5-e47dc993ae95",
+      "store_name": "Fe Handicraft Trading"
+    },
+    {
+      "name": "Red Cardinal Grapes",
+      "category": "Agricultural Products",
+      "description": "​Orpilla-Estigoy Grape Farm in Bauang, La Union, grows Cardinal grapes, a red variety well-suited to the region's dry climate and loamy soil. These grapes are known for their round shape and tangy flavor, especially the lighter-colored ones. Darker grapes tend to be sweeter and riper. The farm offers grape-related products like juice and wines made from blueberry and guyabano. Visitors can also take photos among the vines, even outside the main harvest season.",
+      "price_range": "₱200.0-250.0",
+      "availability": "Year-round",
+      "town": "Bauang",
+      "store_id": "221e6a8d-92c6-49cf-951d-60b9ba83019f",
+      "store_name": "Orpilla Estigoy Grapes Farm"
+    },
+    {
+      "name": "Red Cardinal Grapes",
+      "category": "Agricultural Products",
+      "description": "Calica Grapes Farm in Urayong, Bauang, La Union, primarily grows Red Cardinal grapes. These grapes are known for their sweet taste and are available for visitors to pick directly from the vines. The farm operates on a \"pick and pay\" system, charging ₱250 to ₱300 per kilogram of grapes harvested. There is no entrance fee, but each group is required to purchase at least 1 kilogram of grapes. The farm opens as early as 6:00 AM and remains open until there are no more visitors for the day.",
+      "price_range": "₱200.0-350.0",
+      "availability": "Year-round",
+      "town": "Bauang",
+      "store_id": "4d2d8c8e-dc9b-40b5-a51d-9b890a221d62",
+      "store_name": "Calica Grape Farm"
+    },
+    {
+      "name": "Wooden Square Cabinet",
+      "category": "Handicrafts",
+      "description": "Wooden Cabinet perfect for showcasing your valuable items. Made from local wood and manufactured inhouse, quality is guaranteed.\r\nWith 9 open shelves and 5 compartments you will not waste space.",
+      "price_range": "₱2000.0-4000.0",
+      "availability": "Year-round",
+      "town": "Agoo",
+      "store_id": "ceb598d2-2a7b-41d5-ab65-e5e824f5dd22",
+      "store_name": "DJON Rustic Wood Furnitures"
+    },
+    {
+      "name": "TV Console Cabinet",
+      "category": "Handicrafts",
+      "description": "2 columns with 5 vertical shelves with the perfect space for your entertainment console in between and drawers to keep items safe and secure. Made from locally sourced wood and varnished to customer's specification you will never go wrong with DJON made furniture.",
+      "price_range": "₱5000.0-7000.0",
+      "availability": "Year-round",
+      "town": "Agoo",
+      "store_id": "ceb598d2-2a7b-41d5-ab65-e5e824f5dd22",
+      "store_name": "DJON Rustic Wood Furnitures"
+    },
+    {
+      "name": "Bamboo Sofa",
+      "category": "Handicrafts",
+      "description": "Elevate your living space with the handcrafted Bamboo Sofa from ES Bamboo Furniture Shop, proudly made in Caba, La Union. This eco-friendly sofa showcases the natural beauty and durability of premium Philippine bamboo, known for its strength and sustainability. Its sleek, minimalist design features smooth, polished bamboo poles meticulously woven to create a sturdy frame, paired with plush, customizable cushions for ultimate comfort.\r\n\r\nPerfect for indoor or covered outdoor areas, this sofa blends rustic charm with modern elegance, making it a versatile addition to any home. Lightweight yet robust, it supports up to 250 kg, ensuring long-lasting use with minimal maintenance—just a simple polish to maintain its natural glow. Ideal for cozy living rooms, patios, or tropical-inspired spaces, this piece reflects Caba’s rich tradition of bamboo craftsmanship.",
+      "price_range": "₱1500.0-2500.0",
+      "availability": "Year-round",
+      "town": "Caba",
+      "store_id": "4e27784e-d821-4f2c-9856-41ce4f277fa5",
+      "store_name": "ES Bamboo Furniture Shop"
+    },
+    {
+      "name": "Rice Mill",
+      "category": "Agricultural Products",
+      "description": "A small-scale rice mill in La Union processes 25kg batches of local palay into high-quality rice. Equipped with modern dehuskers and polishers, it ensures minimal breakage and consistent grain size. Serving nearby farmers, it supports the community by delivering fresh, affordable rice daily.",
+      "price_range": "₱1000.0-1200.0",
+      "availability": "Year-round",
+      "town": "Aringay",
+      "store_id": "6594be2c-fc7a-4b6d-a770-913f27def9b3",
+      "store_name": "Sta. Cecilia Rice and Corn Mill"
+    },
+    {
+      "name": "Narra Chair",
+      "category": "Handicrafts",
+      "description": "This exquisite narra chair from Northern Home Furniture Center in Rosario, La Union, features a striking design with beautifully twisted wood armrests, highlighting the artistry of local craftsmanship. Crafted from premium narra wood, known for its durability and rich grain, the chair offers both elegance and sturdiness. Its warm, natural tones and smooth finish make it a standout piece, ideal for enhancing the ambiance of any living or dining area with a blend of traditional charm and modern sophistication.",
+      "price_range": "₱5000.0-8000.0",
+      "availability": "Year-round",
+      "town": "Rosario",
+      "store_id": "915773ef-ff81-4eb7-ad9d-e662cef8575c",
+      "store_name": "Northern Home Furniture Center"
+    },
+    {
+      "name": "Bamboo Bahay Kubo",
+      "category": "Handicrafts",
+      "description": "Experience the essence of Filipino heritage with the Bamboo Bahay Kubo from ES Bamboo Furniture Shop, handcrafted in Caba, La Union. This iconic structure reimagines the traditional Filipino nipa hut, blending rustic charm with modern craftsmanship. Constructed entirely from premium Philippine bamboo, it offers a sustainable, airy retreat perfect for gardens, resorts, or backyard sanctuaries.\r\n\r\nThe Bahay Kubo features a sturdy bamboo frame with intricately woven bamboo slats, elevated on short stilts for ventilation and durability. Its steeply pitched roof, inspired by classic designs, is made from durable, weather-resistant bamboo shingles, providing excellent protection against sun and rain. The open-concept interior invites natural light and breeze, creating a serene space for relaxation, gatherings, or even a cozy guest nook.\r\n\r\nCrafted with Caba’s time-honored bamboo techniques, this Bahay Kubo is both lightweight and resilient, designed to withstand the elements while maintaining its natural elegance. It’s a celebration of eco-conscious living and Filipino culture, offering a versatile, low-maintenance addition to any outdoor space.",
+      "price_range": "₱60000.0-80000.0",
+      "availability": "Year-round",
+      "town": "Caba",
+      "store_id": "4e27784e-d821-4f2c-9856-41ce4f277fa5",
+      "store_name": "ES Bamboo Furniture Shop"
+    },
+    {
+      "name": "Sweet and Spicy Bagoong Alamang",
+      "category": "Food Products",
+      "description": "Made by CABADA's Mushroom. Sweet and Spicy Bagoong Alamang is delicious and tasty made for the taste buds of locals and tourists alike. \r\nFor any concerns and inquiries please contact cabadajohncristhian@gmail.com or at 0912 475 1984.",
+      "price_range": "₱150.0-250.0",
+      "availability": "Year-round",
+      "town": "Agoo",
+      "store_id": "14f4b9a6-ce6d-4744-a503-7eee842e0c0f",
+      "store_name": "Agoo Public Market (Hypermarket)"
+    },
+    {
+      "name": "Table Set (Acacia Wood)",
+      "category": "Handicrafts",
+      "description": "Bring warmth and style to your living room with the Sala Set from Bimbong Furniture Shop, crafted from solid acacia wood. This set’s got that classic, sturdy vibe with a touch of elegance, thanks to the handwoven laga (rattan) accents on the armrests and backrest. The rich, natural grain of the acacia shines through, giving it a cozy, timeless feel that works in any home. It’s built to last, with a comfy sofa and two armchairs that invite you to kick back and relax. Perfect for family hangouts or just chilling with a book.",
+      "price_range": "₱25000.0-30000.0",
+      "availability": "Year-round",
+      "town": "Pugo",
+      "store_id": "5002e680-305a-4b47-b55a-bb75d0310c1b",
+      "store_name": "Bimbong Furnitures & Handicrafts "
+    },
+    {
+      "name": "Pebble Pots",
+      "category": "Handicrafts",
+      "description": "Add a touch of Filipino artistry to your space with this handcrafted plant pot from La Union.  This cylindrical pot features a stunning mosaic of small river pebbles in earthy grays, browns, and whites, giving it a natural, textured look. The flared rim is painted a bold red with a thin yellow stripe below, adding a pop of color, while the white ceramic interior keeps it sleek and simple. Perfect for small plants or succulents, this pot brings rustic charm to any garden or home, reflecting La Union’s local craftsmanship.",
+      "price_range": "₱300.0-799.98",
+      "availability": "Year-round",
+      "town": "Luna",
+      "store_id": "570074dc-eee8-450d-b875-805f0e96f3c5",
+      "store_name": "Bato De Luna Store & Souvenir Shop"
+    },
+    {
+      "name": "Colored Soft Broom",
+      "category": "Handicrafts",
+      "description": "Brighten your cleaning routine with Burgos Colored Soft Brooms from Burgos, La Union. Handcrafted by local artisans, these walis tambo brooms feature soft, flexible tiger grass bristles dyed in vibrant red, blue, and yellow hues, with a natural beige base for a pop of color. The 120 cm polished bamboo handle ensures a comfortable grip for effortless sweeping. Lightweight yet durable, these brooms are perfect for indoor and outdoor use, sweeping away dust with ease while adding a touch of Burgos’ cultural charm to your home.",
+      "price_range": "₱250.0-300.0",
+      "availability": "Year-round",
+      "town": "Burgos",
+      "store_id": "8ddd51d7-0df5-4670-9d51-50fb9c8599bf",
+      "store_name": "Burgos Public Market"
+    },
+    {
+      "name": "Naguilian Basi (Sugarcane Wine)",
+      "category": "Beverages",
+      "description": "Savor the rich heritage of Naguilian with the Naguilian Wine Basi, crafted at the Naguilian Basi Processing Center in La Union, the \"Basi Capital\" of the Philippines. This traditional Ilocano sugarcane wine is made using time-honored methods, starting with freshly extracted sugarcane juice, boiled with natural additives like green guava leaves, one-year-old lomboy (java plum) bark, and tangal bark for a distinct, robust flavor. Fermented for about two months in burnay (earthen jars), it achieves a potent 12-15% alcohol content, delivering a full-bodied taste with a sweet, aromatic finish. Perfect for festive gatherings or as a cultural keepsake, this wine embodies Naguilian’s pride as the \"Home of the Original Basi,\" celebrated annually at the Basi Festival.",
+      "price_range": "₱50.0-100.0",
+      "availability": "Year-round",
+      "town": "Naguilian",
+      "store_id": "7b94deda-5336-4254-9246-eb460175d720",
+      "store_name": "Naguilian Basi Processing Center"
+    },
+    {
+      "name": "Bamboo Kubo",
+      "category": "Handicrafts",
+      "description": "Discover the charm of the Bahay Kubo from Alhamdulillah Bamboo Craftshop in Caba, La Union. This quaint pavilion, roughly 3m x 3m, is handcrafted from sturdy bamboo poles with woven slats featuring a diamond lattice pattern for natural airflow. Elevated on short bamboo stilts, it boasts a steeply pitched roof covered in vibrant green synthetic thatch, offering a tropical vibe. Inside, a simple bamboo bench and small wooden table create a cozy nook, perfect for gardens, backyards, or resorts. This Bahay Kubo blends traditional Filipino design with practical functionality, showcasing Caba’s bamboo craftsmanship.",
+      "price_range": "₱30000.0-40000.0",
+      "availability": "Year-round",
+      "town": "Caba",
+      "store_id": "852f20a3-4770-4895-abdb-8e16bdba5aec",
+      "store_name": "Alhamdulillah Bamboo Craft Shop"
+    },
+    {
+      "name": "Red Cardinal Grapes",
+      "category": "Agricultural Products",
+      "description": "Experience the delight of fresh Red Cardinal grapes at Manguerra Grape Farm in Bauang, La Union, a popular pick-and-pay destination. These vibrant, juicy grapes are grown on sprawling vines in the heart of La Union’s grape country, offering a sweet-tart flavor with a satisfying crunch. Perfect for snacking, juicing, or winemaking, each bunch is handpicked to ensure quality. At just PHP 25 for 30 pieces or PHP 350 per kilo, you can enjoy the fruits of your own harvest while soaking in the farm’s scenic vineyard views. A true taste of La Union’s agricultural heritage, these grapes are a must-try for locals and tourists alike.",
+      "price_range": "₱300.0-400.0",
+      "availability": "Year-round",
+      "town": "Bauang",
+      "store_id": "8bc2366b-bbcd-45d8-8d12-e3afbc10e339",
+      "store_name": "Manguerra Grapes Farm"
+    },
+    {
+      "name": "Table Set",
+      "category": "Handicrafts",
+      "description": "This charming tableset from Babban's Handicraft & Furniture in Rosario, La Union, is crafted from premium narra wood, showcasing intricate hand-carved details and a warm, polished finish. The set includes a sturdy table with elegant twisted leg designs, paired with matching chairs for a cohesive look. Perfect for dining or gatherings, it blends traditional Filipino artistry with timeless durability, adding sophistication to any home.",
+      "price_range": "₱5000.0-7999.99",
+      "availability": "Year-round",
+      "town": "Pugo",
+      "store_id": "961d0ff5-7fc8-4a50-8b9d-4d5afabba81c",
+      "store_name": "Babban's Handicraft & Furniture"
+    },
+    {
+      "name": "Inabel Towels",
+      "category": "Textiles",
+      "description": "These vibrant inabel towels from Nogueras Weaving in Bangar, La Union, are handwoven with traditional Ilocano artistry using the time-honored \"tilar\" loom. Crafted from a durable cotton blend, they feature intricate geometric patterns like binakol and sinan-sabong, showcasing the weavers’ skill and cultural heritage. Soft yet sturdy, these towels are perfect for everyday use, adding a touch of Filipino elegance to your home. Each piece reflects centuries-old techniques, blending functionality with timeless beauty.",
+      "price_range": "₱250.0-300.0",
+      "availability": "Year-round",
+      "town": "Bangar",
+      "store_id": "dada4cad-bf5b-4f7b-80bd-4bc80968d8f9",
+      "store_name": "Nogueras Weaving"
+    },
+    {
+      "name": "Tiger Grass Soft Broom",
+      "category": "Handicrafts",
+      "description": "As the OTOP of Bagulin, Tiger Grass Softbrooms are a staple to every Filipino household. The brooms produced in Bagulin, La Union are known for their quality and durability, making them a popular choice among buyers. Many of these brooms find their way to markets in nearby regions, especially in Baguio City, where they are in high demand. \r\nWhile farming remains the primary occupation, many locals have turned to broom-making to supplement their income. This craft not only provides additional financial stability but also preserves a traditional skill passed down through generations.\r\nFor further information inquire at Municipality of Bagulin, La Union fb page.",
+      "price_range": "₱200.0-300.0",
+      "availability": "Year-round",
+      "town": "Bagulin",
+      "store_id": "45457ed4-e7ea-4b7b-bd57-9aebea55a832",
+      "store_name": "Bagulin Public Market"
+    },
+    {
+      "name": "Ube Wine",
+      "category": "Beverages",
+      "description": "From Alibangsay, Bagulin comes Ube Wine. No added artificial flavor. 750ml per bottle. \r\nLocally made and locally processed, made with Purple Yam, Yeast and Sugar.",
+      "price_range": "₱200.0-300.0",
+      "availability": "Year-round",
+      "town": "Bagulin",
+      "store_id": "45457ed4-e7ea-4b7b-bd57-9aebea55a832",
+      "store_name": "Bagulin Public Market"
+    },
+    {
+      "name": "Cambalay Abel",
+      "category": "Handicrafts",
+      "description": "Made by the Indigenous People of Bagulin, La Union is the Cambalay Abel bags.\r\nLocally sourced materials and made to last, it is perfect to carry your items anywhere you go.",
+      "price_range": "₱150.0-250.0",
+      "availability": "Year-round",
+      "town": "Bagulin",
+      "store_id": "45457ed4-e7ea-4b7b-bd57-9aebea55a832",
+      "store_name": "Bagulin Public Market"
+    },
+    {
+      "name": "Talong Chips",
+      "category": "Food Products",
+      "description": "Crispy, Healthy and Tasty. Aringay Veggies' original Talong Chips\r\nFresh from the Farm comes in different flavors: Classic Barbeque, Cheese Overload, Garlic, Classic, and Sour Cream & Onion.\r\n\r\nFor orders and inquiries, just simply message Aringay Veggies on facebook or contact our mobile number at 09468625502.",
+      "price_range": "₱120.0-200.0",
+      "availability": "Year-round",
+      "town": "Aringay",
+      "store_id": "d25e4a49-8117-43df-a94f-ae74bf1088a1",
+      "store_name": "Aringay Veggies"
+    },
+    {
+      "name": "Okra Chips",
+      "category": "Food Products",
+      "description": "Okra Chips fresh and preserved to create the best healthy chips.\r\nFlavors: Cheese, Spicy Barbeque, and Tangy\r\n\r\nFor inquiries please contact Aringay Veggies fb page.",
+      "price_range": "₱100.0-200.0",
+      "availability": "Year-round",
+      "town": "Aringay",
+      "store_id": "d25e4a49-8117-43df-a94f-ae74bf1088a1",
+      "store_name": "Aringay Veggies"
+    }
+  ],
+  "stores": [
+    {
+      "name": "Manguerra Grapes Farm",
+      "description": "Manguerra Grapes Farm in Bauang, La Union, is a charming destination that offers a unique farm tourism experience. Established as a hobby in the 1980s, the farm has evolved into a thriving family business. Visitors can enjoy picking grapes directly from the vines, a delightful activity that allows them to connect with nature. The farm also produces a variety of wines, including grape wine, mangosteen wine, and other fruit wines like guapple and pitaya (dragonfruit) wine. In addition to wine, Manguerra Grapes Farm sells souvenir items such as shirts and keychains, making it a great place to shop for local products.",
+      "town": "Bauang",
+      "rating": 0,
+      "type": "Farm & Vineyard",
+      "operating_hours": "Mon-Sun 7AM-6PM",
+      "phone": "0977 457 8737"
+    },
+    {
+      "name": "Heisabelle Wood Works",
+      "description": "If you're looking for a unique gift or a memorabilia of your life's significant events, you've come to the right place. Heisabelle Wood Works offers a variety of products and services customized to fit your needs.\r\n",
+      "town": "San Juan",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Mon - Sun: 9AM - 6PM",
+      "phone": "+639273792929"
+    },
+    {
+      "name": "Lambert's Furniture Shop",
+      "description": "Lambert’s Furniture Shop is a local gem in Rosario, La Union, renowned for crafting high-quality, custom-made furniture. Specializing in modern and antique wood designs, this shop uses locally sourced materials to create unique pieces like tables, chairs, and cabinets, blending traditional craftsmanship with contemporary style. A favorite among locals and visitors, it showcases Rosario’s rich furniture-making heritage.",
+      "town": "Rosario",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Mon-Fri 7AM to 6PM",
+      "phone": "0905 235 6401"
+    },
+    {
+      "name": "OL's Labtang ",
+      "description": "Experience the beauty of Filipino craftsmanship with Labtang Handicrafts. 🌿 \r\nMade from La Union's famous Labtang vine, each piece is uniquely yours! ✨",
+      "town": "Rosario",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Always Open",
+      "phone": "0963 024 3528"
+    },
+    {
+      "name": "Burgos Public Market",
+      "description": "Burgos Public Market is a bustling marketplace located along Naguilian Road (Quirino Highway) in Burgos, La Union. It serves as a central hub for local commerce, offering a variety of goods and services to the community. The market provides essential products such as fresh produce, meats, and household items, catering to the daily needs of residents and visitors alike. Its strategic location makes it easily accessible by both public and private transportation, connecting it to nearby towns and cities like San Fernando and Baguio. The market plays a vital role in the local economy, supporting small-scale vendors and farmers by providing them with a platform to sell their products.",
+      "town": "Burgos",
+      "rating": 0,
+      "type": "Marketplace",
+      "operating_hours": "Mon-Sun 6AM-5PM",
+      "phone": ""
+    },
+    {
+      "name": "Gapuz Grape Farm",
+      "description": "Gapuz Grapes Farm is also one of the more popular vineyards in the area. The Gapuzes have expanded into more farms along Bauang, but they all share the same motto of “The Porch Life,” where their family welcomes guests as a big group of friends instead of customers. \r\nFor those on a budget, good news: there is no entrance fee for this farm. Visitors need only to pay for the grapes and goods they’re interested in purchasing, or a small fee for those who simply want to take pictures within the vicinity. Feel free to talk to the owners or employees in the area, who’d be happy to tell you more about the grapes they grow. ",
+      "town": "Bauang",
+      "rating": 0,
+      "type": "Farm & Vineyard",
+      "operating_hours": "Mon-Sun 7AM-6PM",
+      "phone": "09175540966"
+    },
+    {
+      "name": "Dan's Pottery Shop",
+      "description": "Dan’s Pottery Shop is a charming local spot in San Juan, La Union, where the art of \"damili\" (Ilocano pottery) comes to life. Run by skilled artisan Dan, it specializes in handcrafted clay pots, jars, and decorative pieces, blending traditional techniques with modern flair. A hidden gem for pottery enthusiasts, it offers unique, locally made souvenirs that capture San Juan’s cultural essence.",
+      "town": "San Juan",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "6AM-6PM",
+      "phone": "0912 462 9607"
+    },
+    {
+      "name": "San Gabriel Market",
+      "description": "San Gabriel Market is a bustling local spot in San Gabriel, La Union, celebrated for its vibrant array of fresh highland vegetables. Known as the province’s prime producer of upland crops, this market offers crisp cucumbers, cabbages, carrots, and more, all sourced from the town’s fertile mountains. A haven for food lovers and home cooks, it’s a true taste of San Gabriel’s agricultural pride.",
+      "town": "San Gabriel",
+      "rating": 0,
+      "type": "Marketplace",
+      "operating_hours": "6AM - 6PM",
+      "phone": ""
+    },
+    {
+      "name": "Orpilla Estigoy Grapes Farm",
+      "description": "Orpilla Estigoy Grapes Farm, located in Barangay Urayong, Bauang, La Union, is a popular destination for those interested in grape farming and local wines. The farm operates on a \"pick and pay\" policy, although grape picking availability can vary depending on the season. Visitors can purchase grape cuttings if they wish to grow their own grapes. The farm is well-known for its diverse wine offerings, including grape juice wine, blueberry wine, and guyabano wine, which are available for purchase throughout the year. The wines are highly praised by visitors, with tall bottles costing around PHP 200. Even during off-peak seasons when grapes are scarce, the farm remains open and offers opportunities for photo shoots among the vineyards. Orpilla Estigoy Grapes Farm is highly recommended as an alternative to other popular grape farms in the area, such as Lomboy Grape Farm",
+      "town": "Bauang",
+      "rating": 0,
+      "type": "Farm & Vineyard",
+      "operating_hours": "Mon-Sun 7AM-7PM",
+      "phone": "09219664895"
+    },
+    {
+      "name": "De Castro's Loom Weaving",
+      "description": "De Castro's Loom Weaving produces one of the country's top hand-woven products. Made from Ilocano's creativity and passion rooted in their traditional Inabel weaving methods passed down from generation to generation.",
+      "town": "Bangar",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Mon-Sun 8AM-6PM",
+      "phone": ""
+    },
+    {
+      "name": "Calica Grape Farm",
+      "description": "Established in the ‘80s by Virgilio Calica, who used to work on Lomboy Farms, Calica Grapes Farm now has a whopping 2000 sqm of land along with approximately 600 grape trees, which began from only 76 cuttings in its heyday. The vineyard offers various types of grapes and even has a guapple farm for visitors looking for something a little different. Calica Grapes also has a pick-and-pay policy much like Gapuz Grapes Farm and some wine and drink selections that customers can choose from. ",
+      "town": "Bauang",
+      "rating": 0,
+      "type": "Farm & Vineyard",
+      "operating_hours": "Mon-Sun 7AM-5PM",
+      "phone": "09128746327"
+    },
+    {
+      "name": "Nogueras Weaving",
+      "description": "Nogueras Weaving, located in Bangar, La Union, is a prominent local supplier of high-quality handwoven cloths, both domestically and internationally. The shop is owned and operated by Tita Dacio Nogueras, a veteran loom weaver who inherited her skills from her parents and has been instrumental in preserving the traditional craft of Inabel weaving. Nogueras Weaving produces a variety of products, including blankets, pillowcases, table runners, shawls, bed sheets, hand towels, and bath towels. The shop has expanded over the years, now operating with seven loom weaving machines and employing regular workers. Recently, Nogueras Weaving hosted the Abel Academy: School of Living Traditions, a program initiated by the Provincial Government of La Union to preserve and promote the cultural heritage of handloom weaving among young generations",
+      "town": "Bangar",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "",
+      "phone": ""
+    },
+    {
+      "name": "R.P. Lucina's Loom Weaving",
+      "description": "RP Lucina's Loom Weaving is a notable weaving site in Bangar, La Union, owned by Remedios P. Lucina. The business has been operational since 1974 and is deeply rooted in the traditional Inabel craft, which Remedios inherited from her mother-in-law. Initially, they used cotton balls and manually dyed threads at Timbugan Ruins in Barangay Consuegra, Bangar. Over time, they have adapted to using commercial fabric dyes and cotton/polyester threads sourced from Abra and Manila.\r\n\r\nRP Lucina's Loom Weaving is recognized for its contribution to the local economy and cultural heritage. The shop participates in local trade fairs, such as the LU Fairest: La Union PROBINSYAnihan, where they showcase their handloom products alongside other local businesses. Their products are part of the \"Tatak LUcal\" initiative, which highlights local craftsmanship and supports micro, small, and medium enterprises in La Union.\r\n\r\nThe shop's offerings include a variety of handloom-woven items, such as blankets, placemats, towels, draperies, curtains, and more innovative products like bags, gowns, wallets, and facemasks. Customers can also request customized and personalized items, reflecting the versatility and creativity of the local weavers.",
+      "town": "Bangar",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Mon-Sun 8AM-5PM",
+      "phone": "+63 9066577104"
+    },
+    {
+      "name": "Naguilian Public Market",
+      "description": "Naguilian Public Market is a bustling marketplace located in the heart of Naguilian, La Union, serving as a central hub for local commerce and community interaction. Situated near government offices, such as Philhealth, it offers a convenient shopping experience for residents and visitors alike. The market provides a wide range of essential goods, including fresh produce, meats, and household items, catering to the daily needs of the community. As a first-class municipality, Naguilian's public market plays a vital role in supporting local vendors and farmers by providing them with a platform to sell their products. The market's strategic location along major roads makes it easily accessible by both public and private transportation, connecting it to nearby towns and cities. Naguilian is renowned for its traditional industries, such as the production of Basi, a fermented sugarcane wine, and woodcraft, which are also reflected in the market's offerings. Overall, Naguilian Public Market is an integral part of the town's economy and culture, offering a glimpse into the local way of life.",
+      "town": "Naguilian",
+      "rating": 0,
+      "type": "Marketplace",
+      "operating_hours": "Mon-Sun 6AM-6PM",
+      "phone": ""
+    },
+    {
+      "name": "Santo Tomas Daing Delicacy Store",
+      "description": "Santo Tomas Daing Delicacy Store is a distinguished establishment in Santo Tomas, La Union, renowned for its exceptional selection of \"daing,\" the region’s signature dried fish. Offering a diverse array of meticulously prepared seafood, including various species of fish dried to perfection, this store exemplifies the coastal town’s rich culinary heritage. Ideal for visitors seeking authentic local flavors, it provides high-quality products that promise to delight the palate. A visit to this store is highly recommended for those exploring La Union, ensuring an unforgettable gastronomic experience",
+      "town": "Santo Tomas",
+      "rating": 0,
+      "type": "Food Stall",
+      "operating_hours": "Always Open",
+      "phone": "0917 119 2524"
+    },
+    {
+      "name": "Bimbong Furnitures & Handicrafts ",
+      "description": "Bimbong Furnitures & Handicrafts in Pugo, La Union, is a renowned destination for those seeking high-quality, locally crafted furniture and handicrafts. This shop showcases the ingenuity and craftsmanship of Ilocano artisans, offering a range of beautifully designed pieces that reflect the region's rich cultural heritage. From intricately carved wooden furniture to unique handicrafts, Bimbong Furnitures & Handicrafts provides a platform for local artisans to display their skills and creativity. Visitors can explore the shop to discover one-of-a-kind items that not only serve as functional pieces but also as decorative elements that add a touch of local charm to any home or office. By supporting local craftsmanship, Bimbong Furnitures & Handicrafts contributes to the preservation of traditional Ilocano arts and crafts, making it a must-visit for anyone interested in authentic local products.",
+      "town": "Pugo",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Always Open",
+      "phone": "0912 001 6112"
+    },
+    {
+      "name": "Bato De Luna Store & Souvenir Shop",
+      "description": "Bato de Luna Store and Souvenir Shop is a charming destination located in La Union, offering a unique shopping experience for visitors. The shop likely features a variety of local products and souvenirs, allowing travelers to take home a piece of La Union's culture and craftsmanship. While specific details about the shop's offerings are limited, it is situated in a region known for its artistic and cultural attractions, making it a great place to find authentic and meaningful mementos. The shop's proximity to other local landmarks and hotels makes it easily accessible for those exploring the area.",
+      "town": "Luna",
+      "rating": 0,
+      "type": "Souvenir Shop",
+      "operating_hours": "Mon-Sun 7AM-6PM",
+      "phone": ""
+    },
+    {
+      "name": "Northern Home Furniture Center",
+      "description": "Northern Home Furniture Center in Rosario, La Union, is a local furniture store that offers a variety of home furnishings to cater to the needs of residents and visitors alike. While specific details about the store's offerings are limited, it likely provides a range of products such as sofas, beds, dining sets, and decorative items. As a local business, Northern Home Furniture Center contributes to the community by providing employment opportunities and supporting local artisans. The store's location in Rosario makes it easily accessible for those in the surrounding areas, offering a convenient shopping experience for those seeking to enhance their home decor with quality furniture pieces.",
+      "town": "Rosario",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Mon-Sun 7:30AM-8:30PM",
+      "phone": ""
+    },
+    {
+      "name": "Babban's Handicraft & Furniture",
+      "description": "Babban's Handicraft & Furniture, located along Jose D. Aspiras Highway in Pugo, La Union, is a notable destination for those seeking high-quality, locally crafted furniture and handicrafts. This establishment offers a wide range of products, combining traditional craftsmanship with modern designs to create unique and functional pieces. Babban's Handicraft & Furniture not only provides affordable and well-crafted items but also serves as a platform for local artisans to showcase their skills. The shop's strategic location along the national highway makes it easily accessible for both locals and travelers. By supporting local craftsmanship, Babban's contributes to the preservation of traditional Ilocano arts and crafts, making it a must-visit for anyone interested in authentic local products.",
+      "town": "Pugo",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Mon-Sun 9AM-5PM",
+      "phone": ""
+    },
+    {
+      "name": "Kultur Siak - OTOP Hub La Union",
+      "description": "The 32nd OTOP Philippines Hub is located at the La Union River Farm Seafood Restaurant, Bacnotan, La Union. Where you can not only eat delicious seafood but also my handmade house decor to serve as your souvenir from Bacnotan. Handmade with love and only at OTOP Hub La Union.\r\n\r\nContact us at Kultur Siak - OTOP Hub La Union fb page or use our website launion.shop to see more locally made products.",
+      "town": "San Fernando",
+      "rating": 0,
+      "type": "Souvenir Shop",
+      "operating_hours": "Mon - Sun: 8:30AM - 9PM",
+      "phone": ""
+    },
+    {
+      "name": "J & S Furniture and Handicrafts",
+      "description": "Founded in 2018, J & S furniture and handicrafts officially opened its doors in Lloren, Tubao La union. after completing the essential furniture-making equipment, we began participating in trade fairs organized by private groups and, notably, the Department of Trade and Industry (DTI) La Union.  these events helped us connect with our valued customers and expand our reach. \r\nIn 2021, we further enhanced our offerings by opening a display area in Castilla, Cares, Pugo, La Union. Since then, we've also established an online presence, making it easier for more people to discover our unique products.",
+      "town": "Tubao",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "",
+      "phone": "09129635887"
+    },
+    {
+      "name": "Naguilian Basi Processing Center",
+      "description": "Naguilian Basi Processing Center is a significant facility located in Barangay Cabaritan Sur, Naguilian, La Union, serving as a hub for the production of Basi, a traditional Ilocano fermented sugarcane wine. The center is part of a larger complex that also includes a vinegar processing facility, highlighting the town's rich heritage in these traditional industries. Naguilian is renowned as the \"Home of the Original Basi,\" and this processing center plays a crucial role in preserving and promoting this cultural legacy. The Basi produced here is celebrated for its robust flavor, with an alcohol content of 12-15%, and is often featured in local festivities and traditions. The center not only contributes to the local economy but also serves as an educational site, offering insights into the traditional methods of Basi production and its historical significance in the region.",
+      "town": "Naguilian",
+      "rating": 0,
+      "type": "Agri-Tourism Center",
+      "operating_hours": "",
+      "phone": ""
+    },
+    {
+      "name": "ES Bamboo Furniture Shop",
+      "description": "ES Bamboo Furniture Shop is a store that specializes in crafting and selling furniture made from bamboo, a sustainable and versatile material. The shop likely offers a variety of products such as chairs, tables, beds, and decorative items, all designed to showcase the beauty and durability of bamboo. Bamboo furniture is known for its eco-friendly nature and can add a natural, rustic charm to any home or office setting. The shop may also provide customization options to cater to different tastes and needs, ensuring that customers can find pieces that fit their unique style and decor preferences. By focusing on bamboo, ES Bamboo Furniture Shop contributes to sustainable living while offering durable and aesthetically pleasing furniture solutions.",
+      "town": "Caba",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Mon-Sun 7AM-5PM",
+      "phone": "09705064002"
+    },
+    {
+      "name": "Agoo Public Market (Hypermarket)",
+      "description": "One of the biggest public markets here in La Union. Goods are priced cheaply and almost all needed ilocano condiments, farm fresh goods and products are available here. There are a lot of retail stores for general needs. Meats, fishes and vegetables are always fresh. Located near the center of the town plaza you will not regret to come by.",
+      "town": "Agoo",
+      "rating": 0,
+      "type": "Marketplace",
+      "operating_hours": "",
+      "phone": ""
+    },
+    {
+      "name": "La Union Pasalubong Center",
+      "description": "The La Union Pasalubong Center is a vibrant hub showcasing the province’s finest local products. It offers a variety of pasalubong items, including soft brooms, inabel fabrics, dried fish, basi (sugarcane wine), and other goods from La Union’s municipalities. Managed by the Provincial Government, it’s a one-stop shop for tourists and locals to support micro, small, and medium enterprises while grabbing unique souvenirs.",
+      "town": "San Fernando",
+      "rating": 0,
+      "type": "Souvenir Shop",
+      "operating_hours": "Mon-Fri 8AM - 6PM",
+      "phone": "09666202617"
+    },
+    {
+      "name": "Bagulin Public Market",
+      "description": "Bagulin Public Market\r\nCome and support our local market—let’s bring life back to our trading hub! Spread the word and visit us soon!",
+      "town": "Bagulin",
+      "rating": 0,
+      "type": "Marketplace",
+      "operating_hours": "",
+      "phone": ""
+    },
+    {
+      "name": "Fe Handicraft Trading",
+      "description": "Fe Handicraft Trading is a locally owned business for ready made furniture and all your custom needs. \r\nFrom chairs to tables and even art decor, all your weaved furniture needs are available here.\r\nLocated at Masupe, Balaoan, La Union.\r\nContact Marife Salazar Lee for any additional inquiries.\r\n",
+      "town": "Balaoan",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Mon - Fri: 8AM - 4PM",
+      "phone": "09074793186"
+    },
+    {
+      "name": "Sta. Cecilia Rice and Corn Mill",
+      "description": "We are located at Aringay La Union, near Sta Cecilia Elem School. We offer rice and corn milling, rice and feeds store.",
+      "town": "Aringay",
+      "rating": 0,
+      "type": "Agri-Tourism Center",
+      "operating_hours": "7 days a week 6AM - 6PM",
+      "phone": "961 8 992 299"
+    },
+    {
+      "name": "Aringay Veggies",
+      "description": "In the heart of Brgy. San Eugenio, Aringay, La Union, a women-led organization has set the benchmark for sustainable livelihood and community-driven enterprise. The Aringay Veggies Agriculture Cooperative, formerly known as Aringay Veggie Products Sustainable Livelihood Program Association (SLPA), has emerged as the first-ever Champion of the National Gawad Sulong under the Best Microenterprise Development Association category in August 2024. Their remarkable journey under the DSWD Field Office 1 (DSWD FO 1) – Ilocos Region Sustainable Livelihood Program (SLP) showcases how innovation, sustainability, and community engagement can drive real economic and social impact. \r\nEmail: aringayveggies@gmail.com",
+      "town": "Aringay",
+      "rating": 0,
+      "type": "Food Stall",
+      "operating_hours": "",
+      "phone": "0951 795 1179"
+    },
+    {
+      "name": "Alhamdulillah Bamboo Craft Shop",
+      "description": "Alhamdulillah Bamboo Craft Shop is a unique destination that showcases the art of bamboo crafting, a traditional skill deeply rooted in La Union's culture. The shop likely offers a variety of handmade bamboo products, such as functional items like chairs, tables, and baskets, as well as decorative pieces like picture frames, lamp shades, and wall decors. These items not only highlight the versatility of bamboo as a material but also reflect the craftsmanship and creativity of local artisans. Visitors can explore the shop to discover beautiful and sustainable products that blend functionality with aesthetic appeal, making it an ideal place to find unique souvenirs or gifts that support local craftsmanship.",
+      "town": "Caba",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Mon-Sun 6AM-6PM",
+      "phone": "09282482226"
+    },
+    {
+      "name": "Lomboy Grape Farm",
+      "description": "Lomboy Farms, known as a pioneer in grape farming in Bauang, La Union, offers a unique experience with grape picking, farm tours, and wine tasting, with the farm also featuring Uvas Cafe for dining. \r\n\r\nPioneering Grape Farm:\r\nLomboy Farms, started by Avelino Lomboy, is considered the pioneering vineyard in Bauang, La Union, and a key figure in the development of the grape industry in the Philippines. \r\n\r\nAgri-tourism Experience:\r\nThe farm offers various experiences, including grape picking, farm tours, and wine tasting sessions led by experts. \r\n\r\nUvas Cafe:\r\nVisitors can enjoy a dining experience at Uvas Cafe, the family's vineyard cafe, offering classic Filipino comfort food. \r\n\r\nDiverse Produce:\r\nBeyond grapes, Lomboy Farms also cultivates other fruits like mulberries, passionfruit, and guapple, and sometimes vegetables are grown under the grapevines. \r\n\r\nGrape Varieties:\r\nThe farm is known for its \"Cardinal\" and \"Brazilian Hybrid\" grape varieties. \r\n\r\nLomboy Farms Resort:\r\nLomboy Farms also has a resort in Bagbag, Bauang, La Union, offering day tours. \r\n\r\nLegacy of Avelino Lomboy:\r\nAvelino Lomboy, known as the \"Grape King,\" has left a lasting legacy in the grape farm industry of Bauang, with his contributions to the development of the industry and the livelihood of the local people. ",
+      "town": "Bauang",
+      "rating": 0,
+      "type": "Farm & Vineyard",
+      "operating_hours": "Mon-Wed & Fri-Sun 7AM-6PM ",
+      "phone": "(072) 705 2105"
+    },
+    {
+      "name": "DJON Rustic Wood Furnitures",
+      "description": "🍂DJON RUSTIC WOOD FURNITURES 🍂\r\n\"Bringing you the Quality of comfort that you deserve.\"\r\n--------------\r\n✅ Manufacturer and Supplier of solid wood and fine Furnitures since 2015\r\n✅DTI & BIR registered\r\n✅Quality processing and manufacturing\r\n✅We accept made to order and customized wood crafts and Furnitures\r\n-----------\r\n📍Location: Brgy. San Francisco, Agoo,La Union\r\nLandmark: If from Agoo going to tubao, 200 meters after bjmp bridge, right side.\r\n🚛 Shipping: Nationwide\r\n🚛We do CASH ON DELIVERY within La Union, Baguio, La Trinidad, and some parts of pangasinan.\r\n------------------------\r\n𝘌𝘹𝘱𝘦𝘳𝘪𝘦𝘯𝘤𝘦 𝘵𝘩𝘦 𝘲𝘶𝘢𝘭𝘪𝘵𝘺 𝘰𝘧 𝘤𝘰𝘮𝘧𝘰𝘳𝘵 𝘵𝘩𝘢𝘵 𝘺𝘰𝘶 𝘥𝘦𝘴𝘦𝘳𝘷𝘦.\r\n🛒𝘍𝘰𝘳 𝘪𝘯𝘲𝘶𝘪𝘳𝘪𝘦𝘴, 𝘳𝘦𝘴𝘦𝘳𝘷𝘢𝘵𝘪𝘰𝘯 𝘢𝘯𝘥 𝘤𝘰𝘭𝘭𝘢𝘣𝘰𝘳𝘢𝘵𝘪𝘰𝘯𝘴;\r\n📩𝐦𝐞𝐬𝐬𝐚𝐠𝐞 𝐮𝐬: https://www.facebook.com/DJON-Rustic-Wood-Furniture-Manufacturer-and-Supplier-982449201882830/\r\n☎𝐜𝐚𝐥𝐥 𝐮𝐬: 𝟎𝟗𝟕𝟕𝟑𝟖𝟎𝟐𝟎𝟑𝟖\r\n0977 380 2038\r\n📧𝐞𝐦𝐚𝐢𝐥 𝐮𝐬: 𝐃𝐣𝐨𝐧𝐫𝐮𝐬𝐭𝐢𝐜𝟕𝟔@𝐠𝐦𝐚𝐢𝐥.𝐜𝐨𝐦",
+      "town": "Agoo",
+      "rating": 0,
+      "type": "Local Crafts Shop",
+      "operating_hours": "Mon - Sat: 9AM - 5PM",
+      "phone": "09773802038"
+    }
+  ]
+}

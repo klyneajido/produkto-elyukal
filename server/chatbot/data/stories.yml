@@ -1,84 +1,150 @@
 version: "3.1"
 
 stories:
-- story: happy path
+- story: Greet and ask products in town
   steps:
   - intent: greet
   - action: utter_greet
-  - intent: mood_great
-  - action: utter_happy
+  - intent: ask_products_in_town
+  - action: action_fetch_products_by_town
+  - action: utter_product_list
 
-- story: sad path 1
+- story: Ask products by category
   steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - intent: affirm
-  - action: utter_happy
+  - intent: ask_products_by_category
+  - action: action_fetch_products_by_category
+  - action: utter_category_list
 
-- story: sad path 2
+- story: Ask store details
   steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - intent: deny
-  - action: utter_goodbye
+  - intent: ask_store_details
+  - action: action_fetch_store_details
+  - action: utter_store_details
 
-- story: product municipality inquiry flow with empty slots
+- story: Ask store location
   steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: ask_products_by_municipality
-  - action: municipality_form
-  - active_loop: municipality_form
-  - active_loop: null
-  - action: action_fetch_products_by_municipality
-  - intent: ask_product_price
-  - action: product_price_form
-  - active_loop: product_price_form
-  - active_loop: null
-  - action: action_get_product_price
-  - action: utter_product_price_disclaimer
+  - intent: ask_store_location
+  - action: action_fetch_store_location
+  - action: utter_store_location
+
+- story: Ask product by name
+  steps:
+  - intent: ask_product_by_name
+  - action: action_fetch_product_by_name
+  - checkpoint: check_product_found
+
+- story: Product found
+  steps:
+  - checkpoint: check_product_found
+  - slot_was_set:
+    - products
+  - action: utter_product_list
+
+- story: Product not found
+  steps:
+  - checkpoint: check_product_found
+  - slot_was_set:
+    - products: null
+  - action: utter_product_not_found
+
+- story: Ask product availability
+  steps:
   - intent: ask_product_availability
-  - action: product_availability_form
-  - active_loop: product_availability_form
-  - active_loop: null
-  - action: action_get_product_availability
-  - action: utter_product_availability_info
-  - intent: goodbye
-  - action: utter_goodbye
+  - action: action_fetch_product_availability
+  - checkpoint: check_product_availability
 
-- story: product location inquiry with empty slot
+- story: Product available
   steps:
-  - intent: ask_municipality_by_product
-  - action: product_location_form
-  - active_loop: product_location_form
-  - active_loop: null
-  - action: action_find_municipality_by_product
+  - checkpoint: check_product_availability
+  - slot_was_set:
+    - products
+  - action: utter_product_availability_yes
+
+- story: Product not available
+  steps:
+  - checkpoint: check_product_availability
+  - slot_was_set:
+    - products: null
+  - action: utter_product_availability_no
+
+- story: Ask product location after availability
+  steps:
+  - intent: ask_product_availability
+  - action: action_fetch_product_availability
+  - slot_was_set:
+    - products
+  - action: utter_product_availability_yes
+  - intent: ask_product_location
+  - action: action_fetch_product_location
+  - action: utter_product_location
+
+- story: Ask products then store details
+  steps:
+  - intent: ask_products_in_town
+  - action: action_fetch_products_by_town
+  - action: utter_product_list
+  - intent: ask_store_details
+  - action: action_fetch_store_details
+  - action: utter_store_details
+
+- story: Ask products by location
+  steps:
+  - intent: ask_products_by_location
+  - action: action_fetch_products_by_location
+  - action: utter_products_by_location
+
+- story: Ask products by type
+  steps:
+  - intent: ask_products_by_type
+  - action: action_fetch_products_by_type
+  - action: utter_products_by_type
+
+- story: Ask store by product
+  steps:
+  - intent: ask_store_by_product
+  - action: action_fetch_store_by_product
+  - action: utter_store_by_product
+
+- story: Ask recommendation
+  steps:
+  - intent: ask_recommendation
+  - action: action_fetch_recommendation
+  - action: utter_recommendation
+
+- story: Ask location near me
+  steps:
+  - intent: ask_location_near_me
+  - action: action_fetch_location_near_me
+  - action: utter_location_near_me
+
+- story: Ask about app
+  steps:
+  - intent: ask_about_app
+  - action: utter_about_app
+
+- story: Ask product details
+  steps:
   - intent: ask_product_details
-  - action: product_details_form
-  - active_loop: product_details_form
-  - active_loop: null
-  - action: action_provide_product_details
+  - action: action_fetch_product_details
+  - action: utter_product_details
 
-- story: product inquiry with filled slot
+- story: Ask app creators
   steps:
-  - intent: ask_products_by_municipality
-    entities:
-    - municipality: "San Juan"
-  - action: municipality_form
-  - active_loop: municipality_form
-  - active_loop: null
-  - action: action_fetch_products_by_municipality
-  - intent: ask_product_price
-    entities:
-    - product: "Coffee Beans"
-  - action: product_price_form
-  - active_loop: product_price_form
-  - active_loop: null
-  - action: action_get_product_price
-  - action: utter_product_price_disclaimer
+  - intent: ask_app_creators
+  - action: utter_app_creators
+  
+- story: Follow up where is it
+  steps:
+  - intent: ask_product_availability
+  - action: action_fetch_product_availability
+  - slot_was_set:
+    - products
+  - action: utter_product_availability_yes
+  - intent: follow_up_where_is_it
+  - action: action_fetch_product_location
+  - action: utter_follow_up_where_is_it
+
+- story: Fallback for unclear input
+  steps:
+  - intent: nlu_fallback
+  - action: utter_fallback

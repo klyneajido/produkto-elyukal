@@ -1,7 +1,8 @@
+
 #!/bin/bash
 
 # Path to your virtual environment
-VENV_PATH="venv/Scripts/activate"  # Windows (adjust if on Linux/Mac)
+VENV_PATH="venv/Scripts/activate"  # Windows (venv/bin/activate for Linux/Mac)
 
 # Colors for output
 RED='\033[0;31m'
@@ -23,23 +24,23 @@ prefix_output() {
 echo "Activating virtual environment..."
 source "$VENV_PATH"
 
-# Navigate to server directory (just in case)
+# Navigate to server directory
 cd "$(dirname "$0")"
 
-# Start Uvicorn server (assuming main.py is your FastAPI app)
+# Start Uvicorn server for FastAPI
 echo "Starting Uvicorn server..."
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload 2>&1 | prefix_output "[0]" "$RED" &
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload 2>&1 | prefix_output "[FastAPI]" "$RED" &
 
 # Navigate to chatbot directory
 cd chatbot
 
 # Start Rasa action server
 echo "Starting Rasa action server..."
-PYTHONPATH=../ rasa run actions --port 5056 2>&1 | prefix_output "[1]" "$GREEN" &
+rasa run actions --port 5056 2>&1 | prefix_output "[Actions]" "$GREEN" &
 
 # Start Rasa server with REST API
 echo "Starting Rasa server..."
-PYTHONPATH=../ rasa run --enable-api --cors "*" --port 5055 2>&1 | prefix_output "[2]" "$BLUE" &
+rasa run --enable-api --cors "*" --port 5055 2>&1 | prefix_output "[Rasa]" "$BLUE" &
 
 # Wait for all background processes to finish
 wait

@@ -1,258 +1,348 @@
 from typing import Any, Text, Dict, List
-from rasa_sdk import Action, Tracker, FormValidationAction
+from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet
-from rasa_sdk.types import DomainDict
+import json
+import os
+import re
+import logging
 
-# Mock data to simulate Supabase until the real database is ready
-MOCK_DATA = {
-    "municipalities": {
-        "San Juan": {"description": "known for surfing and coffee"},
-        "Agoo": {"description": "famous for pottery and crafts"},
-        "San Fernando": {"description": "the bustling capital with markets"},
-    },
-    "products": [
-        {"name": "Coffee Beans", "category": "Food", "description": "Rich local brew", "price_range": "₱200-300", "availability": "Year-round", "town": "San Juan"},
-        {"name": "Pottery", "category": "Crafts", "description": "Handmade clay pots", "price_range": "₱500-800", "availability": "Seasonal", "town": "Agoo"},
-        {"name": "Handwoven Bags", "category": "Crafts", "description": "Traditional weaves", "price_range": "₱300-600", "availability": "Year-round", "town": "San Fernando"},
-        {"name": "Rice Wine", "category": "Beverage", "description": "Fermented tapuey", "price_range": "₱150-250", "availability": "Seasonal", "town": "San Juan"},
-    ]
-}
-class ValidateMunicipalityForm(FormValidationAction):
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+# Load JSON data from the same directory as actions.py
+file_path = os.path.join(os.path.dirname(__file__), "database_data_processed.json")
+with open(file_path, "r", encoding="utf-8") as file:
+    data = json.load(file)
+
+def clean_town_name(town: str) -> str:
+    """Clean town name by removing extra spaces and standardizing."""
+    if not town:
+        return town
+    town = re.sub(r'\s+', ' ', town.strip().lower())
+    if town == "la union":
+        return "La Union"
+    if town.startswith("san "):
+        town = "San " + town[4:].capitalize()
+    else:
+        town = town.capitalize()
+    return town
+
+class ActionFetchProductsByTown(Action):
     def name(self) -> Text:
-        return "validate_municipality_form"
-
-    def validate_municipality(
-        self,
-        slot_value: Any,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        """Validate municipality value."""
-        # Check if slot is already filled with valid value
-        current_value = tracker.get_slot("municipality")
-        if current_value in MOCK_DATA["municipalities"]:
-            return {"municipality": current_value}
-            
-        if not slot_value:
-            dispatcher.utter_message(text="Which municipality are you curious about? San Juan, maybe?")
-            return {"municipality": None}
-            
-        if slot_value not in MOCK_DATA["municipalities"]:
-            dispatcher.utter_message(text=f"I don't know {slot_value}. Did you mean San Juan or San Fernando?")
-            return {"municipality": None}
-            
-        return {"municipality": slot_value}
-    
-    def name(self) -> Text:
-        return "validate_municipality_form"
-
-    def validate_municipality(
-        self,
-        slot_value: Any,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        """Validate municipality value."""
-        if not slot_value:
-            dispatcher.utter_message(text="Which municipality are you curious about? San Juan, maybe?")
-            return {"municipality": None}
-            
-        if slot_value not in MOCK_DATA["municipalities"]:
-            dispatcher.utter_message(text=f"I don't know {slot_value}. Did you mean San Juan or San Fernando?")
-            return {"municipality": None}
-            
-        return {"municipality": slot_value}
-
-class ValidateProductLocationForm(FormValidationAction):
-    def name(self) -> Text:
-        return "validate_product_location_form"
-
-    def validate_product(
-        self,
-        slot_value: Any,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        """Validate product value for location questions."""
-        if not slot_value:
-            dispatcher.utter_message(text="Which product's origin are you looking for? Coffee Beans, Pottery, something else?")
-            return {"product": None}
-            
-        if not any(p["name"] == slot_value for p in MOCK_DATA["products"]):
-            dispatcher.utter_message(text=f"I don't have {slot_value} in my list. Maybe Coffee Beans or Handwoven Bags?")
-            return {"product": None}
-            
-        return {"product": slot_value}
-
-class ValidateProductPriceForm(FormValidationAction):
-    def name(self) -> Text:
-        return "validate_product_price_form"
-
-    def validate_product(
-        self,
-        slot_value: Any,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        """Validate product value for price questions."""
-        if not slot_value:
-            dispatcher.utter_message(text="Which product's price are you asking about? Coffee Beans, Pottery, something else?")
-            return {"product": None}
-            
-        if not any(p["name"] == slot_value for p in MOCK_DATA["products"]):
-            dispatcher.utter_message(text=f"I don't have price info for {slot_value}. Try Coffee Beans or Handwoven Bags?")
-            return {"product": None}
-            
-        return {"product": slot_value}
-
-class ValidateProductAvailabilityForm(FormValidationAction):
-    def name(self) -> Text:
-        return "validate_product_availability_form"
-
-    def validate_product(
-        self,
-        slot_value: Any,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        """Validate product value for availability questions."""
-        if not slot_value:
-            dispatcher.utter_message(text="Which product's availability are you asking about? Coffee Beans, Pottery, something else?")
-            return {"product": None}
-            
-        if not any(p["name"] == slot_value for p in MOCK_DATA["products"]):
-            dispatcher.utter_message(text=f"I don't have availability info for {slot_value}. Try Coffee Beans or Pottery?")
-            return {"product": None}
-            
-        return {"product": slot_value}
-
-class ValidateProductDetailsForm(FormValidationAction):
-    def name(self) -> Text:
-        return "validate_product_details_form"
-
-    def validate_product(
-        self,
-        slot_value: Any,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: DomainDict,
-    ) -> Dict[Text, Any]:
-        """Validate product value for detail questions."""
-        if not slot_value:
-            dispatcher.utter_message(text="Which product would you like details about? Coffee Beans, Pottery, something else?")
-            return {"product": None}
-            
-        if not any(p["name"] == slot_value for p in MOCK_DATA["products"]):
-            dispatcher.utter_message(text=f"I don't have details for {slot_value}. Try Coffee Beans or Handwoven Bags?")
-            return {"product": None}
-            
-        return {"product": slot_value}
-
-class ActionFetchProductsByMunicipality(Action):
-    def name(self) -> Text:
-        return "action_fetch_products_by_municipality"
+        return "action_fetch_products_by_town"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        municipality = tracker.get_slot("municipality")
-        products = [p for p in MOCK_DATA["products"] if p["town"] == municipality]
-        mun_info = MOCK_DATA["municipalities"].get(municipality, {"description": "a part of La Union"})
+        town = clean_town_name(tracker.get_slot("town"))
+        logger.debug(f"Fetching products for town: {town}")
+        if not town:
+            dispatcher.utter_message(response="utter_ask_town")
+            return [SlotSet("products", None)]
 
-        if products:
-            product_details = [f"*{p['name']}* ({p['category']}): {p['description']}" for p in products]
-            response_text = (
-                f"In {municipality}, check out these local gems:\n"
-                f"{'; '.join(product_details)}.\n"
-                f"{municipality} is {mun_info['description'].lower()}. Want more details?"
-            )
+        if town.lower() == "la union":
+            products = data["products"]
         else:
-            response_text = (
-                f"No products listed for {municipality} yet, but it's {mun_info['description'].lower()}. "
-                "Try San Juan or Agoo for some cool finds!"
-            )
-        dispatcher.utter_message(text=response_text)
-        return [SlotSet("municipality", municipality)]
+            products = [p for p in data["products"] if clean_town_name(p["town"]).lower() == town.lower()]
+        
+        logger.debug(f"Found {len(products)} products for {town}: {[p['name'] for p in products]}")
+        
+        if not products:
+            nearby_towns = sorted(set(clean_town_name(p["town"]) for p in data["products"] if p["town"].lower() != town.lower()))
+            nearby_suggestion = f"Check out nearby towns like {', '.join(nearby_towns[:2])}!" if nearby_towns else "Try another town!"
+            dispatcher.utter_message(text=f"Ay, no products found in {town} yet. {nearby_suggestion}")
+            return [SlotSet("products", None)]
 
-class ActionFindMunicipalityByProduct(Action):
+        product_list = ", ".join(sorted(set(p["name"] for p in products)))
+        dispatcher.utter_message(response="utter_product_list", town=town, products=product_list)
+        return [SlotSet("products", product_list), SlotSet("store_name", None)]
+
+class ActionFetchProductsByCategory(Action):
     def name(self) -> Text:
-        return "action_find_municipality_by_product"
+        return "action_fetch_products_by_category"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        product = tracker.get_slot("product")
-        matches = [p for p in MOCK_DATA["products"] if p["name"] == product]
+        category = tracker.get_slot("product_category")
+        if not category:
+            dispatcher.utter_message(response="utter_ask_category")
+            return [SlotSet("products", None)]
 
-        if matches:
-            locations = [f"{p['town']}: {p['description']}" for p in matches]
-            response_text = (
-                f"*{product}* is found in:\n"
-                f"{'; '.join(locations)}.\n"
-                "Which spot interests you?"
-            )
-        else:
-            response_text = (
-                f"I don't have *{product}* yet. Try Coffee Beans or Pottery!"
-            )
-        dispatcher.utter_message(text=response_text)
-        return [SlotSet("product", product)]
+        products = [p for p in data["products"] if p["category"].lower() == category.lower()]
+        if not products:
+            dispatcher.utter_message(text=f"No {category} found. Maybe try snacks or crafts?")
+            return [SlotSet("products", None)]
 
-class ActionGetProductPrice(Action):
+        product_list = ", ".join(sorted(set(p["name"] for p in products)))
+        dispatcher.utter_message(response="utter_category_list", product_category=category, products=product_list)
+        return [SlotSet("products", product_list), SlotSet("store_name", None)]
+
+class ActionFetchStoreDetails(Action):
     def name(self) -> Text:
-        return "action_get_product_price"
+        return "action_fetch_store_details"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        product = tracker.get_slot("product")
-        matches = [p for p in MOCK_DATA["products"] if p["name"] == product]
+        store_name = tracker.get_slot("store_name")
+        if not store_name:
+            dispatcher.utter_message(response="utter_ask_store")
+            return [SlotSet("description", None)]
 
-        if matches:
-            price_info = [f"In {p['town']}: {p['price_range']}" for p in matches]
-            response_text = (
-                f"*{product}* prices:\n"
-                f"{'; '.join(price_info)}.\n"
-                "Prices may vary by season!"
-            )
-        else:
-            response_text = f"No price info for *{product}* yet. Try Coffee Beans!"
-        dispatcher.utter_message(text=response_text)
-        return []
+        store = next((s for s in data["stores"] if s["name"].lower().startswith(store_name.lower())), None)
+        if not store:
+            dispatcher.utter_message(text=f"No details found for {store_name}. Try another store!")
+            return [SlotSet("description", None)]
 
-class ActionGetProductAvailability(Action):
+        dispatcher.utter_message(response="utter_store_details", store_name=store["name"], description=store["description"])
+        return [SlotSet("description", store["description"]), SlotSet("products", None)]
+
+class ActionFetchStoreLocation(Action):
     def name(self) -> Text:
-        return "action_get_product_availability"
+        return "action_fetch_store_location"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        product = tracker.get_slot("product")
-        matches = [p for p in MOCK_DATA["products"] if p["name"] == product]
+        store_name = tracker.get_slot("store_name")
+        if not store_name:
+            dispatcher.utter_message(response="utter_ask_store")
+            return [SlotSet("operating_hours", None), SlotSet("phone", None)]
 
-        if matches:
-            avail_info = [f"In {p['town']}: {p['availability']}" for p in matches]
-            response_text = (
-                f"*{product}* availability:\n"
-                f"{'; '.join(avail_info)}."
-            )
-        else:
-            response_text = f"No availability info for *{product}* yet. Try Pottery!"
-        dispatcher.utter_message(text=response_text)
-        return []
+        store = next((s for s in data["stores"] if s["name"].lower().startswith(store_name.lower())), None)
+        if not store:
+            dispatcher.utter_message(text=f"No location found for {store_name}. Try another store!")
+            return [SlotSet("operating_hours", None), SlotSet("phone", None)]
 
-class ActionProvideProductDetails(Action):
+        dispatcher.utter_message(
+            response="utter_store_location",
+            store_name=store["name"],
+            town=clean_town_name(store["town"]),
+            operating_hours=store["operating_hours"] or "Not available",
+            phone=store["phone"] or "Not available"
+        )
+        return [
+            SlotSet("operating_hours", store["operating_hours"] or "Not available"),
+            SlotSet("phone", store["phone"] or "Not available"),
+            SlotSet("products", None)
+        ]
+
+class ActionFetchProductByName(Action):
     def name(self) -> Text:
-        return "action_provide_product_details"
+        return "action_fetch_product_by_name"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        product = tracker.get_slot("product")
-        matches = [p for p in MOCK_DATA["products"] if p["name"] == product]
+        product_name = tracker.get_slot("product_name")
+        if not product_name:
+            dispatcher.utter_message(response="utter_ask_product")
+            return [SlotSet("products", None)]
 
-        if matches:
-            response_parts = [f"About *{product}*:"]
-            for p in matches:
-                response_parts.append(f"{p['description']} (from {p['town']})")
-            response_text = "\n".join(response_parts)
+        products = [p for p in data["products"] if product_name.lower() in p["name"].lower()]
+        if not products:
+            dispatcher.utter_message(response="utter_product_not_found", product_name=product_name)
+            return [SlotSet("products", None)]
+
+        towns = sorted(set(clean_town_name(p["town"]) for p in products))
+        product_list = f"{product_name} (available in {', '.join(towns)})"
+        dispatcher.utter_message(response="utter_product_list", town=", ".join(towns), products=product_list)
+        return [SlotSet("products", product_list), SlotSet("store_name", None)]
+
+class ActionFetchProductAvailability(Action):
+    def name(self) -> Text:
+        return "action_fetch_product_availability"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        product_name = tracker.get_slot("product_name")
+        if not product_name:
+            dispatcher.utter_message(response="utter_ask_product")
+            return [SlotSet("products", None)]
+
+        products = [p for p in data["products"] if product_name.lower() in p["name"].lower()]
+        if not products:
+            dispatcher.utter_message(response="utter_product_availability_no", product_name=product_name)
+            return [SlotSet("products", None)]
+
+        dispatcher.utter_message(response="utter_product_availability_yes", product_name=product_name)
+        return [SlotSet("products", product_name)]
+
+class ActionFetchProductLocation(Action):
+    def name(self) -> Text:
+        return "action_fetch_product_location"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        product_name = tracker.get_slot("product_name")
+        if not product_name:
+            dispatcher.utter_message(response="utter_ask_product")
+            return []
+
+        products = [p for p in data["products"] if product_name.lower() in p["name"].lower()]
+        if not products:
+            dispatcher.utter_message(response="utter_product_not_found", product_name=product_name)
+            return []
+
+        town = clean_town_name(products[0]["town"])
+        stores = [s for s in data["stores"] if clean_town_name(s["town"]).lower() == town.lower()]
+        store_name = stores[0]["name"] if stores else "local shops"
+        dispatcher.utter_message(response="utter_product_location", product_name=product_name, store_name=store_name, town=town)
+        return [SlotSet("store_name", store_name)]
+
+class ActionFetchProductsByLocation(Action):
+    def name(self) -> Text:
+        return "action_fetch_products_by_location"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        town = clean_town_name(tracker.get_slot("town"))
+        logger.debug(f"Fetching products by location for town: {town}")
+        if not town:
+            dispatcher.utter_message(response="utter_ask_town")
+            return [SlotSet("products", None)]
+
+        if town.lower() == "la union":
+            products = data["products"]
         else:
-            response_text = f"No details for *{product}* yet. Try Handwoven Bags!"
-        dispatcher.utter_message(text=response_text)
-        return []
+            products = [p for p in data["products"] if clean_town_name(p["town"]).lower() == town.lower()]
+        
+        logger.debug(f"Found {len(products)} products for {town}: {[p['name'] for p in products]}")
+        
+        if not products:
+            nearby_towns = sorted(set(clean_town_name(p["town"]) for p in data["products"] if p["town"].lower() != town.lower()))
+            nearby_suggestion = f"Check out nearby towns like {', '.join(nearby_towns[:2])}!" if nearby_towns else "Try another town!"
+            dispatcher.utter_message(text=f"Ay, no products found in {town} yet. {nearby_suggestion}")
+            return [SlotSet("products", None)]
+
+        product_list = ", ".join(sorted(set(p["name"] for p in products)))
+        dispatcher.utter_message(response="utter_products_by_location", town=town, products=product_list)
+        return [SlotSet("products", product_list), SlotSet("store_name", None)]
+
+class ActionFetchProductsByType(Action):
+    def name(self) -> Text:
+        return "action_fetch_products_by_type"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        product_type = tracker.get_slot("product_type")
+        if not product_type:
+            dispatcher.utter_message(response="utter_ask_category")
+            return [SlotSet("products", None)]
+
+        type_mapping = {
+            "spicy": ["spicy", "hot"],
+            "sweet": ["sweet", "dessert", "sugary"],
+            "snacks": ["chips", "snack", "talong", "okra"],
+            "chocolate": ["chocolate", "cocoa"],
+            "food": ["food", "bagoong", "fish", "chips"],
+            "handicrafts": ["wooden", "bamboo", "woven", "pottery", "handicraft"],
+            "souvenirs": ["souvenir", "craft", "inabel", "broom"],
+            "pasalubong": ["bagoong", "chips", "wine", "dried fish"],
+            "local snacks": ["chips", "talong", "okra"]
+        }
+
+        keywords = type_mapping.get(product_type.lower(), [product_type.lower()])
+        products = [p for p in data["products"] if any(k in p["name"].lower() or k in p["description"].lower() for k in keywords)]
+
+        if not products:
+            dispatcher.utter_message(text=f"No {product_type} products found. Try something like 'snacks'!")
+            return [SlotSet("products", None)]
+
+        product_list = ", ".join(sorted(set(p["name"] for p in products)))
+        dispatcher.utter_message(response="utter_products_by_type", product_type=product_type, products=product_list)
+        return [SlotSet("products", product_list), SlotSet("store_name", None)]
+
+class ActionFetchStoreByProduct(Action):
+    def name(self) -> Text:
+        return "action_fetch_store_by_product"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        product_name = tracker.get_slot("product_name") or tracker.get_slot("product_category")
+        town = clean_town_name(tracker.get_slot("town"))
+
+        if not product_name:
+            dispatcher.utter_message(response="utter_ask_product")
+            return [SlotSet("products", None)]
+
+        products = [p for p in data["products"] if product_name.lower() in p["name"].lower() or product_name.lower() in p["category"].lower()]
+        if not products:
+            dispatcher.utter_message(response="utter_product_not_found", product_name=product_name)
+            return [SlotSet("products", None)]
+
+        if town and town.lower() != "la union":
+            products = [p for p in products if clean_town_name(p["town"]).lower() == town.lower()]
+
+        if not products:
+            nearby_towns = sorted(set(clean_town_name(p["town"]) for p in data["products"] if p["town"].lower() != town.lower()))
+            nearby_suggestion = f"Check out nearby towns like {', '.join(nearby_towns[:2])}!" if nearby_towns else "Try another town!"
+            dispatcher.utter_message(text=f"No stores found for {product_name} in {town}. {nearby_suggestion}")
+            return [SlotSet("products", None)]
+
+        store = next((s for s in data["stores"] if s["name"] == products[0]["store_name"]), None)
+        if not store:
+            dispatcher.utter_message(text=f"No store details available for {product_name}. Try another product!")
+            return [SlotSet("products", None)]
+
+        dispatcher.utter_message(
+            response="utter_store_by_product",
+            product_name=product_name,
+            store_name=store["name"],
+            town=clean_town_name(store["town"])
+        )
+        return [SlotSet("store_name", store["name"]), SlotSet("products", product_name)]
+
+class ActionFetchRecommendation(Action):
+    def name(self) -> Text:
+        return "action_fetch_recommendation"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        town = clean_town_name(tracker.get_slot("town"))
+        if town and town.lower() != "la union":
+            products = [p for p in data["products"] if clean_town_name(p["town"]).lower() == town.lower()]
+        else:
+            products = data["products"]
+
+        if not products:
+            dispatcher.utter_message(text="No products available to recommend. Check back later!")
+            return [SlotSet("products", None)]
+
+        popular_products = [p for p in products if any(keyword in p["name"].lower() for keyword in ["basi", "chips", "grapes", "inabel"])]
+        if not popular_products:
+            popular_products = products[:5]
+
+        product_list = ", ".join(sorted(set(p["name"] for p in popular_products)))
+        dispatcher.utter_message(response="utter_recommendation", products=product_list)
+        return [SlotSet("products", product_list)]
+
+class ActionFetchLocationNearMe(Action):
+    def name(self) -> Text:
+        return "action_fetch_location_near_me"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        town = clean_town_name(tracker.get_slot("town"))
+        if not town:
+            dispatcher.utter_message(response="utter_location_near_me")
+            return []
+
+        products = [p for p in data["products"] if clean_town_name(p["town"]).lower() == town.lower()]
+        if not products:
+            nearby_towns = sorted(set(clean_town_name(p["town"]) for p in data["products"] if p["town"].lower() != town.lower()))
+            nearby_suggestion = f"Check out nearby towns like {', '.join(nearby_towns[:2])}!" if nearby_towns else "Try another town!"
+            dispatcher.utter_message(text=f"No products found near {town}. {nearby_suggestion}")
+            return [SlotSet("products", None)]
+
+        product_list = ", ".join(sorted(set(p["name"] for p in products)))
+        dispatcher.utter_message(response="utter_products_by_location", town=town, products=product_list)
+        return [SlotSet("products", product_list)]
+
+class ActionFetchProductDetails(Action):
+    def name(self) -> Text:
+        return "action_fetch_product_details"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        product_name = tracker.get_slot("product_name")
+        if not product_name:
+            dispatcher.utter_message(response="utter_ask_product")
+            return [SlotSet("products", None)]
+
+        product = next((p for p in data["products"] if product_name.lower() in p["name"].lower()), None)
+        if not product:
+            dispatcher.utter_message(response="utter_product_not_found", product_name=product_name)
+            return [SlotSet("products", None)]
+
+        dispatcher.utter_message(
+            response="utter_product_details",
+            product_name=product["name"],
+            description=product["description"]
+        )
+        return [SlotSet("products", product["name"])]

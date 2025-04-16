@@ -1,205 +1,329 @@
 version: "3.1"
 
 nlu:
-# Core Intents
 - intent: greet
   examples: |
     - hi
     - hello
     - hey there
     - good morning
-    - good afternoon
-    - mabuhay
+    - yo
     - kumusta
-    - yo, what’s up
-    - hi, bot!
-    - hello from La Union
-    - hey, let’s talk products
+    - naimbag nga aldaw
 
 - intent: goodbye
   examples: |
     - bye
+    - see you
     - goodbye
-    - see ya
-    - later
-    - paalam
-    - babay
     - thanks, bye
-    - catch you later
-    - hanggang sa muli
-    - I’m out
-
-- intent: affirm
-  examples: |
-    - yes
-    - yup
-    - sure
-    - of course
-    - oo
+    - later
+    - agyamanak
     - sige
-    - definitely
-    - sounds good
-    - okay lang
-    - go ahead
 
-- intent: deny
+- intent: ask_products_in_town
   examples: |
-    - no
-    - nope
-    - not really
-    - never
-    - hindi
-    - ayoko
-    - pass
-    - don’t think so
-    - nah
-    - no thanks
+    - what can I buy in [Agoo]{"entity": "town"}?
+    - show me products in [Tubao]{"entity": "town"}
+    - any local items in [San Fernando]{"entity": "town"}?
+    - what's available in [Rosario]{"entity": "town"}?
+    - products from [Bauang]{"entity": "town"} please
+    - tell me about [Bagulin]{"entity": "town"} products
+    - what’s for sale in [Naguilian]{"entity": "town"}?
+    - ano meron sa [Aringay]{"entity": "town"}?
+    - what products can I find in [San Juan]{"entity": "town"}?
+    - do you have something sweet from [Agoo]{"entity": "town"}?
+    - what products are available in [Bauang]{"entity": "town"}?
+    - anong meron sa [Aringay]{"entity": "town"}?
+    - any must-try products from [San Juan]{"entity": "town"}?
+    - what can I buy in La Union?
 
-- intent: mood_great
+- intent: ask_products_by_category
   examples: |
-    - I’m great
-    - feeling awesome
-    - super happy
-    - perfect day
-    - masaya ako
-    - all good here
-    - loving it
-    - so excited
-    - everything’s cool
-    - ganda ng mood ko
+    - show me [handicrafts]{"entity": "product_category"} in La Union
+    - any [food products]{"entity": "product_category"} available?
+    - what [beverages]{"entity": "product_category"} can I get?
+    - list [agricultural products]{"entity": "product_category"}
+    - where to find [textiles]{"entity": "product_category"}?
+    - do you have [handicrafts]{"entity": "product_category"}?
+    - any [gadgets]{"entity": "product_category"}?
+    - something good from the [north]{"entity": "product_category"}
+    - I’m looking for [local snacks]{"entity": "product_category"}
+    - any [snacks]{"entity": "product_category"}?
+    - what products do you recommend?
+    - something good to eat
+    - is there anything sweet to buy?
+    - what are the popular local crafts here?
 
-- intent: mood_unhappy
+- intent: ask_store_details
   examples: |
-    - I’m sad
-    - feeling down
-    - not good
-    - bad day
-    - malungkot ako
-    - disappointed
-    - so tired
-    - awful vibe
-    - hindi okay
-    - stressed out
+    - tell me about [Manguerra Grapes Farm]{"entity": "store_name"}
+    - details for [Burgos Public Market]{"entity": "store_name"}
+    - what's at [ES Bamboo Furniture Shop]{"entity": "store_name"}?
+    - info on [Naguilian Basi Processing Center]{"entity": "store_name"}
+    - tell me about [J & S Furniture and Handicrafts]{"entity": "store_name"}
+    - how do I contact [Balay ti Elyu]{"entity": "store_name"}?
+    - tell me about [Babban's Handicraft & Furniture]{"entity": "store_name"}
 
-- intent: bot_challenge
+- intent: ask_store_location
   examples: |
-    - are you a bot?
-    - human or bot?
-    - robot ka ba?
-    - tao ka ba?
-    - who’s this?
-    - am I talking to AI?
-    - you real?
-    - bot or not?
-    - what are you?
-    - machine ka ba?
+    - where is [Agoo Public Market]{"entity": "store_name"} located?
+    - location of [Gapuz Grape Farm]{"entity": "store_name"}
+    - how to find [Dan's Pottery Shop]{"entity": "store_name"}?
+    - address of [Kultur Siak - OTOP Hub La Union]{"entity": "store_name"}
+    - where’s [Santo Tomas Daing Delicacy Store]{"entity": "store_name"}?
+    - where is [J & S Furniture and Handicrafts]{"entity": "store_name"} located?
+    - what are the store hours of [La Union Pasalubong Center]{"entity": "store_name"}?
+    - where is [Babban's Handicraft & Furniture]{"entity": "store_name"} located?
 
-# Product/Municipality-Specific Intents
-- intent: ask_products_by_municipality
+- intent: ask_product_by_name
   examples: |
-    - What’s from [San Juan](municipality)?
-    - Products in [San Fernando](municipality)?
-    - What’s made in [Agoo](municipality)?
-    - Tell me about [Bacnotan](municipality) goods
-    - Any specialties in [Naguilian](municipality)?
-    - What can I get from [Bauang](municipality)?
-    - Local stuff in [La Union](municipality)?
-    - [San Juan](municipality) products please
-    - What’s cool in [Sudipen](municipality)?
-    - Show me [Luna](municipality) items
-
-- intent: ask_municipality_by_product
-  examples: |
-    - Where’s [Coffee Beans](product) from?
-    - Which town makes [Handwoven Bags](product)?
-    - Origin of [Pottery](product)?
-    - [Rice Wine](product) comes from where?
-    - What place has [Wood Carvings](product)?
-    - Where can I find [Bamboo Crafts](product)?
-    - [Coffee](product) source?
-    - Who makes [Vinegar](product)?
-    - Location of [Fish Sauce](product)?
-    - [Honey](product) from which town?
-
-- intent: ask_product_price
-  examples: |
-    - How much is [Coffee Beans](product)?
-    - Price of [Handwoven Bags](product)?
-    - [Pottery](product) cost in [San Juan](municipality)?
-    - What's [Rice Wine](product) worth?
-    - How expensive is [Wood Carvings](product)?
-    - [Coffee Beans](product) price tag?
-    - Cost of [Bamboo Crafts](product)?
-    - [Vinegar](product) how much?
-    - Tell me [Honey](product) price
-    - [Fish Sauce](product) in [Agoo](municipality)?
-    - Price [Pottery](product) [Agoo](municipality)
-    - [Pottery](product) price
-    - Price of [Coffee Beans](product) in [San Juan](municipality)
-    - How much does [Pottery](product) cost?
-    - What's the price range for [Handwoven Bags](product)?
+    - do you have [Sweet and Spicy Bagoong Alamang]{"entity": "product_name"}?
+    - is [Naguilian Basi (Sugarcane Wine)]{"entity": "product_name"} available?
+    - where can I find [Wooden Trophy]{"entity": "product_name"}?
+    - any [Fresh Grapes]{"entity": "product_name"} in La Union?
+    - tell me about [Talong Chips]{"entity": "product_name"}
+    - is there [Red Cardinal Grapes]{"entity": "product_name"}?
+    - do you sell [mangoes]{"entity": "product_name"} here?
 
 - intent: ask_product_availability
   examples: |
-    - Is [Coffee Beans](product) available?
-    - Can I get [Handwoven Bags](product) now?
-    - [Pottery](product) in [San Juan](municipality) when?
-    - [Rice Wine](product) this month?
-    - [Wood Carvings](product) in stock?
-    - When’s [Coffee](product) ready?
-    - [Bamboo Crafts](product) available today?
-    - [Vinegar](product) season?
-    - [Honey](product) around now?
-    - Find [Fish Sauce](product) anytime?
+    - does La Union have [Fresh Grapes]{"entity": "product_name"}?
+    - is there [Talong Chips]{"entity": "product_name"} in La Union?
+    - do you have [Naguilian Basi (Sugarcane Wine)]{"entity": "product_name"}?
+    - any [Sweet and Spicy Bagoong Alamang]{"entity": "product_name"} available?
+    - is [Moreno Cafe Wine]{"entity": "product_name"} sold here?
+    - may [calamansi jam]{"entity": "product_name"} ba dito?
+    - do you have [local honey]{"entity": "product_name"}?
+
+- intent: ask_product_location
+  examples: |
+    - where can I buy [Fresh Grapes]{"entity": "product_name"}?
+    - okay, where is [Talong Chips]{"entity": "product_name"} sold?
+    - where to find [Red Cardinal Grapes]{"entity": "product_name"}?
+    - which stores have [Okra Chips]{"entity": "product_name"}?
+    - where is it?
+    - where can I buy [mango chips]{"entity": "product_name"}?
+
+- intent: ask_products_by_location
+  examples: |
+    - what products are in [Bacnotan]{"entity": "town"}?
+    - anong product meron sa [Luna]{"entity": "town"}?
+    - I’m in [Agoo]{"entity": "town"}. What products are near me?
+    - may bago bang produkto sa [Aringay]{"entity": "town"}?
+    - what can I buy in [La Union]{"entity": "town"}?
+
+- intent: ask_products_by_type
+  examples: |
+    - I want something [spicy]{"entity": "product_type"}
+    - meron bang [tsokolate]{"entity": "product_type"}?
+    - where can I find [local snacks]{"entity": "product_type"}?
+    - what [food]{"entity": "product_type"} is La Union known for?
+    - any [sweet]{"entity": "product_type"} products?
+    - do you have [handicrafts]{"entity": "product_type"} in [Bauang]{"entity": "town"}?
+
+- intent: ask_store_by_product
+  examples: |
+    - where can I buy [mango chips]{"entity": "product_name"}?
+    - saan pwede bumili ng [handicrafts]{"entity": "product_category"} sa [Bauang]{"entity": "town"}?
+    - where is the best place to get [pasalubong]{"entity": "product_type"}?
+    - san gawa yung [sweet bagoong]{"entity": "product_name"} na nakita ko?
+
+- intent: ask_recommendation
+  examples: |
+    - what do you recommend from La Union?
+    - what’s a must-try product in [San Juan]{"entity": "town"}?
+    - anong magandang bilhin dito?
+    - what’s popular in La Union?
+
+- intent: ask_location_near_me
+  examples: |
+    - anong malapit sa akin?
+    - what products are near me?
+    - saan malapit na tindahan?
+
+- intent: ask_about_app
+  examples: |
+    - what can this app do?
+    - ano gamit nitong app?
+    - is this for tourists?
+    - what’s Produkto Elyukal about?
+    - can I buy things here?
+    - how do I find products near me?
+    - can I message the seller?
+
+- intent: ask_app_creators
+  examples: |
+    - who made this app?
+    - sino gumawa nitong app?
+    - who created produkto elyukal?
+    - who’s behind this bot?
+    - who’s the creator of this app?
 
 - intent: ask_product_details
   examples: |
-    - Tell me about [Coffee Beans](product)
-    - What’s [Handwoven Bags](product) like?
-    - Details on [Pottery](product)
-    - [Rice Wine](product) from [San Juan](municipality)?
-    - Info on [Wood Carvings](product)
-    - Describe [Coffee](product)
-    - [Bamboo Crafts](product) specifics?
-    - What’s up with [Vinegar](product)?
-    - [Honey](product) background
-    - Explain [Fish Sauce](product)
+    - anong ingredients nitong [bagoong]{"entity": "product_name"}?
+    - what’s in [Talong Chips]{"entity": "product_name"}?
+    - tell me more about [Naguilian Basi]{"entity": "product_name"}
 
-# Out-of-Scope Intent (Bonus!)
-- intent: out_of_scope
+- intent: follow_up_where_is_it
   examples: |
-    - What’s the weather?
-    - Book me a flight
-    - How’s the traffic?
-    - Tell me a joke
-    - What’s 2+2?
-    - Can you sing?
-    - Who’s the president?
-    - Play music
-    - How’s the beach?
-    - Fix my car
+    - saan ko mabibili yan?
+    - where is it sold?
+    - which store has that?
 
-# Synonyms for Entities
-- synonym: Coffee
+- intent: nlu_fallback
   examples: |
-    - Coffee Beans
-    - Local Coffee
-    - Brewed Coffee
+    - no
+    - ha
+    - ???
+    - baliw kaba
+    - fuck you
+    - huh
+    - what
+    - random stuff
+    - asdfgh
+    - meron bang online order or pickup?
 
-- synonym: San Juan
+- synonym: food products
   examples: |
-    - San Juan La Union
-    - SJ
-    - San Juan Town
+    - snacks
+    - local snacks
+    - something good to eat
+    - food
+    - pasalubong
 
-- synonym: Pottery
+- synonym: handicrafts
   examples: |
-    - Clay Pots
-    - Ceramic Ware
-    - Handmade Pottery
+    - crafts
+    - local crafts
+    - souvenirs
 
-- synonym: Rice Wine
+- synonym: sweet
   examples: |
-    - Tapuey
-    - Local Wine
-    - Fermented Rice Drink
+    - dessert
+    - sweets
+    - sugary
+
+- synonym: spicy
+  examples: |
+    - hot
+    - piquant
+    - maanghang
+    - nagasang
+
+- lookup: town
+  examples: |
+    - Agoo
+    - Aringay
+    - Bacnotan
+    - Bagulin
+    - Balaoan
+    - Bangar
+    - Bauang
+    - Burgos
+    - Caba
+    - Luna
+    - Naguilian
+    - Pugo
+    - Rosario
+    - San Fernando
+    - San Gabriel
+    - San Juan
+    - Santol
+    - Santo Tomas
+    - Sudipen
+    - Tubao
+    - La Union
+
+- lookup: product_category
+  examples: |
+    - Handicrafts
+    - Agricultural Products
+    - Food Products
+    - Beverages
+    - Textiles
+    - Clothing
+
+- lookup: product_type
+  examples: |
+    - spicy
+    - sweet
+    - snacks
+    - chocolate
+    - food
+    - handicrafts
+    - souvenirs
+    - pasalubong
+    - local snacks
+
+- lookup: store_name
+  examples: |
+    - Manguerra Grapes Farm
+    - Heisabelle Wood Works
+    - Lambert's Furniture Shop
+    - OL's Labtang
+    - Burgos Public Market
+    - Gapuz Grape Farm
+    - Dan's Pottery Shop
+    - San Gabriel Market
+    - Orpilla Estigoy Grapes Farm
+    - De Castro's Loom Weaving
+    - Calica Grape Farm
+    - Nogueras Weaving
+    - R.P. Lucina's Loom Weaving
+    - Naguilian Public Market
+    - Santo Tomas Daing Delicacy Store
+    - Bimbong Furnitures & Handicrafts
+    - Bato De Luna Store & Souvenir Shop
+    - Northern Home Furniture Center
+    - Babban's Handicraft & Furniture
+    - Kultur Siak - OTOP Hub La Union
+    - J & S Furniture and Handicrafts
+    - Naguilian Basi Processing Center
+    - ES Bamboo Furniture Shop
+    - Agoo Public Market
+    - La Union Pasalubong Center
+    - Bagulin Public Market
+    - Fe Handicraft Trading
+    - Sta. Cecilia Rice and Corn Mill
+    - Aringay Veggies
+    - Alhamdulillah Bamboo Craft Shop
+    - Lomboy Grape Farm
+    - DJON Rustic Wood Furnitures
+
+- lookup: product_name
+  examples: |
+    - Wooden Rocking Chair
+    - Wooden Trophy
+    - Rolled Edge Bamboo Platter
+    - Bamboo Wicker Table Lamp
+    - Coconut Cups
+    - Fresh Grapes
+    - Handmade Clay Potter
+    - Naguilian Basi (Sugarcane Wine)
+    - Labtang Basket
+    - Moreno Cafe Wine
+    - Inabel Towel
+    - Dried Fish
+    - Centerpiece Chair
+    - Woven Table Desk Lamp
+    - Red Cardinal Grapes
+    - Wooden Square Cabinet
+    - TV Console Cabinet
+    - Bamboo Sofa
+    - Rice Mill
+    - Narra Chair
+    - Bamboo Bahay Kubo
+    - Sweet and Spicy Bagoong Alamang
+    - Table Set (Acacia Wood)
+    - Pebble Pots
+    - Colored Soft Broom
+    - Bamboo Kubo
+    - Inabel Towels
+    - Tiger Grass Soft Broom
+    - Ube Wine
+    - Cambalay Abel
+    - Talong Chips
+    - Okra Chips
+    - Table Set
