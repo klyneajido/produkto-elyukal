@@ -22,7 +22,7 @@ export type RootStackParamList = {
   ForgotPassword: undefined;
   Tabs: NavigatorScreenParams<TabsParamList>;
   ProductDetails: { product: Product; reviews?: Review[] };
-  Products: undefined;
+  Products: { category?: string } | undefined;
   Municipalities: undefined;
   Reviews: { reviews: Review[]; product: Product };
   EventDetails: { eventId: string };

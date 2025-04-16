@@ -78,7 +78,7 @@ const Chatbot: React.FC = () => {
         position.setValue({ x: validX, y: validY });
       }
     } catch (error) {
-      console.error('Error loading button position:', error);
+      console.log('Error loading button position:', error);
     }
   };
 
@@ -95,7 +95,7 @@ const Chatbot: React.FC = () => {
       const positionToSave = JSON.stringify(currentPos);
       await AsyncStorage.setItem(BUTTON_POSITION_KEY, positionToSave);
     } catch (error) {
-      console.error('Error saving button position:', error);
+      console.log('Error saving button position:', error);
     }
   };
 
@@ -228,7 +228,7 @@ const Chatbot: React.FC = () => {
         }]);
       }
     } catch (error) {
-      console.error('Error communicating with Rasa:', error);
+      console.log('Error communicating with Rasa:', error);
       setMessages((prev) => [...prev, {
         text: 'Oops, something went wrong!',
         sender: 'bot',

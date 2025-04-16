@@ -1,4 +1,3 @@
-// Products.tsx
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -25,6 +24,7 @@ import { Product, ProductsProps } from '../../types/types';
 import styles from '../assets/style/productStyle.js';
 import ProductList from '../components/ProductList.tsx';
 import { COLORS } from '../assets/constants/constant.ts';
+import { useRoute } from '@react-navigation/native'; // Add useRoute
 
 const priceRanges = [
   { label: 'Under ₱50', value: 'under50', min: 0, max: 50 },
@@ -120,22 +120,30 @@ function fuzzySearch<T>(
 }
 
 const Products: React.FC<ProductsProps> = ({ onScroll }) => {
+  const route = useRoute<any>(); // Access route params
   const [products, setProducts] = useState<Product[]>([]);
   const [searchText, setSearchText] = useState('');
-  const [inputText, setInputText] = useState(''); // New state for immediate input
+  const [inputText, setInputText] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPriceRange, setSelectedPriceRange] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Handle category from route params
+  useEffect(() => {
+    const category = route.params?.category;
+    if (category && !selectedCategories.includes(category)) {
+      setSelectedCategories([category]);
+    }
+  }, [route.params?.category]);
+
   // Debouncing logic
   useEffect(() => {
     const handler = setTimeout(() => {
-      setSearchText(inputText); // Update searchText after debounce
-    }, 500); // 500ms debounce delay
+      setSearchText(inputText);
+    }, 500);
 
-    // Cleanup timeout on inputText change or component unmount
     return () => clearTimeout(handler);
   }, [inputText]);
 
@@ -222,7 +230,7 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
 
   const resetFilters = () => {
     setSearchText('');
-    setInputText(''); // Reset inputText as well
+    setInputText('');
     setSelectedCategories([]);
     setSelectedPriceRange([]);
     setInStockOnly(false);
@@ -273,14 +281,16 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
           </View>
         ) : (
           <>
-            {/* Search Results Indicator */}
-            {searchText ? (
+            {/* Search or Category Results Indicator */}
+            {(searchText || selectedCategories.length > 0) && (
               <View style={styles.resultsIndicator}>
                 <Text style={styles.resultsText}>
-                  Results for "{searchText}"
+                  {searchText
+                    ? `Results for "${searchText}"`
+                    : `Results for "${selectedCategories[0]}"`}
                 </Text>
               </View>
-            ) : null}
+            )}
 
             <Modal visible={showFilters} animationType="slide" transparent>
               <View style={styles.filterModal}>
@@ -360,9 +370,7 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
               </View>
             </Modal>
 
-            <View
-              style={styles.productContainer}
-            >
+            <View style={styles.productContainer}>
               <ProductList products={filteredProducts} onScroll={onScroll} />
             </View>
           </>
