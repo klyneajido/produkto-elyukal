@@ -17,13 +17,12 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faClose, faPaperPlane, faChevronDown, faInfoCircle, faShoppingBag } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faPaperPlane, faChevronDown, faInfoCircle, faShoppingBag, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ipaddress } from '../config/config';
 import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 import FastImage from 'react-native-fast-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-
 interface Message {
   text: string;
   sender: 'user' | 'bot';
@@ -66,6 +65,7 @@ const Chatbot: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [typingAnimation] = useState(new Animated.Value(0));
   const [productInfoMap, setProductInfoMap] = useState<{ [name: string]: Product }>({});
+  const [showBetaNotice, setShowBetaNotice] = useState(true);
   
   const navigation = useNavigation();
   const flatListRef = useRef<FlatList>(null);
@@ -593,6 +593,51 @@ const Chatbot: React.FC = () => {
     );
   };
 
+  const BetaNotice = () => {
+    const fadeAnim = useRef(new Animated.Value(1)).current;
+
+    const handleDismiss = async () => {
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true
+      }).start(async () => {
+        try {
+          await AsyncStorage.setItem('betaNoticeDismissed', 'true');
+          setShowBetaNotice(false);
+        } catch (error) {
+          console.log('Error saving beta notice status:', error);
+        }
+      });
+    };
+
+    if (!showBetaNotice) return null;
+
+    return (
+      <Animated.View style={[styles.betaNoticeContainer, { opacity: fadeAnim }]}>
+        <View style={styles.betaNoticeContent}>
+          <View style={styles.betaTag}>
+            <Text style={styles.betaTagText}>BETA</Text>
+          </View>
+          <Text style={styles.betaNoticeText}>
+            This AI assistant is currently in beta and may have limited knowledge. It works best with simple queries about La Union's local products and stores.
+          </Text>
+        </View>
+        <TouchableOpacity 
+          onPress={handleDismiss}
+          style={styles.dismissButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <FontAwesomeIcon 
+            icon={faXmark} 
+            color={COLORS.gray} 
+            size={16}
+          />
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
+
   return (
     <>
       {/* Draggable Floating Chat Button */}
@@ -640,7 +685,7 @@ const Chatbot: React.FC = () => {
                 style={styles.headerBotIcon}
               />
               <View style={styles.modalTitleContainer}>
-                <Text style={styles.modalTitle}>Produkto Bot</Text>
+                <Text style={styles.modalTitle}>Elyu Bot</Text>
                 <Text style={styles.modalSubtitle}>Always here to help</Text>
               </View>
               <TouchableOpacity
@@ -650,6 +695,8 @@ const Chatbot: React.FC = () => {
                 <FontAwesomeIcon icon={faClose} color={COLORS.gray} size={FONT_SIZE.large} />
               </TouchableOpacity>
             </View>
+
+            <BetaNotice />
 
             <View style={styles.scrollIndicator}>
               <FontAwesomeIcon icon={faChevronDown} color={COLORS.gray} size={FONT_SIZE.small} />
@@ -956,6 +1003,48 @@ const styles = StyleSheet.create({
     color: COLORS.darkGray,
     marginLeft: 8,
     flex: 1,
+  },
+  betaNoticeContainer: {
+    backgroundColor: 'rgba(66, 153, 225, 0.1)',
+    padding: FONT_SIZE.medium,
+    marginHorizontal: FONT_SIZE.medium,
+    marginVertical: FONT_SIZE.small,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(66, 153, 225, 0.2)',
+    justifyContent: 'space-between',
+  },
+  betaNoticeContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: FONT_SIZE.small,
+  },
+  betaTag: {
+    backgroundColor: '#4299E1',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginRight: FONT_SIZE.small,
+  },
+  betaTagText: {
+    color: COLORS.white,
+    fontSize: FONT_SIZE.small,
+    fontFamily: FONTS.bold,
+  },
+  betaNoticeText: {
+    flex: 1,
+    color: '#2C5282',
+    fontSize: FONT_SIZE.small,
+    fontFamily: FONTS.regular,
+    lineHeight: 18,
+  },
+  dismissButton: {
+    padding: 4,
+    borderRadius: 12,
+    backgroundColor: 'rgba(66, 153, 225, 0.1)',
   },
 });
 
