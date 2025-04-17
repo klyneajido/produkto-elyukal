@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.db.database import supabase_client
 from app.core.security import hash_password, create_access_token, verify_token
-from app.schemas.user import UserRegister, UserLogin, UserProfileUpdate
+from app.schemas.user import UserRegister, UserLogin, UserProfileUpdate, PasswordUpdate
 from datetime import datetime, timedelta
 import bcrypt
 from app.core.config import settings
@@ -84,5 +84,39 @@ async def update_user_profile(
             raise HTTPException(status_code=404, detail="User not found")
 
         return {"message": "Profile updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.patch("/password/update")
+async def update_password(
+    password_update: PasswordUpdate,
+    current_user: dict = Depends(verify_token)
+):
+    try:
+        user_email = current_user.get("sub")
+        # Get user from database
+        response = supabase_client.table("users").select("*").eq("email", user_email).execute()
+        
+        if not response.data or len(response.data) == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        user = response.data[0]
+        
+        # Verify current password
+        if not bcrypt.checkpw(password_update.current_password.encode(), user["password_hash"].encode()):
+            raise HTTPException(status_code=400, detail="Current password is incorrect")
+        
+        # Hash new password
+        new_password_hash = hash_password(password_update.new_password)
+        
+        # Update password in database
+        update_response = supabase_client.table("users").update({
+            "password_hash": new_password_hash
+        }).eq("email", user_email).execute()
+
+        if not update_response.data:
+            raise HTTPException(status_code=500, detail="Failed to update password")
+
+        return {"message": "Password updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

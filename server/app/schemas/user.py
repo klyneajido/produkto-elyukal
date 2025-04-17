@@ -13,3 +13,8 @@ class UserLogin(BaseModel):
 class UserProfileUpdate(BaseModel):
     first_name: str
     last_name: str
+
+# Add this new schema
+class PasswordUpdate(BaseModel):
+    current_password: str
+    new_password: str

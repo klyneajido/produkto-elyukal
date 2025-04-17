@@ -17,13 +17,19 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../contextAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChevronLeft, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faCheck, faExclamationTriangle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { COLORS, FONT_SIZE, FONTS } from '../../assets/constants/constant';
 import InputText from '../../components/TextInput';
 import Footer from '../../components/Footer';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../../config/config';
+
+interface ErrorState {
+    visible: boolean;
+    message: string;
+    type: 'success' | 'error';
+}
 
 const PersonalInformation = () => {
     const { user, setUser } = useAuth(); // Move useAuth to top level
@@ -33,6 +39,15 @@ const PersonalInformation = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState<{ firstName?: string; lastName?: string }>({});
     const saveButtonOpacity = new Animated.Value(1);
+    const [error, setError] = useState<ErrorState>({
+        visible: false,
+        message: '',
+        type: 'error'
+    });
+
+    const dismissError = () => {
+        setError(prev => ({ ...prev, visible: false }));
+    };
 
     // Redirect guest users to Login screen
     useEffect(() => {
@@ -57,7 +72,14 @@ const PersonalInformation = () => {
     };
 
     const handleSave = async () => {
-        if (!validateForm()) return;
+        if (!validateForm()) {
+            setError({
+                visible: true,
+                message: 'Please correct the errors in the form',
+                type: 'error'
+            });
+            return;
+        }
 
         try {
             setIsLoading(true);
@@ -80,7 +102,12 @@ const PersonalInformation = () => {
             // Retrieve token from AsyncStorage
             const token = await AsyncStorage.getItem("token");
             if (!token) {
-                throw new Error('No authentication token found');
+                setError({
+                    visible: true,
+                    message: 'Your session has expired. Please log in again.',
+                    type: 'error'
+                });
+                return;
             }
 
             // Make API request to update profile
@@ -109,13 +136,34 @@ const PersonalInformation = () => {
                 },
             }));
 
-            Alert.alert('Success', 'Your personal information has been updated.', [
-                { text: 'OK', onPress: () => navigation.goBack() },
-            ]);
+            setError({
+                visible: true,
+                message: 'Your personal information has been updated successfully',
+                type: 'success'
+            });
+
+            // Delay navigation to show success message
+            setTimeout(() => {
+                navigation.goBack();
+            }, 1500);
+
         } catch (error: any) {
             console.error('Failed to save personal information:', error);
-            const errorMessage = error.response?.data?.detail || 'Failed to update your information. Please try again.';
-            Alert.alert('Error', errorMessage);
+            let errorMessage = 'Failed to update your information. Please try again.';
+
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status === 401) {
+                    errorMessage = 'Your session has expired. Please log in again.';
+                } else if (error.response?.data?.detail) {
+                    errorMessage = error.response.data.detail;
+                }
+            }
+
+            setError({
+                visible: true,
+                message: errorMessage,
+                type: 'error'
+            });
         } finally {
             setIsLoading(false);
         }
@@ -152,6 +200,27 @@ const PersonalInformation = () => {
                     <Text style={styles.headerSubtitle}>Manage your personal details</Text>
                 </View>
             </View>
+
+            {/* Add Error Banner */}
+            {error.visible && (
+                <View style={[
+                    styles.errorContainer,
+                    error.type === 'success' ? styles.successBanner : styles.errorBanner
+                ]}>
+                    <View style={styles.errorContent}>
+                        <FontAwesomeIcon
+                            icon={error.type === 'success' ? faCheck : faExclamationTriangle}
+                            size={18}
+                            color="#FFF"
+                            style={styles.errorIcon}
+                        />
+                        <Text style={styles.errorText}>{error.message}</Text>
+                    </View>
+                    <TouchableOpacity onPress={dismissError} style={styles.errorDismiss}>
+                        <FontAwesomeIcon icon={faTimes} size={16} color="#FFF" />
+                    </TouchableOpacity>
+                </View>
+            )}
 
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -197,8 +266,11 @@ const PersonalInformation = () => {
                             />
                         </View>
                     </View>
-                    <Footer />
                 </ScrollView>
+
+                <View>
+                    <Footer />
+                </View>
             </KeyboardAvoidingView>
 
             <View style={styles.footer}>
@@ -265,7 +337,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
-        padding: 16,
+        flexGrow: 1,
+        paddingBottom: 20,
     },
     formSection: {
         backgroundColor: COLORS.white,
@@ -277,6 +350,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 4,
         elevation: 2,
+        margin:10,
     },
     sectionTitle: {
         fontSize: FONT_SIZE.large,
@@ -322,6 +396,43 @@ const styles = StyleSheet.create({
     buttonIcon: {
         marginRight: 6,
     },
+    errorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 12,
+        marginHorizontal: 16,
+        marginTop: 16,
+        borderRadius: 8,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    errorBanner: {
+        backgroundColor: '#f44336',
+    },
+    successBanner: {
+        backgroundColor: '#4caf50',
+    },
+    errorContent: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    errorIcon: {
+        marginRight: 10,
+    },
+    errorText: {
+        color: 'white',
+        fontFamily: FONTS.medium,
+        fontSize: FONT_SIZE.medium,
+        flex: 1,
+    },
+    errorDismiss: {
+        padding: 6,
+    },
 });
 
 export default PersonalInformation;
+
