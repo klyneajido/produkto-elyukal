@@ -30,6 +30,18 @@ export type RootStackParamList = {
   MapView: { longitude: number, latitude: number };
   PriceComparison: { product: Product; similarProducts: any[] };
   MunicipalityDetail: { municipality: Municipality };
+  Settings: undefined;
+  EditProfile: undefined;
+  PersonalInformation: undefined;
+  PrivacySecurity: undefined;
+  PasswordSettings: undefined;
+  NotificationSettings: undefined;
+  LanguageSettings: undefined;
+  RegionSettings: undefined;
+  AboutApp: undefined;
+  PrivacyPolicy: undefined;
+  TermsOfService: undefined;
+  DarkModeSettings: undefined;
 };
 export interface Review {
   id: number;

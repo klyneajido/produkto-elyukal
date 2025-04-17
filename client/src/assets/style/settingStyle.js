@@ -57,10 +57,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#E1E1E1',
   },
   profileInfo: {
-    marginLeft: 16,
+    marginLeft: 10,
   },
   profileName: {
-    fontSize: 18,
+    fontSize: FONT_SIZE.medium,
     fontFamily: FONTS.semibold,
     color: COLORS.black,
     marginBottom: 4,

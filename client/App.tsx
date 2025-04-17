@@ -11,12 +11,16 @@ import SignupScreen from './src/pages/Signup';
 import Welcome from './src/pages/Welcome';
 import ForgotPassword from './src/pages/ForgotPassword';
 import AuthProvider, { useAuth } from './contextAuth';
-import StoreDetails  from './src/pages/StoreDetails';
+import StoreDetails from './src/pages/StoreDetails';
 import { ActivityIndicator, View } from 'react-native';
 import ReviewScreen from './src/pages/Reviews';
 import MunicipalityDetail from './src/pages/MunicipalityDetail';
 import PriceComparison from './src/pages/PriceComparison';
 import EditProfileScreen from './src/pages/EditProfile';
+// Import the new settings screens
+import PersonalInformation from './src/pages/settings/PersonalInformation';
+import PasswordSettings from './src/pages/settings/PasswordSettings';
+import { faListCheck } from '@fortawesome/free-solid-svg-icons';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,14 +39,14 @@ const AppNavigator = () => {
     );
   }
 
-  const initialRoute = user ? 'Tabs':'Welcome';
+  const initialRoute = user ? 'Tabs' : 'Welcome';
   return (
-    <Stack.Navigator initialRouteName={initialRoute}
-    screenListeners={{
-      state: (e) =>{
-        
-      }
-    }}
+    <Stack.Navigator 
+      initialRouteName={initialRoute}
+      screenListeners={{
+        state: (e) => {
+        }
+      }}
     >
       <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
@@ -50,11 +54,26 @@ const AppNavigator = () => {
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{ headerShown: false }} />
       <Stack.Screen name="Tabs" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ headerShown: false }} />
-      <Stack.Screen name="Reviews" component={ReviewScreen}options={{ headerShown: false }} />
-      <Stack.Screen name="StoreDetails" component={StoreDetails}  options={{ headerShown: false }} />
+      <Stack.Screen name="Reviews" component={ReviewScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="StoreDetails" component={StoreDetails} options={{ headerShown: false }} />
       <Stack.Screen name="MunicipalityDetail" component={MunicipalityDetail} options={{ headerShown: false }} />
-      <Stack.Screen name="PriceComparison" component={PriceComparison} options={{headerShown: false}} />
-      <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{headerShown:false}}/>
+      <Stack.Screen name="PriceComparison" component={PriceComparison} options={{ headerShown: false }} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ headerShown: false }} />
+
+      <Stack.Screen 
+        name="PersonalInformation" 
+        component={PersonalInformation} 
+        options={{
+          headerShown: false
+        }}
+      />
+      <Stack.Screen 
+        name="PasswordSettings" 
+        component={PasswordSettings}
+        options={{
+          headerShown: false
+        }}
+      />
     </Stack.Navigator>
   );
 };

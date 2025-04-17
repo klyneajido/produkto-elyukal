@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.db.database import supabase_client
 from app.core.security import hash_password, create_access_token, verify_token
-from app.schemas.user import UserRegister, UserLogin
+from app.schemas.user import UserRegister, UserLogin, UserProfileUpdate
 from datetime import datetime, timedelta
 import bcrypt
 from app.core.config import settings
@@ -62,5 +62,27 @@ async def get_user_profile(current_user: dict = Depends(verify_token)):
             raise HTTPException(status_code=404, detail="User not found")
             
         return {"profile": response.data[0]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.patch("/profile/update")
+async def update_user_profile(
+    profile: UserProfileUpdate,
+    current_user: dict = Depends(verify_token)
+):
+    try:
+        user_email = current_user.get("sub")
+        # Update user data in Supabase
+        update_data = {
+            "first_name": profile.first_name.strip(),  # Trim whitespace
+            "last_name": profile.last_name.strip(),   # Trim whitespace
+        }
+
+        response = supabase_client.table("users").update(update_data).eq("email", user_email).execute()
+
+        if not response.data or len(response.data) == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        return {"message": "Profile updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

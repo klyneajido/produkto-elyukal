@@ -38,9 +38,25 @@ import styles from '../assets/style/settingStyle';
 import { COLORS } from '../assets/constants/constant.ts';
 import Footer from '../components/Footer.tsx';
 
-// Type guard to check if user is GuestUser
+// Add these interfaces at the top of the file
+interface UserProfile {
+    profile: {
+        email: string;
+        first_name: string;
+        last_name: string;
+        profile_image?: string;
+    };
+    user_metadata?: {
+        name: string;
+    };
+}
+
+// Update the type guard with debugging
 const isGuestUser = (user: any): user is { guest: boolean } => {
-    return user && 'guest' in user;
+    console.log('🔍 Checking if guest user:', user);
+    const result = user && 'guest' in user;
+    console.log('📊 Is guest user:', result);
+    return result;
 };
 
 interface SettingItemProps {
@@ -60,11 +76,17 @@ const SettingsScreen: React.FC = () => {
     const { user } = useAuth();
     const [profileAnimation] = useState(new Animated.Value(0));
 
+    // Add debug logging for component mount and user state
     useEffect(() => {
+        console.log('🔄 Settings Screen Mounted');
+        console.log('👤 Current User State:', user);
+
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem("token");
-            // Only navigate to Login if no token AND not in guest mode
+            console.log('🎫 Auth Token:', token ? 'Present' : 'Not found');
+            
             if (!token && !isGuestUser(user)) {
+                console.log('⚠️ No token and not guest - redirecting to Login');
                 navigation.navigate("Login");
             }
         };
@@ -76,12 +98,22 @@ const SettingsScreen: React.FC = () => {
             duration: 600,
             useNativeDriver: true,
         }).start();
+
+        return () => {
+            console.log('♻️ Settings Screen Unmounted');
+        };
     }, [user]);
 
     const logoutUser = async () => {
-        await AsyncStorage.removeItem("token");
-        setLogoutModalVisible(false);
-        navigation.navigate("Login");
+        console.log('🚪 Logout initiated');
+        try {
+            await AsyncStorage.removeItem("token");
+            console.log('🗑️ Token removed from AsyncStorage');
+            setLogoutModalVisible(false);
+            navigation.navigate("Login");
+        } catch (error) {
+            console.error('❌ Logout error:', error);
+        }
     };
 
     const SettingItem: React.FC<SettingItemProps> = ({
@@ -152,9 +184,45 @@ const SettingsScreen: React.FC = () => {
 
     // User profile section with animation
     const ProfileSection = () => {
-        const userImage = user?.profile_image || require('../assets/img/default_avatar.png');
-        const userName = user?.first_name ? `${user.first_name} ${user.last_name}` : (isGuestUser(user) ? 'Guest User' : 'User');
-        const userEmail = user?.email || (isGuestUser(user) ? '' : 'user@example.com');
+        const defaultImage = require('../assets/img/default_avatar.png');
+        const userProfile = user as unknown as UserProfile;
+        
+        console.log('🖼️ Profile Section Rendering');
+        console.log('📝 User Profile Data:', userProfile);
+        
+        const getUserName = () => {
+            if (isGuestUser(user)) {
+                console.log('👥 Rendering guest user name');
+                return 'Guest User';
+            }
+            if (userProfile?.profile?.first_name && userProfile?.profile?.last_name) {
+                const fullName = `${userProfile.profile.first_name} ${userProfile.profile.last_name}`;
+                console.log('👤 Using full name:', fullName);
+                return fullName;
+            }
+            const fallbackName = userProfile?.user_metadata?.name || 'User';
+            console.log('👤 Using fallback name:', fallbackName);
+            return fallbackName;
+        };
+
+        const getUserEmail = () => {
+            if (isGuestUser(user)) {
+                console.log('📧 No email for guest user');
+                return '';
+            }
+            const email = userProfile?.profile?.email || '';
+            console.log('📧 User email:', email);
+            return email;
+        };
+
+        const getProfileImage = () => {
+            if (userProfile?.profile?.profile_image) {
+                console.log('🖼️ Using custom profile image:', userProfile.profile.profile_image);
+                return { uri: userProfile.profile.profile_image };
+            }
+            console.log('🖼️ Using default profile image');
+            return defaultImage;
+        };
 
         return (
             <Animated.View
@@ -173,20 +241,31 @@ const SettingsScreen: React.FC = () => {
             >
                 <View style={styles.profileContent}>
                     <Image
-                        source={typeof userImage === 'string' ? { uri: userImage } : userImage}
+                        source={getProfileImage()}
                         style={styles.profileImage}
+                        onError={(error) => {
+                            console.error('❌ Profile image loading error:', error.nativeEvent.error);
+                        }}
                     />
                     <View style={styles.profileInfo}>
-                        <Text style={styles.profileName}>{userName}</Text>
-                        {userEmail && <Text style={styles.profileEmail}>{userEmail}</Text>}
+                        <Text style={styles.profileName}>{getUserName()}</Text>
+                        {getUserEmail() && <Text style={styles.profileEmail}>{getUserEmail()}</Text>}
                     </View>
                 </View>
 
                 <TouchableOpacity
                     style={styles.editProfileButton}
-                   
+                    onPress={() => {
+                        console.log('✏️ Edit profile button pressed');
+                    }}
+                    disabled={isGuestUser(user)}
                 >
-                    <Text style={styles.editProfileText}>Edit</Text>
+                    <Text style={[
+                        styles.editProfileText,
+                        isGuestUser(user) && { opacity: 0.5 }
+                    ]}>
+                        Edit
+                    </Text>
                 </TouchableOpacity>
             </Animated.View>
         );
@@ -216,72 +295,26 @@ const SettingsScreen: React.FC = () => {
                         icon={faUser}
                         title="Personal Information"
                         subtitle="Manage your personal details"
+                        onPress={() => navigation.navigate('PersonalInformation')}
                        
                     />
-
-                    <SettingItem
-                        icon={faEnvelope}
-                        title="Communication Preferences"
-                        subtitle="Manage email notifications and updates"
-                    
-                    />
-
-                    <SettingItem
-                        icon={faShield}
-                        title="Privacy & Security"
-                        subtitle="Manage data and account security"
-                    
-                    />
-
                     <SettingItem
                         icon={faLock}
                         title="Password"
                         subtitle="Update your account password"
-                    
                         showDivider={false}
+                        onPress={() => navigation.navigate('PasswordSettings')}
                     />
                 </View>
 
                 {/* App Settings */}
                 <View style={styles.settingsSection}>
                     <Text style={styles.sectionTitle}>Preferences</Text>
-
-                    <SettingItem
-                        icon={faBell}
-                        title="Notifications"
-                        subtitle={notificationsEnabled ? "Enabled" : "Disabled"}
-                        rightComponent={
-                            <Switch
-                                value={notificationsEnabled}
-                                onValueChange={setNotificationsEnabled}
-                                trackColor={{ false: '#D1D1D6', true: '#4CD964' }}
-                                thumbColor="#FFFFFF"
-                                ios_backgroundColor="#D1D1D6"
-                                style={styles.switch}
-                            />
-                        }
-                    />
-
-                    <SettingItem
-                        icon={faMoon}
-                        title="Dark Mode"
-                        subtitle={darkModeEnabled ? "Enabled" : "Disabled"}
-                        rightComponent={
-                            <Switch
-                                value={darkModeEnabled}
-                                onValueChange={setDarkModeEnabled}
-                                trackColor={{ false: '#D1D1D6', true: '#4CD964' }}
-                                thumbColor="#FFFFFF"
-                                ios_backgroundColor="#D1D1D6"
-                                style={styles.switch}
-                            />
-                        }
-                    />
-
                     <SettingItem
                         icon={faLanguage}
                         title="Language"
                         subtitle="English (United States)"
+                        
                         
                     />
 
