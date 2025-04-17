@@ -40,8 +40,8 @@ type FloatingElement = {
 const LoginScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
     const { setUser, loginAsGuest } = useAuth();
-    const [email, setEmail] = useState('1@gmail.com');
-    const [password, setPassword] = useState('123456');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
     const [containerSize, setContainerSize] = useState({ width: width, height: 200 });
     const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
