@@ -16,12 +16,17 @@ rules:
   - intent: ask_about_app
   - action: utter_about_app
 
-- rule: Fallback
-  steps:
-  - intent: nlu_fallback
-  - action: utter_fallback
-
 - rule: Ask app creators
   steps:
   - intent: ask_app_creators
   - action: utter_app_creators
+
+- rule: Ask stores by town
+  steps:
+  - intent: ask_stores_by_town
+  - action: action_fetch_stores_by_town
+
+- rule: Fallback
+  steps:
+  - intent: nlu_fallback
+  - action: utter_fallback

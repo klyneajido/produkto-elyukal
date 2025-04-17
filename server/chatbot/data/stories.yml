@@ -1,150 +1,96 @@
 version: "3.1"
 
 stories:
-- story: Greet and ask products in town
+- story: Ask products in town
   steps:
-  - intent: greet
-  - action: utter_greet
   - intent: ask_products_in_town
   - action: action_fetch_products_by_town
-  - action: utter_product_list
 
 - story: Ask products by category
   steps:
   - intent: ask_products_by_category
   - action: action_fetch_products_by_category
-  - action: utter_category_list
 
 - story: Ask store details
   steps:
   - intent: ask_store_details
   - action: action_fetch_store_details
-  - action: utter_store_details
 
 - story: Ask store location
   steps:
   - intent: ask_store_location
   - action: action_fetch_store_location
-  - action: utter_store_location
 
 - story: Ask product by name
   steps:
   - intent: ask_product_by_name
   - action: action_fetch_product_by_name
-  - checkpoint: check_product_found
 
-- story: Product found
-  steps:
-  - checkpoint: check_product_found
-  - slot_was_set:
-    - products
-  - action: utter_product_list
-
-- story: Product not found
-  steps:
-  - checkpoint: check_product_found
-  - slot_was_set:
-    - products: null
-  - action: utter_product_not_found
-
-- story: Ask product availability
-  steps:
-  - intent: ask_product_availability
-  - action: action_fetch_product_availability
-  - checkpoint: check_product_availability
-
-- story: Product available
-  steps:
-  - checkpoint: check_product_availability
-  - slot_was_set:
-    - products
-  - action: utter_product_availability_yes
-
-- story: Product not available
-  steps:
-  - checkpoint: check_product_availability
-  - slot_was_set:
-    - products: null
-  - action: utter_product_availability_no
-
-- story: Ask product location after availability
+- story: Ask product availability when product exists
   steps:
   - intent: ask_product_availability
   - action: action_fetch_product_availability
   - slot_was_set:
     - products
-  - action: utter_product_availability_yes
+
+- story: Ask product availability when product does not exist
+  steps:
+  - intent: ask_product_availability
+  - action: action_fetch_product_availability
+  - slot_was_set:
+    - products: null
+
+- story: Ask product location
+  steps:
   - intent: ask_product_location
   - action: action_fetch_product_location
-  - action: utter_product_location
-
-- story: Ask products then store details
-  steps:
-  - intent: ask_products_in_town
-  - action: action_fetch_products_by_town
-  - action: utter_product_list
-  - intent: ask_store_details
-  - action: action_fetch_store_details
-  - action: utter_store_details
 
 - story: Ask products by location
   steps:
   - intent: ask_products_by_location
   - action: action_fetch_products_by_location
-  - action: utter_products_by_location
 
 - story: Ask products by type
   steps:
   - intent: ask_products_by_type
   - action: action_fetch_products_by_type
-  - action: utter_products_by_type
 
 - story: Ask store by product
   steps:
   - intent: ask_store_by_product
   - action: action_fetch_store_by_product
-  - action: utter_store_by_product
 
 - story: Ask recommendation
   steps:
   - intent: ask_recommendation
   - action: action_fetch_recommendation
-  - action: utter_recommendation
 
 - story: Ask location near me
   steps:
   - intent: ask_location_near_me
   - action: action_fetch_location_near_me
-  - action: utter_location_near_me
-
-- story: Ask about app
-  steps:
-  - intent: ask_about_app
-  - action: utter_about_app
 
 - story: Ask product details
   steps:
   - intent: ask_product_details
   - action: action_fetch_product_details
-  - action: utter_product_details
 
-- story: Ask app creators
+- story: Ask signature product
   steps:
-  - intent: ask_app_creators
-  - action: utter_app_creators
-  
+  - intent: ask_signature_product
+  - action: action_fetch_signature_product
+
+- story: Ask stores by town
+  steps:
+  - intent: ask_stores_by_town
+  - action: action_fetch_stores_by_town
+
 - story: Follow up where is it
   steps:
-  - intent: ask_product_availability
-  - action: action_fetch_product_availability
-  - slot_was_set:
-    - products
-  - action: utter_product_availability_yes
   - intent: follow_up_where_is_it
   - action: action_fetch_product_location
-  - action: utter_follow_up_where_is_it
 
-- story: Fallback for unclear input
+- story: Fallback
   steps:
   - intent: nlu_fallback
   - action: utter_fallback

@@ -12,19 +12,42 @@ import {
   Animated,
   Dimensions,
   PanResponder,
+  ActivityIndicator,
+  Pressable,
 } from 'react-native';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faClose, faPaperPlane, faChevronDown, faMinimize } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faPaperPlane, faChevronDown, faInfoCircle, faShoppingBag } from '@fortawesome/free-solid-svg-icons';
 import { ipaddress } from '../config/config';
 import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 import FastImage from 'react-native-fast-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 interface Message {
   text: string;
   sender: 'user' | 'bot';
   timestamp: number;
+  products?: Product[];
+  isTyping?: boolean;
+  isError?: boolean;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  description?: string;
+  category?: string;
+  price_min?: number;
+  price_max?: number;
+  ar_asset_url?: string;
+  image_urls?: string[];
+  address?: string;
+  in_stock?: boolean;
+  store_id?: string;
+  average_rating?: string;
+  total_reviews?: number;
+  isLoading?: boolean;
 }
 
 const { width, height } = Dimensions.get('window');
@@ -33,13 +56,18 @@ const CHAT_BUTTON_SIZE = 70;
 const CHAT_BUTTON_RADIUS = CHAT_BUTTON_SIZE / 2;
 const BUTTON_POSITION_KEY = 'chatbot_button_position';
 const EDGE_PADDING = 10;
+const TYPING_DOTS_DURATION = 500;
+const API_BASE_URL = `http://${ipaddress}:8000`; // FastAPI server URL
 
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [typingAnimation] = useState(new Animated.Value(0));
+  const [productInfoMap, setProductInfoMap] = useState<{ [name: string]: Product }>({});
+  
+  const navigation = useNavigation();
   const flatListRef = useRef<FlatList>(null);
   const position = useRef(new Animated.ValueXY({ 
     x: width - CHAT_BUTTON_SIZE - EDGE_PADDING, 
@@ -67,6 +95,55 @@ const Chatbot: React.FC = () => {
       dimensionsListener.remove();
     };
   }, []);
+
+  // Typing animation
+  useEffect(() => {
+    const startTypingAnimation = () => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(typingAnimation, {
+            toValue: 1,
+            duration: TYPING_DOTS_DURATION,
+            useNativeDriver: true,
+          }),
+          Animated.timing(typingAnimation, {
+            toValue: 0,
+            duration: TYPING_DOTS_DURATION,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    };
+
+    if (messages.some(msg => msg.isTyping)) {
+      startTypingAnimation();
+    } else {
+      typingAnimation.setValue(0);
+    }
+  }, [messages, typingAnimation]);
+
+  // Fetch product info when products are detected
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.products && lastMessage.products.length > 0) {
+      lastMessage.products.forEach(product => {
+        if (!productInfoMap[product.name]) {
+          // Set initial loading state
+          setProductInfoMap(prev => ({
+            ...prev,
+            [product.name]: {
+              id: '',
+              name: product.name,
+              isLoading: true
+            }
+          }));
+          
+          // Search for product in database
+          searchProductByName(product.name);
+        }
+      });
+    }
+  }, [messages]);
 
   const loadButtonPosition = async () => {
     try {
@@ -96,6 +173,48 @@ const Chatbot: React.FC = () => {
       await AsyncStorage.setItem(BUTTON_POSITION_KEY, positionToSave);
     } catch (error) {
       console.log('Error saving button position:', error);
+    }
+  };
+
+  const searchProductByName = async (productName: string) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/products/search_products/${encodeURIComponent(productName)}`);
+      console.log(`API response for ${productName}:`, JSON.stringify(response.data, null, 2));
+      
+      if (response.data && response.data.products && response.data.products.length > 0) {
+        // Prioritize exact match, fallback to first result
+        const matchedProduct = response.data.products.find(
+          (p: Product) => p.name.toLowerCase() === productName.toLowerCase()
+        ) || response.data.products[0];
+        
+        setProductInfoMap(prev => ({
+          ...prev,
+          [productName]: {
+            ...matchedProduct,
+            isLoading: false
+          }
+        }));
+      } else {
+        // No match found
+        setProductInfoMap(prev => ({
+          ...prev,
+          [productName]: {
+            id: '',
+            name: productName,
+            isLoading: false
+          }
+        }));
+      }
+    } catch (error) {
+      console.log(`Error searching for product ${productName}:`, error);
+      setProductInfoMap(prev => ({
+        ...prev,
+        [productName]: {
+          id: '',
+          name: productName,
+          isLoading: false
+        }
+      }));
     }
   };
 
@@ -159,11 +278,22 @@ const Chatbot: React.FC = () => {
   // Add welcome message when chat is opened
   useEffect(() => {
     if (modalVisible && messages.length === 0) {
+      // Add typing indicator
       setMessages([{
-        text: 'Hi there! How can I help you today?',
+        text: '',
         sender: 'bot',
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        isTyping: true
       }]);
+
+      // After 2 seconds, replace typing indicator with welcome message
+      setTimeout(() => {
+        setMessages([{
+          text: 'Hi there! How can I help you today?',
+          sender: 'bot',
+          timestamp: Date.now()
+        }]);
+      }, 2000);
     }
   }, [modalVisible]);
 
@@ -188,6 +318,53 @@ const Chatbot: React.FC = () => {
     return `${hours}:${minutesStr} ${ampm}`;
   };
 
+  // Navigate to product details
+  const navigateToProductDetails = (product: Product) => {
+    setModalVisible(false);
+    // @ts-ignore: Navigation params not typed
+    navigation.navigate('ProductDetails', { product });
+  };
+
+  const extractProducts = (message: string): Product[] | undefined => {
+    console.log(`Extracting products from message: "${message}"`);
+    // Check if message likely contains product listings
+    if (
+      message.toLowerCase().includes("products") ||
+      message.toLowerCase().includes("we have") ||
+      message.toLowerCase().includes("you've got these") ||
+      message.toLowerCase().includes("here are") ||
+      message.includes(":") // Look for colon-separated lists
+    ) {
+      // Extract the product list after a colon or similar marker
+      const productListMatch = message.match(/: (.*?)(?:$|\.)/);
+      let potentialProducts: string[] = [];
+
+      if (productListMatch && productListMatch[1]) {
+        // Split by commas, clean up each product name
+        potentialProducts = productListMatch[1]
+          .split(',')
+          .map((p) => p.trim())
+          .filter((p) => p.length > 2 && p.match(/[A-Za-z]/)) // Ensure valid name
+          .map((name) => name.replace(/[^A-Za-z\s]/g, "")); // Clean special characters
+      } else {
+        // Fallback: Split by commas or "and" if no colon
+        potentialProducts = message
+          .split(/,|and/)
+          .map((p) => p.trim())
+          .filter((p) => p.length > 2 && p.match(/[A-Za-z]/))
+          .map((name) => name.replace(/[^A-Za-z\s]/g, ""));
+      }
+
+      if (potentialProducts.length > 0) {
+        const products = potentialProducts.map((name) => ({ name, id: "" }));
+        console.log(`Extracted products:`, products);
+        return products;
+      }
+    }
+    console.log('No products extracted');
+    return undefined;
+  };
+
   // Send message to Rasa server
   const sendMessage = async (message: string) => {
     if (!message.trim()) return;
@@ -197,11 +374,26 @@ const Chatbot: React.FC = () => {
       sender: 'user',
       timestamp: Date.now()
     };
+    
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
 
+    // Add typing indicator
+    setMessages((prev) => [
+      ...prev, 
+      {
+        text: '',
+        sender: 'bot',
+        timestamp: Date.now(),
+        isTyping: true
+      }
+    ]);
+
     try {
+      // Delay to show typing animation (2-3 seconds)
+      await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
+      
       const response = await axios.post(
         `http://${ipaddress}:5055/webhooks/rest/webhook`,
         {
@@ -210,33 +402,130 @@ const Chatbot: React.FC = () => {
         }
       );
 
+      console.log('Rasa response:', JSON.stringify(response.data, null, 2));
+
+      // Remove typing indicator
+      setMessages((prev) => prev.filter(msg => !msg.isTyping));
+
       const botResponses = response.data as { text: string }[];
       if (botResponses.length > 0) {
         botResponses.forEach((botMsg) => {
+          // Check if response contains products
+          const products = extractProducts(botMsg.text);
+          
           const botMessage: Message = {
             text: botMsg.text,
             sender: 'bot',
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            products
           };
           setMessages((prev) => [...prev, botMessage]);
         });
       } else {
         setMessages((prev) => [...prev, {
-          text: "Sorry, I didn't get that!",
+          text: "I didn't understand that. Could you please rephrase?",
           sender: 'bot',
           timestamp: Date.now()
         }]);
       }
     } catch (error) {
       console.log('Error communicating with Rasa:', error);
+      
+      // Remove typing indicator
+      setMessages((prev) => prev.filter(msg => !msg.isTyping));
+      
       setMessages((prev) => [...prev, {
-        text: 'Oops, something went wrong!',
+        text: 'Oops! It seems there\'s a server problem. Please try again later or contact support if the issue persists.',
         sender: 'bot',
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        isError: true
       }]);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Render typing animation
+  const renderTypingAnimation = () => {
+    return (
+      <View style={styles.typingContainer}>
+        <View style={styles.typingDot} />
+        <Animated.View 
+          style={[
+            styles.typingDot,
+            {
+              opacity: typingAnimation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: [0.3, 1, 0.3]
+              })
+            }
+          ]} 
+        />
+        <Animated.View 
+          style={[
+            styles.typingDot,
+            {
+              opacity: typingAnimation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: [0.3, 0.3, 1]
+              })
+            }
+          ]} 
+        />
+      </View>
+    );
+  };
+
+  const renderProductCards = (products: Product[]) => {
+    return (
+      <View style={styles.productCardsContainer}>
+        {products.map((product, index) => {
+          const productInfo = productInfoMap[product.name] || { id: '', isLoading: true };
+          const isLoading = productInfo.isLoading;
+          const hasValidId = productInfo.id !== '';
+
+          return (
+            <TouchableOpacity
+              key={`${product.name}-${index}`} // Ensure unique key
+              style={[styles.productCard, !hasValidId && !isLoading && styles.productCardDisabled]}
+              onPress={() => {
+                if (!isLoading && hasValidId) {
+                  navigateToProductDetails(productInfo);
+                }
+              }}
+              activeOpacity={0.7}
+              disabled={isLoading || !hasValidId}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color={COLORS.white} />
+              ) : (
+                <FastImage
+                  source={productInfo.image_urls?.[0] ? { uri: productInfo.image_urls[0] } : require('../assets/img/placeholder.png')}
+                  style={styles.productImage}
+                  resizeMode="cover"
+                />
+              )}
+              <Text style={styles.productName} numberOfLines={2}>
+                {product.name}
+              </Text>
+              {!hasValidId && !isLoading && (
+                <Text style={styles.productNotFoundText}>Not available</Text>
+              )}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    );
+  };  
+
+  // Render error message with improved styling
+  const renderErrorMessage = (message: string) => {
+    return (
+      <View style={styles.errorContainer}>
+        <FontAwesomeIcon icon={faInfoCircle} color={COLORS.red} size={FONT_SIZE.medium} />
+        <Text style={styles.errorText}>{message}</Text>
+      </View>
+    );
   };
 
   // Render individual message
@@ -244,6 +533,24 @@ const Chatbot: React.FC = () => {
     const isLastMessage = index === messages.length - 1;
     const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
     const showTime = !nextMessage || nextMessage.sender !== item.sender;
+
+    // Handle typing animation
+    if (item.isTyping) {
+      return (
+        <View style={styles.messageWrapper}>
+          <View style={styles.botIconContainer}>
+            <FastImage
+              source={require('../assets/img/elyubot_bg.png')}
+              resizeMode='cover'
+              style={styles.botIcon}
+            />
+          </View>
+          <View style={[styles.messageContainer, styles.botMessage, styles.typingMessageContainer]}>
+            {renderTypingAnimation()}
+          </View>
+        </View>
+      );
+    }
 
     return (
       <View style={styles.messageWrapper}>
@@ -261,14 +568,22 @@ const Chatbot: React.FC = () => {
             styles.messageContainer,
             item.sender === 'user' ? styles.userMessage : styles.botMessage,
             isLastMessage && styles.lastMessage,
+            item.isError && styles.errorMessageContainer
           ]}
         >
-          <Text style={[
-            styles.messageText,
-            item.sender === 'user' ? styles.userMessageText : styles.botMessageText
-          ]}>
-            {item.text}
-          </Text>
+          {item.isError ? (
+            renderErrorMessage(item.text)
+          ) : (
+            <Text style={[
+              styles.messageText,
+              item.sender === 'user' ? styles.userMessageText : styles.botMessageText
+            ]}>
+              {item.text}
+            </Text>
+          )}
+          
+          {item.products && item.products.length > 0 && renderProductCards(item.products)}
+          
           {showTime && (
             <Text style={styles.timestamp}>{formatTime(item.timestamp)}</Text>
           )}
@@ -328,20 +643,12 @@ const Chatbot: React.FC = () => {
                 <Text style={styles.modalTitle}>Produkto Bot</Text>
                 <Text style={styles.modalSubtitle}>Always here to help</Text>
               </View>
-              <View style={styles.headerButtons}>
-                <TouchableOpacity
-                  style={styles.minimizeButton}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <FontAwesomeIcon icon={faMinimize} color={COLORS.gray} size={FONT_SIZE.medium} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <FontAwesomeIcon icon={faClose} color={COLORS.gray} size={FONT_SIZE.large} />
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <FontAwesomeIcon icon={faClose} color={COLORS.gray} size={FONT_SIZE.large} />
+              </TouchableOpacity>
             </View>
 
             <View style={styles.scrollIndicator}>
@@ -353,7 +660,7 @@ const Chatbot: React.FC = () => {
                 ref={flatListRef}
                 data={messages}
                 renderItem={renderMessage}
-                keyExtractor={(item, index) => `${item.sender}-${index}`}
+                keyExtractor={(item, index) => `${item.sender}-${item.timestamp}-${index}`} // Ensure unique keys
                 style={styles.messageList}
                 contentContainerStyle={styles.messageListContent}
                 ListFooterComponent={<View style={styles.messageFooterSpace} />}
@@ -393,17 +700,15 @@ const Chatbot: React.FC = () => {
   );
 };
 
-// Updated Styles
+// Styles remain unchanged
 const styles = StyleSheet.create({
   floatingButtonContainer: {
     position: 'absolute',
     width: CHAT_BUTTON_SIZE,
     height: CHAT_BUTTON_SIZE,
     borderRadius: CHAT_BUTTON_RADIUS,
-
     justifyContent: 'center',
     alignItems: 'center',
-   
     zIndex: 1000,
   },
   buttonTouchArea: {
@@ -463,16 +768,8 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.regular,
     color: COLORS.gray,
   },
-  headerButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  minimizeButton: {
-    padding: FONT_SIZE.extraSmall,
-    marginRight: FONT_SIZE.small,
-  },
   closeButton: {
-    padding: FONT_SIZE.extraSmall,
+    padding: FONT_SIZE.medium,
   },
   scrollIndicator: {
     alignItems: 'center',
@@ -531,6 +828,23 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 4,
     marginRight: 'auto',
   },
+  typingMessageContainer: {
+    minHeight: 40,
+    justifyContent: 'center',
+    paddingHorizontal: FONT_SIZE.large,
+  },
+  typingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  typingDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.white,
+    marginHorizontal: 2,
+  },
   messageText: {
     fontSize: FONT_SIZE.medium,
     fontFamily: FONTS.regular,
@@ -587,6 +901,61 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.container,
     elevation: 0,
     shadowOpacity: 0,
+  },
+  productCardsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginTop: FONT_SIZE.medium,
+    marginBottom: FONT_SIZE.small,
+  },
+  productCard: {
+    width: '31%',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+    padding: 6,
+    marginBottom: 5,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  productCardDisabled: {
+    opacity: 0.6,
+    backgroundColor: COLORS.gray,
+  },
+  productImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 5,
+    marginBottom: 4,
+  },
+  productName: {
+    fontSize: FONT_SIZE.extraSmall,
+    fontFamily: FONTS.medium,
+    color: COLORS.white,
+    textAlign: 'center',
+  },
+  productNotFoundText: {
+    fontSize: FONT_SIZE.extraSmall,
+    fontFamily: FONTS.regular,
+    color: COLORS.red,
+    marginTop: 4,
+  },
+  errorMessageContainer: {
+    backgroundColor: 'rgba(255, 200, 200, 0.9)',
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.red,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.regular,
+    color: COLORS.darkGray,
+    marginLeft: 8,
+    flex: 1,
   },
 });
 

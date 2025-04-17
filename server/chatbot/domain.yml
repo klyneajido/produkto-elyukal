@@ -16,9 +16,11 @@ intents:
   - ask_recommendation
   - ask_location_near_me
   - ask_about_app
-  - ask_product_details
-  - follow_up_where_is_it
   - ask_app_creators
+  - ask_product_details
+  - ask_signature_product
+  - ask_stores_by_town
+  - follow_up_where_is_it
   - nlu_fallback
 
 entities:
@@ -64,6 +66,11 @@ slots:
     influence_conversation: false
     mappings:
       - type: custom
+  stores:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
   operating_hours:
     type: text
     influence_conversation: false
@@ -85,98 +92,24 @@ responses:
     - text: "Kumusta, friend! I’m ElyuBot, super excited to guide you through La Union’s coolest local finds!"
     - text: "Naimbag nga aldaw! ElyuBot here, ready to sprinkle some La Union magic on your day!"
     - text: "Hey hey! Welcome to La Union’s treasure hunt with your pal, ElyuBot!"
-    - text: "Yo, what’s good? I’m ElyuBot, your buddy for finding La Union’s best snacks and crafts!"
-    - text: "Hi there! ElyuBot’s got the scoop on La Union’s local gems—let’s dive in!"
-    - text: "Kumusta ka! I’m ElyuBot, buzzing to show you La Union’s awesome products!"
-    - text: "Hello, awesome explorer! ElyuBot here to make your La Union adventure super fun!"
-    - text: "Aloha from La Union! I’m ElyuBot, your cheerful guide to local goodies!"
   utter_goodbye:
     - text: "Agyamanak, pal! Can’t wait to explore more La Union goodies with you soon!"
     - text: "Sige, catch you later! Thanks for chilling with ElyuBot!"
     - text: "Bye for now, friend! Keep supporting La Union’s local vibes!"
-    - text: "Thanks for the fun chat! Come back for more La Union discoveries, okay?"
-    - text: "Sige ta, umay ka manen! Your ElyuBot buddy’s always here!"
-    - text: "Take care, superstar! La Union’s treasures are waiting for your next visit!"
-    - text: "Agyamanak tons! Tell your friends about La Union’s awesome finds!"
-    - text: "Later, fam! ElyuBot’s rooting for your next La Union adventure!"
-  utter_ask_town:
-    - text: "Ooh, which La Union town are we exploring today?"
-    - text: "Hey, tell me which town in La Union you’re curious about!"
-  utter_ask_category:
-    - text: "What’s your vibe? Snacks, handicrafts, or maybe some drinks?"
-    - text: "Got a craving? Tell me—snacks, crafts, or something else?"
-  utter_ask_store:
-    - text: "Which shop’s got your attention? Spill the beans!"
-    - text: "Ooh, what store are you thinking about? Let me know!"
-  utter_ask_product:
-    - text: "What cool product are you hunting for today?"
-    - text: "Got a specific product in mind? Tell your buddy ElyuBot!"
-  utter_product_list:
-    - text: "Check out these awesome finds from {town}: {products}"
-    - text: "Here’s what’s poppin’ in {town}: {products}"
-  utter_category_list:
-    - text: "Woohoo! Here are some {product_category} in La Union: {products}"
-    - text: "Feast your eyes on these La Union {product_category}: {products}"
-  utter_store_details:
-    - text: "All about {store_name}: {description}"
-    - text: "{store_name} scoop: {description}"
-  utter_store_location:
-    - text: "You’ll find {store_name} in {town}! Open {operating_hours}, call them at {phone}."
-    - text: "{store_name}’s chilling in {town}. Hours: {operating_hours}, Phone: {phone}."
-  utter_product_not_found:
-    - text: "Oops, couldn’t find {product_name} in La Union. Wanna try another product or maybe some snacks?"
-    - text: "Aww, no {product_name} here. How about checking out other cool stuff like crafts?"
-  utter_product_availability_yes:
-    - text: "Yay, we’ve got {product_name} in La Union! Wanna know where to grab it?"
-    - text: "Good news! {product_name} is here in La Union—want the deets on where?"
-  utter_product_availability_no:
-    - text: "Sorry, no {product_name} around. Wanna explore some local snacks or crafts instead?"
-    - text: "No {product_name} found, but I’ve got tons of other goodies like Talong Chips!"
-  utter_product_location:
-    - text: "Score! Find {product_name} at {store_name} in {town}. Need more info?"
-    - text: "You can snag {product_name} at {store_name} in {town}. Want the full scoop?"
   utter_fallback:
     - text: "Oops, my brain’s doing a little dance! 😅 Wanna talk about La Union’s yummy snacks or cool shops?"
-    - text: "Hehe, I got a bit lost there! Try asking about local products or stores in La Union!"
-    - text: "Ay, nalito ako dun! 😜 But I’m great at finding La Union treasures—what’s next?"
-    - text: "Hmmm, that’s a head-scratcher! How about we explore La Union’s crafts or food?"
-    - text: "Whoops, I tripped there! 😆 Ask me about La Union’s best finds instead!"
-    - text: "My bad, didn’t catch that! Wanna hunt for some La Union pasalubong?"
-    - text: "Ehe, I’m a bit confused! 😄 Let’s chat about La Union’s snacks or souvenirs!"
-    - text: "Oh no, I zoned out! 😅 Try asking about where to shop or what to buy in Elyu!"
-    - text: "Haha, you got me stumped! Let’s talk La Union goodies—whatcha looking for?"
-    - text: "Ayy, my bad! 😜 Wanna know about La Union’s best local spots or products?"
-  utter_products_by_location:
-    - text: "In {town}, you’ve got these cool finds: {products}"
-    - text: "Here’s what’s awesome in {town}: {products}"
-  utter_products_by_type:
-    - text: "Check out these {product_type} goodies in La Union: {products}"
-    - text: "La Union’s got these {product_type} treasures: {products}"
-  utter_store_by_product:
-    - text: "You can grab {product_name} at {store_name} in {town}. Happy shopping!"
-    - text: "Head to {store_name} in {town} for {product_name}. Enjoy!"
-  utter_recommendation:
-    - text: "Oh, you gotta try these La Union faves: {products}! Naguilian Basi and Talong Chips are total stars!"
-    - text: "My top picks for La Union? {products}! You’ll love Naguilian Basi and Talong Chips!"
-  utter_location_near_me:
-    - text: "Hey, what La Union town are you in? I’ll hook you up with nearby goodies!"
-    - text: "Tell me your town in La Union, and I’ll find some awesome products near you!"
   utter_about_app:
     - text: "Produkto Elyukal’s your bestie for finding La Union’s local treasures! Think snacks, crafts, and pasalubong galore—all from local sellers. Wanna know what’s hot or where to shop?"
-    - text: "Hey, I’m ElyuBot from Produkto Elyukal! I’m here to spill the tea on La Union’s yummiest snacks, coolest crafts, and must-have souvenirs. What’s calling your name?"
-    - text: "Produkto Elyukal’s all about La Union’s local vibe! From sweet treats to handmade crafts, I’ll help you find the perfect pasalubong. Ask me anything!"
-    - text: "Looking for something special? Produkto Elyukal’s got La Union’s best—snacks, souvenirs, and more, straight from local makers. What do you wanna explore?"
-    - text: "Produkto Elyukal’s like your personal La Union hype squad! I’ll show you the best local food, crafts, and gifts. Got a craving or need a rec?"
-  utter_product_details:
-    - text: "Here’s the scoop on {product_name}: {description}"
-    - text: "All about {product_name}: {description}"
-  utter_follow_up_where_is_it:
-    - text: "You can pick up that gem at {store_name} in {town}. Want more store deets?"
-    - text: "Find it at {store_name} in {town}! Need extra info on the shop?"
   utter_app_creators:
     - text: "Produkto Elyukal was crafted with love by BSCS students from Lorma Colleges—Andriq Klyne Ajido, Xavier Gael San Juan, and Maira Francine Rosales. Their mission? To make La Union the heart of agri-tourism in the North!"
-    - text: "Big shoutout to Andriq Klyne Ajido, Xavier Gael San Juan, and Maira Francine Rosales, BSCS students from Lorma Colleges, who built Produkto Elyukal to boost La Union as the North’s agri-tourism star!"
-    - text: "This app’s a passion project by Lorma Colleges BSCS students Andriq Klyne Ajido, Xavier Gael San Juan, and Maira Francine Rosales, dreaming big to make La Union the agri-tourism hub of the North!"
+  utter_no_product_found:
+    - text: "Oops, couldn’t find that product in La Union. Wanna try something like snacks or handicrafts?"
+  utter_no_store_found:
+    - text: "No stores found for that product. Try local markets or nearby towns like San Fernando!"
+  utter_ask_town:
+    - text: "Ooh, which La Union town are we exploring today?"
+  utter_ask_product:
+    - text: "What cool product are you hunting for today?"
 
 actions:
   - action_fetch_products_by_town
@@ -192,6 +125,8 @@ actions:
   - action_fetch_recommendation
   - action_fetch_location_near_me
   - action_fetch_product_details
+  - action_fetch_signature_product
+  - action_fetch_stores_by_town
 
 session_config:
   session_expiration_time: 60

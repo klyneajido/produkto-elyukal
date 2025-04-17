@@ -109,18 +109,8 @@
       "price_range": "₱1100.0-5000.0",
       "availability": "Year-round",
       "town": "Rosario",
-      "store_id": "6a738b8b-dccb-45e7-af00-338ca3506582",
+      "store_id": "S033",
       "store_name": "Lambert's Furniture Shop"
-    },
-    {
-      "name": "Wooden Trophy",
-      "category": "Handicrafts",
-      "description": "Wooden Trophy for Silaw -175th La Union Foundation Anniversary.\r\nMade from 3 different types of wood and can be customized to your needs. From Heisabelle Wood Works, Sudipen, La Union.",
-      "price_range": "₱800.0-3000.0",
-      "availability": "Year-round",
-      "town": "San Juan",
-      "store_id": "4a4a4511-88cc-4bad-ba3d-97c02baa9a38",
-      "store_name": "Heisabelle Wood Works"
     },
     {
       "name": "Rolled Edge Bamboo Platter",
@@ -129,8 +119,18 @@
       "price_range": "₱400.0-600.0",
       "availability": "Year-round",
       "town": "San Fernando",
-      "store_id": "040cab3b-e270-4181-832e-0bad3d0603ce",
+      "store_id": "S034",
       "store_name": "Kultur Siak - OTOP Hub La Union"
+    },
+    {
+      "name": "Wooden Trophy",
+      "category": "Handicrafts",
+      "description": "Wooden Trophy for Silaw -175th La Union Foundation Anniversary.\r\nMade from 3 different types of wood and can be customized to your needs. From Heisabelle Wood Works, Sudipen, La Union.",
+      "price_range": "₱800.0-3000.0",
+      "availability": "Year-round",
+      "town": "San Juan",
+      "store_id": "S035",
+      "store_name": "Heisabelle Wood Works"
     },
     {
       "name": "Bamboo Wicker Table Lamp",
@@ -139,7 +139,7 @@
       "price_range": "₱1600.0-1800.0",
       "availability": "Year-round",
       "town": "San Fernando",
-      "store_id": "040cab3b-e270-4181-832e-0bad3d0603ce",
+      "store_id": "S036",
       "store_name": "Kultur Siak - OTOP Hub La Union"
     },
     {
@@ -149,18 +149,8 @@
       "price_range": "₱150.0-1500.0",
       "availability": "Year-round",
       "town": "Tubao",
-      "store_id": "16d95e01-be99-4abb-9e21-93706a13b903",
+      "store_id": "S037",
       "store_name": "J & S Furniture and Handicrafts"
-    },
-    {
-      "name": "Fresh Grapes",
-      "category": "Agricultural Products",
-      "description": "Gapuz Grape Farm offers fresh, locally grown grapes from Bauang, La Union. Known for their sweet taste and vibrant color, these grapes are handpicked and perfect for both eating and making wine. Visitors can enjoy grape picking during the harvest season and experience the farm's rich tradition of grape cultivation.",
-      "price_range": "₱100.0-250.0",
-      "availability": "Year-round",
-      "town": "Bauang",
-      "store_id": "a226e8f5-3ff9-4930-8110-d5f7f2902634",
-      "store_name": "Gapuz Grape Farm"
     },
     {
       "name": "Handmade Clay Potter",
@@ -169,7 +159,7 @@
       "price_range": "₱300.0-1200.0",
       "availability": "Year-round",
       "town": "San Juan",
-      "store_id": "b9eadbc5-875a-4c01-b467-2c74b3f042f5",
+      "store_id": "S038",
       "store_name": "Dan's Pottery Shop"
     },
     {
@@ -179,7 +169,7 @@
       "price_range": "₱120.0-200.0",
       "availability": "Year-round",
       "town": "Naguilian",
-      "store_id": "24244a9f-b060-476e-ab87-3cc9a196fcd7",
+      "store_id": "S039",
       "store_name": "Naguilian Public Market"
     },
     {
@@ -189,7 +179,7 @@
       "price_range": "₱200.0-600.0",
       "availability": "Year-round",
       "town": "Rosario",
-      "store_id": "86e46ee3-c6f1-4c93-a443-f58871828071",
+      "store_id": "S040",
       "store_name": "OL's Labtang "
     },
     {
@@ -199,7 +189,7 @@
       "price_range": "₱350.0-500.0",
       "availability": "Year-round",
       "town": "Bauang",
-      "store_id": "854d44ff-8534-4f12-832c-419f3d57fe63",
+      "store_id": "S041",
       "store_name": "Lomboy Grape Farm"
     },
     {
@@ -209,18 +199,8 @@
       "price_range": "₱100.0-200.0",
       "availability": "Year-round",
       "town": "Bangar",
-      "store_id": "110789dd-1012-40d9-8d40-618945df6887",
+      "store_id": "S042",
       "store_name": "R.P. Lucina's Loom Weaving"
-    },
-    {
-      "name": "Dried Fish",
-      "category": "Food Products",
-      "description": "Santo Tomas La Union daing is a traditional Filipino delicacy made from sun-dried fish, typically sourced fresh from the coastal waters of Santo Tomas, La Union. Known for its savory, slightly salty flavor and crispy texture when fried, daing from this town is popular for its quality and taste. It is often enjoyed with rice and vinegar dipping sauce, making it a staple in many Filipino households. The town's dedication to preserving this culinary heritage makes its daing a sought-after product in local and regional markets",
-      "price_range": "₱50.0-150.0",
-      "availability": "Year-round",
-      "town": "Santo Tomas",
-      "store_id": "2b8ede81-615a-4197-ba23-eff9a88807a6",
-      "store_name": "Santo Tomas Daing Delicacy Store"
     },
     {
       "name": "Centerpiece Chair ",
@@ -229,7 +209,7 @@
       "price_range": "₱700.0-1200.0",
       "availability": "Year-round",
       "town": "Balaoan",
-      "store_id": "57661d9d-271b-4b2b-98f5-e47dc993ae95",
+      "store_id": "S043",
       "store_name": "Fe Handicraft Trading"
     },
     {
@@ -239,7 +219,7 @@
       "price_range": "₱400.0-700.0",
       "availability": "Year-round",
       "town": "Balaoan",
-      "store_id": "57661d9d-271b-4b2b-98f5-e47dc993ae95",
+      "store_id": "S044",
       "store_name": "Fe Handicraft Trading"
     },
     {
@@ -249,7 +229,7 @@
       "price_range": "₱200.0-250.0",
       "availability": "Year-round",
       "town": "Bauang",
-      "store_id": "221e6a8d-92c6-49cf-951d-60b9ba83019f",
+      "store_id": "S045",
       "store_name": "Orpilla Estigoy Grapes Farm"
     },
     {
@@ -259,7 +239,7 @@
       "price_range": "₱200.0-350.0",
       "availability": "Year-round",
       "town": "Bauang",
-      "store_id": "4d2d8c8e-dc9b-40b5-a51d-9b890a221d62",
+      "store_id": "S046",
       "store_name": "Calica Grape Farm"
     },
     {
@@ -269,7 +249,7 @@
       "price_range": "₱2000.0-4000.0",
       "availability": "Year-round",
       "town": "Agoo",
-      "store_id": "ceb598d2-2a7b-41d5-ab65-e5e824f5dd22",
+      "store_id": "S047",
       "store_name": "DJON Rustic Wood Furnitures"
     },
     {
@@ -279,7 +259,7 @@
       "price_range": "₱5000.0-7000.0",
       "availability": "Year-round",
       "town": "Agoo",
-      "store_id": "ceb598d2-2a7b-41d5-ab65-e5e824f5dd22",
+      "store_id": "S048",
       "store_name": "DJON Rustic Wood Furnitures"
     },
     {
@@ -289,7 +269,7 @@
       "price_range": "₱1500.0-2500.0",
       "availability": "Year-round",
       "town": "Caba",
-      "store_id": "4e27784e-d821-4f2c-9856-41ce4f277fa5",
+      "store_id": "S049",
       "store_name": "ES Bamboo Furniture Shop"
     },
     {
@@ -299,7 +279,7 @@
       "price_range": "₱1000.0-1200.0",
       "availability": "Year-round",
       "town": "Aringay",
-      "store_id": "6594be2c-fc7a-4b6d-a770-913f27def9b3",
+      "store_id": "S050",
       "store_name": "Sta. Cecilia Rice and Corn Mill"
     },
     {
@@ -309,7 +289,7 @@
       "price_range": "₱5000.0-8000.0",
       "availability": "Year-round",
       "town": "Rosario",
-      "store_id": "915773ef-ff81-4eb7-ad9d-e662cef8575c",
+      "store_id": "S051",
       "store_name": "Northern Home Furniture Center"
     },
     {
@@ -319,7 +299,7 @@
       "price_range": "₱60000.0-80000.0",
       "availability": "Year-round",
       "town": "Caba",
-      "store_id": "4e27784e-d821-4f2c-9856-41ce4f277fa5",
+      "store_id": "S052",
       "store_name": "ES Bamboo Furniture Shop"
     },
     {
@@ -329,7 +309,7 @@
       "price_range": "₱150.0-250.0",
       "availability": "Year-round",
       "town": "Agoo",
-      "store_id": "14f4b9a6-ce6d-4744-a503-7eee842e0c0f",
+      "store_id": "S053",
       "store_name": "Agoo Public Market (Hypermarket)"
     },
     {
@@ -339,7 +319,7 @@
       "price_range": "₱25000.0-30000.0",
       "availability": "Year-round",
       "town": "Pugo",
-      "store_id": "5002e680-305a-4b47-b55a-bb75d0310c1b",
+      "store_id": "S054",
       "store_name": "Bimbong Furnitures & Handicrafts "
     },
     {
@@ -349,7 +329,7 @@
       "price_range": "₱300.0-799.98",
       "availability": "Year-round",
       "town": "Luna",
-      "store_id": "570074dc-eee8-450d-b875-805f0e96f3c5",
+      "store_id": "S055",
       "store_name": "Bato De Luna Store & Souvenir Shop"
     },
     {
@@ -359,7 +339,7 @@
       "price_range": "₱250.0-300.0",
       "availability": "Year-round",
       "town": "Burgos",
-      "store_id": "8ddd51d7-0df5-4670-9d51-50fb9c8599bf",
+      "store_id": "S056",
       "store_name": "Burgos Public Market"
     },
     {
@@ -369,7 +349,7 @@
       "price_range": "₱50.0-100.0",
       "availability": "Year-round",
       "town": "Naguilian",
-      "store_id": "7b94deda-5336-4254-9246-eb460175d720",
+      "store_id": "S057",
       "store_name": "Naguilian Basi Processing Center"
     },
     {
@@ -379,7 +359,7 @@
       "price_range": "₱30000.0-40000.0",
       "availability": "Year-round",
       "town": "Caba",
-      "store_id": "852f20a3-4770-4895-abdb-8e16bdba5aec",
+      "store_id": "S058",
       "store_name": "Alhamdulillah Bamboo Craft Shop"
     },
     {
@@ -389,7 +369,7 @@
       "price_range": "₱300.0-400.0",
       "availability": "Year-round",
       "town": "Bauang",
-      "store_id": "8bc2366b-bbcd-45d8-8d12-e3afbc10e339",
+      "store_id": "S059",
       "store_name": "Manguerra Grapes Farm"
     },
     {
@@ -399,7 +379,7 @@
       "price_range": "₱5000.0-7999.99",
       "availability": "Year-round",
       "town": "Pugo",
-      "store_id": "961d0ff5-7fc8-4a50-8b9d-4d5afabba81c",
+      "store_id": "S060",
       "store_name": "Babban's Handicraft & Furniture"
     },
     {
@@ -409,7 +389,7 @@
       "price_range": "₱250.0-300.0",
       "availability": "Year-round",
       "town": "Bangar",
-      "store_id": "dada4cad-bf5b-4f7b-80bd-4bc80968d8f9",
+      "store_id": "S061",
       "store_name": "Nogueras Weaving"
     },
     {
@@ -419,7 +399,7 @@
       "price_range": "₱200.0-300.0",
       "availability": "Year-round",
       "town": "Bagulin",
-      "store_id": "45457ed4-e7ea-4b7b-bd57-9aebea55a832",
+      "store_id": "S062",
       "store_name": "Bagulin Public Market"
     },
     {
@@ -429,7 +409,7 @@
       "price_range": "₱200.0-300.0",
       "availability": "Year-round",
       "town": "Bagulin",
-      "store_id": "45457ed4-e7ea-4b7b-bd57-9aebea55a832",
+      "store_id": "S063",
       "store_name": "Bagulin Public Market"
     },
     {
@@ -439,7 +419,7 @@
       "price_range": "₱150.0-250.0",
       "availability": "Year-round",
       "town": "Bagulin",
-      "store_id": "45457ed4-e7ea-4b7b-bd57-9aebea55a832",
+      "store_id": "S064",
       "store_name": "Bagulin Public Market"
     },
     {
@@ -449,7 +429,7 @@
       "price_range": "₱120.0-200.0",
       "availability": "Year-round",
       "town": "Aringay",
-      "store_id": "d25e4a49-8117-43df-a94f-ae74bf1088a1",
+      "store_id": "S065",
       "store_name": "Aringay Veggies"
     },
     {
@@ -459,8 +439,28 @@
       "price_range": "₱100.0-200.0",
       "availability": "Year-round",
       "town": "Aringay",
-      "store_id": "d25e4a49-8117-43df-a94f-ae74bf1088a1",
+      "store_id": "S066",
       "store_name": "Aringay Veggies"
+    },
+    {
+      "name": "Dried Fish",
+      "category": "Food Products",
+      "description": "Santo Tomas La Union daing is a traditional Filipino delicacy made from sun-dried fish, typically sourced fresh from the coastal waters of Santo Tomas, La Union. Known for its savory, slightly salty flavor and crispy texture when fried, daing from this town is popular for its quality and taste. It is often enjoyed with rice and vinegar dipping sauce, making it a staple in many Filipino households. The town's dedication to preserving this culinary heritage makes its daing a sought-after product in local and regional markets",
+      "price_range": "₱50.0-150.0",
+      "availability": "Year-round",
+      "town": "Santo Tomas",
+      "store_id": "S067",
+      "store_name": "Santo Tomas Daing Delicacy Store"
+    },
+    {
+      "name": "Fresh Grapes",
+      "category": "Agricultural Products",
+      "description": "Gapuz Grape Farm offers fresh, locally grown grapes from Bauang, La Union. Known for their sweet taste and vibrant color, these grapes are handpicked and perfect for both eating and making wine. Visitors can enjoy grape picking during the harvest season and experience the farm's rich tradition of grape cultivation.",
+      "price_range": "₱100.0-250.0",
+      "availability": "Year-round",
+      "town": "Bauang",
+      "store_id": "S068",
+      "store_name": "Gapuz Grape Farm"
     }
   ],
   "stores": [
@@ -471,7 +471,8 @@
       "rating": 0,
       "type": "Farm & Vineyard",
       "operating_hours": "Mon-Sun 7AM-6PM",
-      "phone": "0977 457 8737"
+      "phone": "0977 457 8737",
+      "store_id": "S001"
     },
     {
       "name": "Heisabelle Wood Works",
@@ -480,7 +481,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Mon - Sun: 9AM - 6PM",
-      "phone": "+639273792929"
+      "phone": "+639273792929",
+      "store_id": "S002"
     },
     {
       "name": "Lambert's Furniture Shop",
@@ -489,7 +491,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Mon-Fri 7AM to 6PM",
-      "phone": "0905 235 6401"
+      "phone": "0905 235 6401",
+      "store_id": "S003"
     },
     {
       "name": "OL's Labtang ",
@@ -498,7 +501,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Always Open",
-      "phone": "0963 024 3528"
+      "phone": "0963 024 3528",
+      "store_id": "S004"
     },
     {
       "name": "Burgos Public Market",
@@ -507,7 +511,8 @@
       "rating": 0,
       "type": "Marketplace",
       "operating_hours": "Mon-Sun 6AM-5PM",
-      "phone": ""
+      "phone": "",
+      "store_id": "S005"
     },
     {
       "name": "Gapuz Grape Farm",
@@ -516,7 +521,8 @@
       "rating": 0,
       "type": "Farm & Vineyard",
       "operating_hours": "Mon-Sun 7AM-6PM",
-      "phone": "09175540966"
+      "phone": "09175540966",
+      "store_id": "S006"
     },
     {
       "name": "Dan's Pottery Shop",
@@ -525,7 +531,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "6AM-6PM",
-      "phone": "0912 462 9607"
+      "phone": "0912 462 9607",
+      "store_id": "S007"
     },
     {
       "name": "San Gabriel Market",
@@ -534,7 +541,8 @@
       "rating": 0,
       "type": "Marketplace",
       "operating_hours": "6AM - 6PM",
-      "phone": ""
+      "phone": "",
+      "store_id": "S008"
     },
     {
       "name": "Orpilla Estigoy Grapes Farm",
@@ -543,7 +551,8 @@
       "rating": 0,
       "type": "Farm & Vineyard",
       "operating_hours": "Mon-Sun 7AM-7PM",
-      "phone": "09219664895"
+      "phone": "09219664895",
+      "store_id": "S009"
     },
     {
       "name": "De Castro's Loom Weaving",
@@ -552,7 +561,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Mon-Sun 8AM-6PM",
-      "phone": ""
+      "phone": "",
+      "store_id": "S010"
     },
     {
       "name": "Calica Grape Farm",
@@ -561,7 +571,8 @@
       "rating": 0,
       "type": "Farm & Vineyard",
       "operating_hours": "Mon-Sun 7AM-5PM",
-      "phone": "09128746327"
+      "phone": "09128746327",
+      "store_id": "S011"
     },
     {
       "name": "Nogueras Weaving",
@@ -570,7 +581,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "",
-      "phone": ""
+      "phone": "",
+      "store_id": "S012"
     },
     {
       "name": "R.P. Lucina's Loom Weaving",
@@ -579,7 +591,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Mon-Sun 8AM-5PM",
-      "phone": "+63 9066577104"
+      "phone": "+63 9066577104",
+      "store_id": "S013"
     },
     {
       "name": "Naguilian Public Market",
@@ -588,7 +601,8 @@
       "rating": 0,
       "type": "Marketplace",
       "operating_hours": "Mon-Sun 6AM-6PM",
-      "phone": ""
+      "phone": "",
+      "store_id": "S014"
     },
     {
       "name": "Santo Tomas Daing Delicacy Store",
@@ -597,7 +611,8 @@
       "rating": 0,
       "type": "Food Stall",
       "operating_hours": "Always Open",
-      "phone": "0917 119 2524"
+      "phone": "0917 119 2524",
+      "store_id": "S015"
     },
     {
       "name": "Bimbong Furnitures & Handicrafts ",
@@ -606,7 +621,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Always Open",
-      "phone": "0912 001 6112"
+      "phone": "0912 001 6112",
+      "store_id": "S016"
     },
     {
       "name": "Bato De Luna Store & Souvenir Shop",
@@ -615,7 +631,8 @@
       "rating": 0,
       "type": "Souvenir Shop",
       "operating_hours": "Mon-Sun 7AM-6PM",
-      "phone": ""
+      "phone": "",
+      "store_id": "S017"
     },
     {
       "name": "Northern Home Furniture Center",
@@ -624,7 +641,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Mon-Sun 7:30AM-8:30PM",
-      "phone": ""
+      "phone": "",
+      "store_id": "S018"
     },
     {
       "name": "Babban's Handicraft & Furniture",
@@ -633,7 +651,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Mon-Sun 9AM-5PM",
-      "phone": ""
+      "phone": "",
+      "store_id": "S019"
     },
     {
       "name": "Kultur Siak - OTOP Hub La Union",
@@ -642,7 +661,8 @@
       "rating": 0,
       "type": "Souvenir Shop",
       "operating_hours": "Mon - Sun: 8:30AM - 9PM",
-      "phone": ""
+      "phone": "",
+      "store_id": "S020"
     },
     {
       "name": "J & S Furniture and Handicrafts",
@@ -651,7 +671,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "",
-      "phone": "09129635887"
+      "phone": "09129635887",
+      "store_id": "S021"
     },
     {
       "name": "Naguilian Basi Processing Center",
@@ -660,7 +681,8 @@
       "rating": 0,
       "type": "Agri-Tourism Center",
       "operating_hours": "",
-      "phone": ""
+      "phone": "",
+      "store_id": "S022"
     },
     {
       "name": "ES Bamboo Furniture Shop",
@@ -669,7 +691,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Mon-Sun 7AM-5PM",
-      "phone": "09705064002"
+      "phone": "09705064002",
+      "store_id": "S023"
     },
     {
       "name": "Agoo Public Market (Hypermarket)",
@@ -678,7 +701,8 @@
       "rating": 0,
       "type": "Marketplace",
       "operating_hours": "",
-      "phone": ""
+      "phone": "",
+      "store_id": "S024"
     },
     {
       "name": "La Union Pasalubong Center",
@@ -687,7 +711,8 @@
       "rating": 0,
       "type": "Souvenir Shop",
       "operating_hours": "Mon-Fri 8AM - 6PM",
-      "phone": "09666202617"
+      "phone": "09666202617",
+      "store_id": "S025"
     },
     {
       "name": "Bagulin Public Market",
@@ -696,7 +721,8 @@
       "rating": 0,
       "type": "Marketplace",
       "operating_hours": "",
-      "phone": ""
+      "phone": "",
+      "store_id": "S026"
     },
     {
       "name": "Fe Handicraft Trading",
@@ -705,7 +731,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Mon - Fri: 8AM - 4PM",
-      "phone": "09074793186"
+      "phone": "09074793186",
+      "store_id": "S027"
     },
     {
       "name": "Sta. Cecilia Rice and Corn Mill",
@@ -714,7 +741,8 @@
       "rating": 0,
       "type": "Agri-Tourism Center",
       "operating_hours": "7 days a week 6AM - 6PM",
-      "phone": "961 8 992 299"
+      "phone": "961 8 992 299",
+      "store_id": "S028"
     },
     {
       "name": "Aringay Veggies",
@@ -723,7 +751,8 @@
       "rating": 0,
       "type": "Food Stall",
       "operating_hours": "",
-      "phone": "0951 795 1179"
+      "phone": "0951 795 1179",
+      "store_id": "S029"
     },
     {
       "name": "Alhamdulillah Bamboo Craft Shop",
@@ -732,7 +761,8 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Mon-Sun 6AM-6PM",
-      "phone": "09282482226"
+      "phone": "09282482226",
+      "store_id": "S030"
     },
     {
       "name": "Lomboy Grape Farm",
@@ -741,7 +771,8 @@
       "rating": 0,
       "type": "Farm & Vineyard",
       "operating_hours": "Mon-Wed & Fri-Sun 7AM-6PM ",
-      "phone": "(072) 705 2105"
+      "phone": "(072) 705 2105",
+      "store_id": "S031"
     },
     {
       "name": "DJON Rustic Wood Furnitures",
@@ -750,7 +781,386 @@
       "rating": 0,
       "type": "Local Crafts Shop",
       "operating_hours": "Mon - Sat: 9AM - 5PM",
-      "phone": "09773802038"
+      "phone": "09773802038",
+      "store_id": "S032"
+    },
+    {
+      "store_id": "S033",
+      "name": "Local Shop for Wooden Rocking Chair",
+      "town": "Rosario",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S034",
+      "name": "Local Shop for Rolled Edge Bamboo Platter",
+      "town": "San Fernando",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S035",
+      "name": "Local Shop for Wooden Trophy",
+      "town": "San Juan",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S036",
+      "name": "Local Shop for Bamboo Wicker Table Lamp",
+      "town": "San Fernando",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S037",
+      "name": "Local Shop for Coconut Cups",
+      "town": "Tubao",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S038",
+      "name": "Local Shop for Handmade Clay Potter",
+      "town": "San Juan",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S039",
+      "name": "Local Shop for Naguilian Basi (Sugarcane Wine)",
+      "town": "Naguilian",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S040",
+      "name": "Local Shop for Labtang Basket",
+      "town": "Rosario",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S041",
+      "name": "Local Shop for Moreno Cafe Wine",
+      "town": "Bauang",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S042",
+      "name": "Local Shop for Inabel Towel",
+      "town": "Bangar",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S043",
+      "name": "Local Shop for Centerpiece Chair ",
+      "town": "Balaoan",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S044",
+      "name": "Local Shop for Woven Table Desk Lamp",
+      "town": "Balaoan",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S045",
+      "name": "Local Shop for Red Cardinal Grapes",
+      "town": "Bauang",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S046",
+      "name": "Local Shop for Red Cardinal Grapes",
+      "town": "Bauang",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S047",
+      "name": "Local Shop for Wooden Square Cabinet",
+      "town": "Agoo",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S048",
+      "name": "Local Shop for TV Console Cabinet",
+      "town": "Agoo",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S049",
+      "name": "Local Shop for Bamboo Sofa",
+      "town": "Caba",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S050",
+      "name": "Local Shop for Rice Mill",
+      "town": "Aringay",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S051",
+      "name": "Local Shop for Narra Chair",
+      "town": "Rosario",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S052",
+      "name": "Local Shop for Bamboo Bahay Kubo",
+      "town": "Caba",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S053",
+      "name": "Local Shop for Sweet and Spicy Bagoong Alamang",
+      "town": "Agoo",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S054",
+      "name": "Local Shop for Table Set (Acacia Wood)",
+      "town": "Pugo",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S055",
+      "name": "Local Shop for Pebble Pots",
+      "town": "Luna",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S056",
+      "name": "Local Shop for Colored Soft Broom",
+      "town": "Burgos",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S057",
+      "name": "Local Shop for Naguilian Basi (Sugarcane Wine)",
+      "town": "Naguilian",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S058",
+      "name": "Local Shop for Bamboo Kubo",
+      "town": "Caba",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S059",
+      "name": "Local Shop for Red Cardinal Grapes",
+      "town": "Bauang",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S060",
+      "name": "Local Shop for Table Set",
+      "town": "Pugo",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S061",
+      "name": "Local Shop for Inabel Towels",
+      "town": "Bangar",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S062",
+      "name": "Local Shop for Tiger Grass Soft Broom",
+      "town": "Bagulin",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S063",
+      "name": "Local Shop for Ube Wine",
+      "town": "Bagulin",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S064",
+      "name": "Local Shop for Cambalay Abel",
+      "town": "Bagulin",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S065",
+      "name": "Local Shop for Talong Chips",
+      "town": "Aringay",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S066",
+      "name": "Local Shop for Okra Chips",
+      "town": "Aringay",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S067",
+      "name": "Local Shop for Dried Fish",
+      "town": "Santo Tomas",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    },
+    {
+      "store_id": "S068",
+      "name": "Local Shop for Fresh Grapes",
+      "town": "Bauang",
+      "description": "Generic local shop",
+      "operating_hours": "Unknown",
+      "phone": "N/A"
+    }
+  ],
+  "signature_products": [
+    {
+      "town": "Agoo",
+      "product_name": "mushrooms"
+    },
+    {
+      "town": "Aringay",
+      "product_name": "milkfish"
+    },
+    {
+      "town": "Bacnotan",
+      "product_name": "honey"
+    },
+    {
+      "town": "Bagulin",
+      "product_name": "rambutan"
+    },
+    {
+      "town": "Balaoan",
+      "product_name": "sea urchins"
+    },
+    {
+      "town": "Bangar",
+      "product_name": "inabel towel"
+    },
+    {
+      "town": "Bauang",
+      "product_name": "grapes"
+    },
+    {
+      "town": "Burgos",
+      "product_name": "colored soft broom"
+    },
+    {
+      "town": "Caba",
+      "product_name": "bamboo crafts"
+    },
+    {
+      "town": "Luna",
+      "product_name": "stone crafts"
+    },
+    {
+      "town": "Naguilian",
+      "product_name": "basi"
+    },
+    {
+      "town": "Pugo",
+      "product_name": "wood furniture"
+    },
+    {
+      "town": "Rosario",
+      "product_name": "banana"
+    },
+    {
+      "town": "San Fernando",
+      "product_name": "colored soft broom"
+    },
+    {
+      "town": "San Fernando",
+      "product_name": "lemongrass and ginger tea"
+    },
+    {
+      "town": "San Fernando",
+      "product_name": "ube wine"
+    },
+    {
+      "town": "San Gabriel",
+      "product_name": "tiger grass broom"
+    },
+    {
+      "town": "San Juan",
+      "product_name": "damili"
+    },
+    {
+      "town": "Santol",
+      "product_name": "tobacco"
+    },
+    {
+      "town": "Santo Tomas",
+      "product_name": "dried fish"
+    },
+    {
+      "town": "Sudipen",
+      "product_name": "Labtang Basket"
+    },
+    {
+      "town": "Tubao",
+      "product_name": "chichacorn"
     }
   ]
 }

@@ -153,7 +153,7 @@ const SettingsScreen: React.FC = () => {
     // User profile section with animation
     const ProfileSection = () => {
         const userImage = user?.profile_image || require('../assets/img/default_avatar.png');
-        const userName = user?.name || (isGuestUser(user) ? 'Guest User' : 'User');
+        const userName = user?.first_name ? `${user.first_name} ${user.last_name}` : (isGuestUser(user) ? 'Guest User' : 'User');
         const userEmail = user?.email || (isGuestUser(user) ? '' : 'user@example.com');
 
         return (
@@ -184,7 +184,7 @@ const SettingsScreen: React.FC = () => {
 
                 <TouchableOpacity
                     style={styles.editProfileButton}
-                    onPress={() => navigation.navigate("EditProfile")}
+                   
                 >
                     <Text style={styles.editProfileText}>Edit</Text>
                 </TouchableOpacity>
@@ -216,28 +216,28 @@ const SettingsScreen: React.FC = () => {
                         icon={faUser}
                         title="Personal Information"
                         subtitle="Manage your personal details"
-                        onPress={() => navigation.navigate('AccountDetails')}
+                       
                     />
 
                     <SettingItem
                         icon={faEnvelope}
                         title="Communication Preferences"
                         subtitle="Manage email notifications and updates"
-                        onPress={() => navigation.navigate('EmailPreferences')}
+                    
                     />
 
                     <SettingItem
                         icon={faShield}
                         title="Privacy & Security"
                         subtitle="Manage data and account security"
-                        onPress={() => navigation.navigate('PrivacySecurity')}
+                    
                     />
 
                     <SettingItem
                         icon={faLock}
                         title="Password"
                         subtitle="Update your account password"
-                        onPress={() => navigation.navigate('ChangePassword')}
+                    
                         showDivider={false}
                     />
                 </View>
@@ -282,14 +282,13 @@ const SettingsScreen: React.FC = () => {
                         icon={faLanguage}
                         title="Language"
                         subtitle="English (United States)"
-                        onPress={() => navigation.navigate('LanguageSettings')}
+                        
                     />
 
                     <SettingItem
                         icon={faGlobe}
                         title="Region"
                         subtitle="La union"
-                        onPress={() => navigation.navigate('RegionSettings')}
                         showDivider={false}
                     />
                 </View>
@@ -302,7 +301,6 @@ const SettingsScreen: React.FC = () => {
                         icon={faInfoCircle}
                         title="About App"
                         subtitle="Version: Beta"
-                        onPress={() => navigation.navigate('AboutApp')}
                         showDivider={false}
                     />
                 </View>

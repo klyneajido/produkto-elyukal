@@ -32,11 +32,14 @@ nlu:
     - what’s for sale in [Naguilian]{"entity": "town"}?
     - ano meron sa [Aringay]{"entity": "town"}?
     - what products can I find in [San Juan]{"entity": "town"}?
-    - do you have something sweet from [Agoo]{"entity": "town"}?
+    - what is the common product of [Aringay]{"entity": "town"}?
     - what products are available in [Bauang]{"entity": "town"}?
-    - anong meron sa [Aringay]{"entity": "town"}?
-    - any must-try products from [San Juan]{"entity": "town"}?
-    - what can I buy in La Union?
+    - anong meron sa [San Juan]{"entity": "town"}?
+    - what’s in [Bacnotan]{"entity": "town"} for shopping?
+    - show me what's sold in [Balaoan]{"entity": "town"}
+    - list products in [Bangar]{"entity": "town"}
+    - what can I buy in [Ag]{"entity": "town"}?
+    - products in [City of San Fernando]{"entity": "town"}?
 
 - intent: ask_products_by_category
   examples: |
@@ -46,11 +49,8 @@ nlu:
     - list [agricultural products]{"entity": "product_category"}
     - where to find [textiles]{"entity": "product_category"}?
     - do you have [handicrafts]{"entity": "product_category"}?
-    - any [gadgets]{"entity": "product_category"}?
-    - something good from the [north]{"entity": "product_category"}
     - I’m looking for [local snacks]{"entity": "product_category"}
     - any [snacks]{"entity": "product_category"}?
-    - what products do you recommend?
     - something good to eat
     - is there anything sweet to buy?
     - what are the popular local crafts here?
@@ -62,7 +62,7 @@ nlu:
     - what's at [ES Bamboo Furniture Shop]{"entity": "store_name"}?
     - info on [Naguilian Basi Processing Center]{"entity": "store_name"}
     - tell me about [J & S Furniture and Handicrafts]{"entity": "store_name"}
-    - how do I contact [Balay ti Elyu]{"entity": "store_name"}?
+    - how do I contact [Balay ti Elyu]{"entity": "store_name"}
     - tell me about [Babban's Handicraft & Furniture]{"entity": "store_name"}
 
 - intent: ask_store_location
@@ -79,39 +79,73 @@ nlu:
 - intent: ask_product_by_name
   examples: |
     - do you have [Sweet and Spicy Bagoong Alamang]{"entity": "product_name"}?
-    - is [Naguilian Basi (Sugarcane Wine)]{"entity": "product_name"} available?
+    - is [Naguilian Basi]{"entity": "product_name"} available?
     - where can I find [Wooden Trophy]{"entity": "product_name"}?
     - any [Fresh Grapes]{"entity": "product_name"} in La Union?
     - tell me about [Talong Chips]{"entity": "product_name"}
     - is there [Red Cardinal Grapes]{"entity": "product_name"}?
     - do you sell [mangoes]{"entity": "product_name"} here?
+    - what about [honey]{"entity": "product_name"}?
+    - any [colored brooms]{"entity": "product_name"}?
+    - what towns sell [daing]{"entity": "product_name"}?
+    - which municipality has [bamboo]{"entity": "product_name"}?
+    - who sells [wood carvings]{"entity": "product_name"}?
+    - pasalubong shops for [pasalubong]{"entity": "product_name"}?
+    - is [tuyo]{"entity": "product_name"} available?
+    - do you have [labtang]{"entity": "product_name"}?
+    - any [kabute]{"entity": "product_name"}?
+    - what about [salabat]{"entity": "product_name"}?
 
 - intent: ask_product_availability
   examples: |
     - does La Union have [Fresh Grapes]{"entity": "product_name"}?
     - is there [Talong Chips]{"entity": "product_name"} in La Union?
-    - do you have [Naguilian Basi (Sugarcane Wine)]{"entity": "product_name"}?
+    - do you have [Naguilian Basi]{"entity": "product_name"}?
     - any [Sweet and Spicy Bagoong Alamang]{"entity": "product_name"} available?
     - is [Moreno Cafe Wine]{"entity": "product_name"} sold here?
     - may [calamansi jam]{"entity": "product_name"} ba dito?
     - do you have [local honey]{"entity": "product_name"}?
+    - is there [colored soft broom]{"entity": "product_name"} in La Union?
+    - do you have [maritangtang]{"entity": "product_name"}?
+    - is [palayok]{"entity": "product_name"} available?
 
 - intent: ask_product_location
   examples: |
     - where can I buy [Fresh Grapes]{"entity": "product_name"}?
+    - where can I find [honey]{"entity": "product_name"}?
+    - where can I find [colored brooms]{"entity": "product_name"}?
     - okay, where is [Talong Chips]{"entity": "product_name"} sold?
     - where to find [Red Cardinal Grapes]{"entity": "product_name"}?
     - which stores have [Okra Chips]{"entity": "product_name"}?
     - where is it?
     - where can I buy [mango chips]{"entity": "product_name"}?
+    - where’s [Naguilian Basi]{"entity": "product_name"} sold?
+    - what municipality has [inabel]{"entity": "product_name"}?
+    - which town sells [daing]{"entity": "product_name"}?
+    - where can I get [bamboo]{"entity": "product_name"} crafts?
+    - who sells [wood]{"entity": "product_name"} carvings?
+    - pasalubong shops for [pasalubong]{"entity": "product_name"}?
+    - where can I buy [baskets]{"entity": "product_name"}?
+    - where to find [Labtang Basket]{"entity": "product_name"}?
+    - where can I get [inabel]{"entity": "product_name"}?
+    - where can I buy [tuyo]{"entity": "product_name"}?
+    - where to find [ubas]{"entity": "product_name"}?
+    - where can I get [maritangtang]{"entity": "product_name"}?
+    - where to buy [bato]{"entity": "product_name"} crafts?
+    - where can I find [salabat]{"entity": "product_name"}?
+    - where to buy [cornick]{"entity": "product_name"}?
+    - where can I get [ube]{"entity": "product_name"}?
+    - where to find [kawayan]{"entity": "product_name"}?
+    - where can I buy [isda]{"entity": "product_name"}?
 
 - intent: ask_products_by_location
   examples: |
-    - what products are in [Bacnotan]{"entity": "town"}?
     - anong product meron sa [Luna]{"entity": "town"}?
     - I’m in [Agoo]{"entity": "town"}. What products are near me?
     - may bago bang produkto sa [Aringay]{"entity": "town"}?
     - what can I buy in [La Union]{"entity": "town"}?
+    - what’s available near [Bacnotan]{"entity": "town"}?
+    - products in [Nags]{"entity": "town"}?
 
 - intent: ask_products_by_type
   examples: |
@@ -121,20 +155,54 @@ nlu:
     - what [food]{"entity": "product_type"} is La Union known for?
     - any [sweet]{"entity": "product_type"} products?
     - do you have [handicrafts]{"entity": "product_type"} in [Bauang]{"entity": "town"}?
+    - where can I buy [inabel]{"entity": "product_type"}?
+    - what towns sell [honey]{"entity": "product_type"}?
+    - which municipality has [bamboo]{"entity": "product_type"}?
+    - who sells [wood]{"entity": "product_type"} carvings?
+    - pasalubong shops for [pasalubong]{"entity": "product_type"}?
+    - where can I find [baskets]{"entity": "product_type"}?
+    - any [tea]{"entity": "product_type"} products?
+    - where to buy [pottery]{"entity": "product_type"}?
 
 - intent: ask_store_by_product
   examples: |
-    - where can I buy [mango chips]{"entity": "product_name"}?
+    - where can I buy [inabel]{"entity": "product_name"}?
     - saan pwede bumili ng [handicrafts]{"entity": "product_category"} sa [Bauang]{"entity": "town"}?
     - where is the best place to get [pasalubong]{"entity": "product_type"}?
     - san gawa yung [sweet bagoong]{"entity": "product_name"} na nakita ko?
+    - what towns sell [daing]{"entity": "product_name"}?
+    - which place has [daing]{"entity": "product_name"}?
+    - where can I get [bamboo]{"entity": "product_name"} crafts?
+    - who sells [wood carvings]{"entity": "product_name"}?
+    - pasalubong shops for [pasalubong]{"entity": "product_name"}?
+    - where can I buy [baskets]{"entity": "product_name"}?
+    - where to find [Labtang Basket]{"entity": "product_name"}?
+    - which stores sell [inabel towels]{"entity": "product_name"}?
+    - where can I get [inabel fabrics]{"entity": "product_name"} in [Bangar]{"entity": "town"}?
+    - where to buy [dried fish]{"entity": "product_name"}?
+    - where can I buy [towel]{"entity": "product_name"}?
+    - where to find [tuyo]{"entity": "product_name"}?
+    - where can I get [labtang]{"entity": "product_name"}?
+    - where to buy [walis tambo]{"entity": "product_name"}?
+    - where can I find [ubas]{"entity": "product_name"}?
+    - where to buy [kabute]{"entity": "product_name"}?
+    - where can I get [maritangtang]{"entity": "product_name"}?
+    - where to find [bato]{"entity": "product_name"} crafts?
+    - where can I buy [palayok]{"entity": "product_name"}?
+    - where to buy [salabat]{"entity": "product_name"}?
+    - where can I find [cornick]{"entity": "product_name"}?
+    - where to buy [ube]{"entity": "product_name"}?
+    - where can I get [kawayan]{"entity": "product_name"}?
+    - where to find [upan]{"entity": "product_name"}?
+    - where can I buy [isda]{"entity": "product_name"}?
+    - where to buy [walis]{"entity": "product_name"}?
 
 - intent: ask_recommendation
   examples: |
     - what do you recommend from La Union?
     - what’s a must-try product in [San Juan]{"entity": "town"}?
     - anong magandang bilhin dito?
-    - what’s popular in La Union?
+    - recommend some products in La Union
 
 - intent: ask_location_near_me
   examples: |
@@ -159,12 +227,50 @@ nlu:
     - who created produkto elyukal?
     - who’s behind this bot?
     - who’s the creator of this app?
+    - who made you?
 
 - intent: ask_product_details
   examples: |
     - anong ingredients nitong [bagoong]{"entity": "product_name"}?
     - what’s in [Talong Chips]{"entity": "product_name"}?
     - tell me more about [Naguilian Basi]{"entity": "product_name"}
+    - what’s in [salabat]{"entity": "product_name"}?
+    - details about [labtang]{"entity": "product_name"}
+
+- intent: ask_signature_product
+  examples: |
+    - what is [Agoo]{"entity": "town"} famous for?
+    - what’s the signature product of [Bauang]{"entity": "town"}?
+    - anong sikat na produkto sa [Naguilian]{"entity": "town"}?
+    - what product is [San Fernando]{"entity": "town"} known for?
+    - what’s special in [Bagulin]{"entity": "town"}?
+    - where is the signature product of [Agoo]{"entity": "town"}?
+    - what’s [Aringay]{"entity": "town"} known for?
+    - what are the famous products in [San Juan]{"entity": "town"}?
+    - what is the common product in [Balaoan]{"entity": "town"}?
+    - famous items from [Bangar]{"entity": "town"}?
+    - what do people usually buy in [Agoo]{"entity": "town"}?
+    - what's popular in [Aringay]{"entity": "town"}?
+    - what’s [Balaoan]{"entity": "town"} famous for?
+    - what is [Ag]{"entity": "town"} known for?
+    - what’s famous in [Nags]{"entity": "town"}?
+    - what’s [Santo]{"entity": "town"} famous for?
+
+- intent: ask_stores_by_town
+  examples: |
+    - what stores are in [San Juan]{"entity": "town"}?
+    - anong mga tindahan sa [Rosario]{"entity": "town"}?
+    - what shops can I find in [Bauang]{"entity": "town"}?
+    - saan makakabili sa [Agoo]{"entity": "town"}?
+    - list stores in [Naguilian]{"entity": "town"}
+    - where can I shop in [San Fernando]{"entity": "town"}?
+    - what are the stores in [Bacnotan]{"entity": "town"}?
+    - where can I find shops in [Sudipen]{"entity": "town"}?
+    - shops located in [Naguilian]{"entity": "town"}?
+    - stores in [San Fernando]{"entity": "town"}?
+    - stores in [Bangar]{"entity": "town"}?
+    - stores in [Ag]{"entity": "town"}?
+    - shops in [Santo]{"entity": "town"}?
 
 - intent: follow_up_where_is_it
   examples: |
@@ -178,12 +284,16 @@ nlu:
     - ha
     - ???
     - baliw kaba
-    - fuck you
     - huh
     - what
     - random stuff
     - asdfgh
     - meron bang online order or pickup?
+    - wtf
+    - are you single?
+    - tell me a joke
+    - give me a funny story
+    - say something funny
 
 - synonym: food products
   examples: |
@@ -198,6 +308,8 @@ nlu:
     - crafts
     - local crafts
     - souvenirs
+    - wood carvings
+    - bamboo crafts
 
 - synonym: sweet
   examples: |
@@ -211,6 +323,193 @@ nlu:
     - piquant
     - maanghang
     - nagasang
+
+- synonym: inabel towel
+  examples: |
+    - inabel
+    - towel
+    - handloom
+    - weaving
+    - abel
+
+- synonym: dried fish
+  examples: |
+    - daing
+    - dried fish
+    - tuyo
+
+- synonym: Labtang Basket
+  examples: |
+    - baskets
+    - basket
+    - basket weaving
+    - labtang
+
+- synonym: colored soft broom
+  examples: |
+    - colored brooms
+    - colored broom
+    - broom
+    - soft broom
+    - walis tambo
+    - buyboy
+    - walis
+
+- synonym: honey
+  examples: |
+    - honey
+    - pulot
+
+- synonym: basi
+  examples: |
+    - basi
+    - sugarcane wine
+    - alak na tubo
+    - innumin
+
+- synonym: grapes
+  examples: |
+    - grapes
+    - ubas
+    - grape wine
+    - alak na ubas
+
+- synonym: mushrooms
+  examples: |
+    - mushrooms
+    - kabute
+
+- synonym: sea urchins
+  examples: |
+    - sea urchin
+    - sea urchins
+    - maritangtang
+    - tayom
+
+- synonym: pebble crafts
+  examples: |
+    - pebbles
+    - pebble crafts
+    - bato
+
+- synonym: damili
+  examples: |
+    - pottery
+    - clay pot
+    - palayok
+    - damili
+
+- synonym: lemongrass and ginger tea
+  examples: |
+    - tea
+    - lemongrass tea
+    - ginger tea
+    - salabat
+
+- synonym: chichacorn
+  examples: |
+    - chichacorn
+    - cornick
+    - mais
+
+- synonym: ube wine
+  examples: |
+    - ube wine
+    - ube
+    - purple yam
+    - halayang ube
+
+- synonym: bamboo crafts
+  examples: |
+    - bamboo
+    - bamboo crafts
+    - kawayan
+
+- synonym: wood furniture
+  examples: |
+    - furniture
+    - wood
+    - kagamitan sa bahay
+    - upan
+
+- synonym: milkfish
+  examples: |
+    - bangus
+    - milkfish
+    - isda
+
+- synonym: Agoo
+  examples: |
+    - Ag
+
+- synonym: San Fernando
+  examples: |
+    - City of San Fernando
+    - Fernando
+    - SFC
+
+- synonym: Naguilian
+  examples: |
+    - Nags
+
+- synonym: Santo Tomas
+  examples: |
+    - Santo
+    - Tomas
+    - ST
+
+- synonym: Sudipen
+  examples: |
+    - Sud
+
+- synonym: Rosario
+  examples: |
+    - Ros
+
+- synonym: Bauang
+  examples: |
+    - Bau
+
+- synonym: Aringay
+  examples: |
+    - Aring
+
+- synonym: Bacnotan
+  examples: |
+    - Bac
+
+- synonym: Balaoan
+  examples: |
+    - Bal
+
+- synonym: Bangar
+  examples: |
+    - Bang
+
+- synonym: Caba
+  examples: |
+    - Cab
+
+- synonym: Luna
+  examples: |
+    - Lun
+
+- synonym: Pugo
+  examples: |
+    - Pug
+
+- synonym: San Juan
+  examples: |
+    - Sanj
+    - SJ
+
+- synonym: Santol
+  examples: |
+    - Sant
+
+- synonym: Tubao
+  examples: |
+    - Tub
 
 - lookup: town
   examples: |
@@ -235,95 +534,16 @@ nlu:
     - Sudipen
     - Tubao
     - La Union
-
-- lookup: product_category
-  examples: |
-    - Handicrafts
-    - Agricultural Products
-    - Food Products
-    - Beverages
-    - Textiles
-    - Clothing
-
-- lookup: product_type
-  examples: |
-    - spicy
-    - sweet
-    - snacks
-    - chocolate
-    - food
-    - handicrafts
-    - souvenirs
-    - pasalubong
-    - local snacks
-
-- lookup: store_name
-  examples: |
-    - Manguerra Grapes Farm
-    - Heisabelle Wood Works
-    - Lambert's Furniture Shop
-    - OL's Labtang
-    - Burgos Public Market
-    - Gapuz Grape Farm
-    - Dan's Pottery Shop
-    - San Gabriel Market
-    - Orpilla Estigoy Grapes Farm
-    - De Castro's Loom Weaving
-    - Calica Grape Farm
-    - Nogueras Weaving
-    - R.P. Lucina's Loom Weaving
-    - Naguilian Public Market
-    - Santo Tomas Daing Delicacy Store
-    - Bimbong Furnitures & Handicrafts
-    - Bato De Luna Store & Souvenir Shop
-    - Northern Home Furniture Center
-    - Babban's Handicraft & Furniture
-    - Kultur Siak - OTOP Hub La Union
-    - J & S Furniture and Handicrafts
-    - Naguilian Basi Processing Center
-    - ES Bamboo Furniture Shop
-    - Agoo Public Market
-    - La Union Pasalubong Center
-    - Bagulin Public Market
-    - Fe Handicraft Trading
-    - Sta. Cecilia Rice and Corn Mill
-    - Aringay Veggies
-    - Alhamdulillah Bamboo Craft Shop
-    - Lomboy Grape Farm
-    - DJON Rustic Wood Furnitures
-
-- lookup: product_name
-  examples: |
-    - Wooden Rocking Chair
-    - Wooden Trophy
-    - Rolled Edge Bamboo Platter
-    - Bamboo Wicker Table Lamp
-    - Coconut Cups
-    - Fresh Grapes
-    - Handmade Clay Potter
-    - Naguilian Basi (Sugarcane Wine)
-    - Labtang Basket
-    - Moreno Cafe Wine
-    - Inabel Towel
-    - Dried Fish
-    - Centerpiece Chair
-    - Woven Table Desk Lamp
-    - Red Cardinal Grapes
-    - Wooden Square Cabinet
-    - TV Console Cabinet
-    - Bamboo Sofa
-    - Rice Mill
-    - Narra Chair
-    - Bamboo Bahay Kubo
-    - Sweet and Spicy Bagoong Alamang
-    - Table Set (Acacia Wood)
-    - Pebble Pots
-    - Colored Soft Broom
-    - Bamboo Kubo
-    - Inabel Towels
-    - Tiger Grass Soft Broom
-    - Ube Wine
-    - Cambalay Abel
-    - Talong Chips
-    - Okra Chips
-    - Table Set
+    - Ag
+    - City of San Fernando
+    - Fernando
+    - Nags
+    - Santo
+    - Tomas
+    - Sud
+    - Ros
+    - Bau
+    - Aring
+    - Bac
+    - Bal
+   
