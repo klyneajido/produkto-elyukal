@@ -23,6 +23,10 @@ import { BASE_URL } from '../config/config.ts';
 import LinearGradient from 'react-native-linear-gradient';
 import Footer from '../components/Footer.tsx';
 import FloatingARElement from '../components/Floatingelements.tsx';
+import { ActivityIndicator } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import SpinningCubeLoader from '../components/SpinningCubeLoader';
 
 const { width, height } = Dimensions.get('window');
 type FloatingElement = {
@@ -40,7 +44,9 @@ const LoginScreen: React.FC = () => {
     const [password, setPassword] = useState('123456');
     const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
     const [containerSize, setContainerSize] = useState({ width: width, height: 200 });
-    const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([])
+    const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [loginTimeout, setLoginTimeout] = useState<NodeJS.Timeout | null>(null);
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -124,15 +130,35 @@ const LoginScreen: React.FC = () => {
             return;
         }
 
-        const token = await loginUser(email, password);
-        if (token) {
-            const profile = await getUserProfile();
-            if (profile) {
-                setUser(profile);
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Tabs' }],
-                });
+        setIsLoading(true);
+        
+        // Set a timeout for 15 seconds
+        const timeout = setTimeout(() => {
+            setIsLoading(false);
+            setErrors(prev => ({
+                ...prev,
+                general: 'Login is taking longer than expected. Please check your connection and try again.'
+            }));
+        }, 15000);
+        
+        setLoginTimeout(timeout);
+
+        try {
+            const token = await loginUser(email, password);
+            if (token) {
+                const profile = await getUserProfile();
+                if (profile) {
+                    setUser(profile);
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Tabs' }],
+                    });
+                }
+            }
+        } finally {
+            setIsLoading(false);
+            if (loginTimeout) {
+                clearTimeout(loginTimeout);
             }
         }
     };
@@ -176,12 +202,41 @@ const LoginScreen: React.FC = () => {
         }
     }, [containerSize]);
 
+    const renderError = () => {
+        if (!errorMessage) return null;
+
+        return (
+            <View style={styles.modernErrorContainer}>
+                <View style={styles.modernErrorContent}>
+                    <FontAwesomeIcon 
+                        icon={faExclamationTriangle} 
+                        size={20} 
+                        color="#fff" 
+                        style={styles.errorIcon}
+                    />
+                    <Text style={styles.modernErrorText}>{errorMessage}</Text>
+                </View>
+            </View>
+        );
+    };
+
     return (
         <ScrollView style={styles.container}>
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.container}
             >
+                {/* Add the error display right after KeyboardAvoidingView opening */}
+                {renderError()}
+                
+                {/* Add loading overlay */}
+                {isLoading && (
+                    <View style={styles.loadingOverlay}>
+                        <SpinningCubeLoader size={25} />
+                    
+                    </View>
+                )}
+
                 <View style={styles.logoContainer}>
                     <LinearGradient
                         colors={['#6B48FF', '#8E2DE2']}
@@ -241,8 +296,17 @@ const LoginScreen: React.FC = () => {
                         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                        <Text style={styles.loginButtonText}>Login</Text>
+                    <TouchableOpacity 
+                        style={[
+                            styles.loginButton,
+                            isLoading && styles.loginButtonDisabled
+                        ]} 
+                        onPress={handleLogin}
+                        disabled={isLoading}
+                    >
+                        <Text style={styles.loginButtonText}>
+                            {isLoading ? 'Signing in...' : 'Login'}
+                        </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.continueGuestButton} onPress={handleGuest}>

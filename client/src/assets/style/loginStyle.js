@@ -187,6 +187,58 @@ const loginSignupStyles = StyleSheet.create({
   footerContainer: {
     marginTop: 100,
   },
+  modernErrorContainer: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    right: 20,
+    zIndex: 999,
+    backgroundColor: '#ff4444',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modernErrorContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+  },
+  modernErrorText: {
+    color: '#fff',
+    fontFamily: FONTS.medium,
+    fontSize: FONT_SIZE.medium,
+    marginLeft: 10,
+    flex: 1,
+  },
+  errorIcon: {
+    marginRight: 8,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  loadingText: {
+    marginTop: 20,
+    color: COLORS.primary,
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.medium,
+    letterSpacing: 0.5,
+  },
+  loginButtonDisabled: {
+    opacity: 0.7,
+  },
 });
 
 export default loginSignupStyles;
