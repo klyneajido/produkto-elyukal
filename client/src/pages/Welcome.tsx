@@ -98,14 +98,14 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 30,
     },
     logo: {
-        width: 70,
-        height: 70,
+        width: 80,
+        height: 80,
         borderRadius: 35,
     },
     appTitle: {
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     subtitle: {
         fontFamily: FONTS.light,
         fontSize: FONT_SIZE.medium+1,
-        color: 'rgba(255, 255, 255, 0.9)',
+        color: 'rgba(255, 255, 255, 0.8)',
         letterSpacing: 0.5,
     },
     loaderContainer: {
