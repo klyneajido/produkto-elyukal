@@ -16,7 +16,7 @@ import { ActivityIndicator, View } from 'react-native';
 import ReviewScreen from './src/pages/Reviews';
 import MunicipalityDetail from './src/pages/MunicipalityDetail';
 import PriceComparison from './src/pages/PriceComparison';
-import EditProfileScreen from './src/pages/EditProfile';
+
 // Import the new settings screens
 import PersonalInformation from './src/pages/settings/PersonalInformation';
 import PasswordSettings from './src/pages/settings/PasswordSettings';
@@ -55,10 +55,9 @@ const AppNavigator = () => {
       <Stack.Screen name="Tabs" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ headerShown: false }} />
       <Stack.Screen name="Reviews" component={ReviewScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="StoreDetails" component={StoreDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="StoreDetails" component={StoreDetails as React.ComponentType<any>} options={{ headerShown: false }} />
       <Stack.Screen name="MunicipalityDetail" component={MunicipalityDetail} options={{ headerShown: false }} />
       <Stack.Screen name="PriceComparison" component={PriceComparison} options={{ headerShown: false }} />
-      <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ headerShown: false }} />
 
       <Stack.Screen 
         name="PersonalInformation" 

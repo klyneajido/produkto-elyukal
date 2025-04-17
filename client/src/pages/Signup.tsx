@@ -14,7 +14,7 @@ import {
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import axios from "axios";
-import styles from "../assets/style/signupStyle";
+import styles from '../assets/style/signupStyle.js';
 import { COLORS } from "../assets/constants/constant";
 import InputText from "../components/TextInput";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -23,7 +23,7 @@ import { BASE_URL } from "../config/config";
 import LinearGradient from "react-native-linear-gradient";
 import Footer from "../components/Footer";
 import FloatingARElement from "../components/Floatingelements";
-
+import SpinningCubeLoader from "../components/SpinningCubeLoader";
 
 const { width, height } = Dimensions.get('window');
 
@@ -186,6 +186,11 @@ const SignupScreen: React.FC = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
+        {isLoading && (
+          <View style={styles.loadingOverlay}>
+            <SpinningCubeLoader size={25} color={COLORS.primary} />
+          </View>
+        )}
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.logoContainer}>
             <LinearGradient

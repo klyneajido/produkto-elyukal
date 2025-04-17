@@ -1,5 +1,7 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { COLORS, FONT_SIZE, FONTS } from "../constants/constant";
+
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -261,74 +263,84 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.regular,
     color: COLORS.white,
   },
-  modalOverlay: {
+  modalBackground: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backdropFilter: 'blur(5px)',
   },
-  modalContent: {
+  modalContainer: {
+    width: width * 0.85,
     backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 15,
-    width: "85%",
-    alignItems: "center",
-    shadowColor: COLORS.black,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 16,
+  },
+  modalIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 99, 71, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
   modalTitle: {
-    fontSize: 18,
-    fontFamily: "OpenSans-Bold",
-    color: "#333",
-    marginBottom: 12,
-    textAlign: "center",
+    fontSize: 20,
+    fontFamily: FONTS.bold,
+    color: COLORS.black,
   },
-  modalText: {
-    fontSize: 14,
+  modalDescription: {
+    fontSize: 15,
     fontFamily: FONTS.regular,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 20,
-    lineHeight: 20,
+    color: COLORS.gray,
+    paddingHorizontal: 24,
+    marginBottom: 24,
+    lineHeight: 22,
   },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    gap: 8,
+  modalActions: {
+    flexDirection: 'row',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0, 0, 0, 0.06)',
+    gap: 12,
   },
-  modalButton: {
+  cancelButton: {
     flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: COLORS.black,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
   },
-  modalButtonCancel: {
-    backgroundColor: "red",
-    opacity: 0.8,
+  cancelButtonText: {
+    fontSize: 15,
+    fontFamily: FONTS.medium,
+    color: COLORS.black,
   },
-  modalButtonAllow: {
-    backgroundColor: COLORS.secondary,
+  logoutButton: {
+    flex: 1,
+    flexDirection: 'row',
+    paddingVertical: 12,
+    backgroundColor: COLORS.alert,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
   },
-  modalButtonText: {
+  logoutButtonIcon: {
+    marginRight: 8,
+  },
+  logoutButtonText: {
+    fontSize: 15,
+    fontFamily: FONTS.medium,
     color: COLORS.white,
-    fontSize: 16,
-    fontFamily: "OpenSans-Bold",
   },
   routeInfoContainer: {
     flexDirection: "row",
@@ -573,6 +585,106 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
     fontWeight: '500',
+  },
+  // Filter Modal Styles
+  filterModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  filterModalContent: {
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 16,
+    maxHeight: '80%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  filterModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  filterModalTitle: {
+    fontSize: FONT_SIZE.large,
+    fontFamily: FONTS.bold,
+    color: COLORS.black,
+  },
+  filterModalCloseButton: {
+    padding: 8,
+  },
+  filterModalBody: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  filterTypeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  filterTypeButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  filterTypeButtonSelected: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  filterTypeText: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.medium,
+    color: COLORS.gray,
+  },
+  filterTypeTextSelected: {
+    color: COLORS.white,
+  },
+  filterModalFooter: {
+    flexDirection: 'row',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+    gap: 12,
+  },
+  filterResetButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+  },
+  filterApplyButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: COLORS.primary,
+  },
+  filterResetButtonText: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.medium,
+    color: COLORS.gray,
+  },
+  filterApplyButtonText: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.medium,
+    color: COLORS.white,
   },
 });
 

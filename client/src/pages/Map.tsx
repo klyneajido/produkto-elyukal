@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faMap, faSatelliteDish, faDirections, faClock, faRoad, faLocationDot, faSearch, faTimes, faFilter } from '@fortawesome/free-solid-svg-icons';
+import { faMap, faSatelliteDish, faDirections, faClock, faRoad, faLocationDot, faSearch, faTimes, faFilter, faCog } from '@fortawesome/free-solid-svg-icons';
 import styles from '../assets/style/mapStyle';
 import MapboxDirections from '@mapbox/mapbox-sdk/services/directions';
 import { BASE_URL } from '../config/config';
@@ -26,6 +26,7 @@ import axios from 'axios';
 import { Store, RootStackParamList, RouteInfo } from '../../types/types';
 import IntentLauncher from 'react-native-intent-launcher';
 import { COLORS } from '../assets/constants/constant.ts';
+import SpinningCubeLoader from '../components/SpinningCubeLoader';
 
 const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN || '';
 
@@ -183,24 +184,7 @@ const MapView = () => {
             return true;
         }
         
-        Alert.alert(
-            'Location Services Disabled',
-            'Please enable location services to use navigation features.',
-            [
-                {
-                    text: 'Cancel',
-                    style: 'cancel'
-                },
-                {
-                    text: 'Open Settings',
-                    onPress: () => {
-                        IntentLauncher.startActivity({
-                            action: 'android.settings.LOCATION_SOURCE_SETTINGS'
-                        });
-                    }
-                }
-            ]
-        );
+        setShowLocationError(true);
         return false;
     };
 
@@ -444,34 +428,53 @@ const MapView = () => {
         if (!showLocationError) return null;
 
         return (
-            <View style={styles.locationErrorModal}>
-                <View style={styles.locationErrorContent}>
-                    <TouchableOpacity
-                        style={styles.locationErrorCloseButton}
-                        onPress={() => setShowLocationError(false)}
-                    >
-                        <Text style={styles.locationErrorCloseText}>×</Text>
-                    </TouchableOpacity>
-                    <View style={styles.locationErrorIcon}>
-                        <FontAwesomeIcon icon={faLocationDot} size={28} color="#FFF" />
+            <Modal
+                transparent={true}
+                visible={showLocationError}
+                animationType="fade"
+                statusBarTranslucent
+            >
+                <View style={styles.modalBackground}>
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalHeader}>
+                            <View style={styles.modalIconContainer}>
+                                <FontAwesomeIcon icon={faLocationDot} size={22} color={COLORS.alert} />
+                            </View>
+                            <Text style={styles.modalTitle}>Location Services Disabled</Text>
+                        </View>
+                        
+                        <Text style={styles.modalDescription}>
+                            Please enable location services in your device settings to use navigation features and see your current location on the map.
+                        </Text>
+
+                        <View style={styles.modalActions}>
+                            <TouchableOpacity
+                                style={styles.cancelButton}
+                                onPress={() => setShowLocationError(false)}
+                            >
+                                <Text style={styles.cancelButtonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.logoutButton}
+                                onPress={() => {
+                                    IntentLauncher.startActivity({
+                                        action: 'android.settings.LOCATION_SOURCE_SETTINGS'
+                                    });
+                                    setShowLocationError(false);
+                                }}
+                            >
+                                <FontAwesomeIcon 
+                                    icon={faCog}
+                                    size={16}
+                                    color={COLORS.white}
+                                    style={styles.logoutButtonIcon}
+                                />
+                                <Text style={styles.logoutButtonText}>Settings</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    <Text style={styles.locationErrorTitle}>Location Services Disabled</Text>
-                    <Text style={styles.locationErrorMessage}>
-                        Please enable location services in your device settings to use navigation features and see your current location on the map.
-                    </Text>
-                    <TouchableOpacity
-                        style={styles.locationErrorButton}
-                        onPress={() => {
-                            IntentLauncher.startActivity({
-                                action: 'android.settings.LOCATION_SOURCE_SETTINGS'
-                            });
-                            setShowLocationError(false);
-                        }}
-                    >
-                        <Text style={styles.locationErrorButtonText}>Open Settings</Text>
-                    </TouchableOpacity>
                 </View>
-            </View>
+            </Modal>
         );
     };
 
@@ -676,29 +679,53 @@ const MapView = () => {
             <Modal
                 visible={showFilter}
                 transparent={true}
-                animationType="fade"
+                animationType="slide"
                 onRequestClose={() => setShowFilter(false)}>
-                <TouchableOpacity
-                    style={styles.modalOverlay}
-                    activeOpacity={1}
-                    onPress={() => setShowFilter(false)}>
-                    <View style={styles.filterContainer}>
-                        {storeTypes.map((type) => (
+                <View style={styles.filterModalOverlay}>
+                    <View style={styles.filterModalContent}>
+                        <View style={styles.filterModalHeader}>
+                            <Text style={styles.filterModalTitle}>Filter Stores</Text>
                             <TouchableOpacity
-                                key={type}
-                                style={[
-                                    styles.filterButton,
-                                    selectedFilter === type && styles.filterButtonSelected
-                                ]}
-                                onPress={() => filterStores(type)}>
-                                <Text style={[
-                                    styles.filterButtonText,
-                                    selectedFilter === type && styles.filterButtonTextSelected
-                                ]}>{type}</Text>
+                                style={styles.filterModalCloseButton}
+                                onPress={() => setShowFilter(false)}>
+                                <FontAwesomeIcon icon={faTimes} size={20} color={COLORS.gray} />
                             </TouchableOpacity>
-                        ))}
+                        </View>
+                        <ScrollView style={styles.filterModalBody}>
+                            <View style={styles.filterTypeContainer}>
+                                {storeTypes.map((type) => (
+                                    <TouchableOpacity
+                                        key={type}
+                                        style={[
+                                            styles.filterTypeButton,
+                                            selectedFilter === type && styles.filterTypeButtonSelected
+                                        ]}
+                                        onPress={() => filterStores(type)}>
+                                        <Text style={[
+                                            styles.filterTypeText,
+                                            selectedFilter === type && styles.filterTypeTextSelected
+                                        ]}>{type}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </ScrollView>
+                        <View style={styles.filterModalFooter}>
+                            <TouchableOpacity 
+                                style={styles.filterResetButton}
+                                onPress={() => {
+                                    filterStores('All');
+                                    setShowFilter(false);
+                                }}>
+                                <Text style={styles.filterResetButtonText}>Reset</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity 
+                                style={styles.filterApplyButton}
+                                onPress={() => setShowFilter(false)}>
+                                <Text style={styles.filterApplyButtonText}>Apply</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </TouchableOpacity>
+                </View>
             </Modal>
 
             {/* Error Message */}
@@ -719,7 +746,7 @@ const MapView = () => {
             {/* Loading Overlay */}
             {loading && (
                 <View style={styles.loadingOverlay}>
-                    <ActivityIndicator size="large" color={COLORS.primary} />
+                    <SpinningCubeLoader size={25} color={COLORS.secondary} />
                     <Text style={styles.loadingText}>Loading stores...</Text>
                 </View>
             )}

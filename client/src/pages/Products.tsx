@@ -8,7 +8,6 @@ import {
   ScrollView,
   Modal,
   Animated,
-  ActivityIndicator,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
@@ -24,7 +23,8 @@ import { Product, ProductsProps } from '../../types/types';
 import styles from '../assets/style/productStyle.js';
 import ProductList from '../components/ProductList.tsx';
 import { COLORS } from '../assets/constants/constant.ts';
-import { useRoute } from '@react-navigation/native'; // Add useRoute
+import { useRoute } from '@react-navigation/native';
+import SpinningCubeLoader from '../components/SpinningCubeLoader';
 
 const priceRanges = [
   { label: 'Under ₱50', value: 'under50', min: 0, max: 50 },
@@ -276,7 +276,7 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
         {/* Loading Indicator */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={COLORS.secondary} />
+            <SpinningCubeLoader size={25} color={COLORS.secondary} />
             <Text style={styles.loadingText}>Loading products...</Text>
           </View>
         ) : (
@@ -293,81 +293,109 @@ const Products: React.FC<ProductsProps> = ({ onScroll }) => {
             )}
 
             <Modal visible={showFilters} animationType="slide" transparent>
-              <View style={styles.filterModal}>
-                <View style={styles.filterContent}>
-                  <View style={styles.filterHeader}>
-                    <Text style={styles.filterTitle}>Filters</Text>
-                    <TouchableOpacity onPress={() => setShowFilters(false)}>
-                      <FontAwesomeIcon icon={faTimes} size={24} color="#333" />
+              <Animated.View style={styles.filterModalOverlay}>
+                <TouchableOpacity 
+                  style={styles.filterModalDismiss} 
+                  onPress={() => setShowFilters(false)} 
+                />
+                <Animated.View style={styles.filterModalContent}>
+                  {/* Handle Bar */}
+                  <View style={styles.modalHandleBar} />
+
+                  {/* Header */}
+                  <View style={styles.filterModalHeader}>
+                    <Text style={styles.filterModalTitle}>Filter Products</Text>
+                    <TouchableOpacity 
+                      style={styles.clearButton} 
+                      onPress={resetFilters}
+                    >
+                      <Text style={styles.clearButtonText}>Clear all</Text>
                     </TouchableOpacity>
                   </View>
 
-                  <ScrollView>
+                  <ScrollView style={styles.filterModalBody}>
+                    {/* Categories Section */}
                     <View style={styles.filterSection}>
-                      <Text style={styles.filterSubtitle}>Category</Text>
-                      {categories.map((category) => (
-                        <TouchableOpacity
-                          key={category}
-                          style={styles.filterOption}
-                          onPress={() => toggleCategory(category)}
-                        >
-                          <FontAwesomeIcon
-                            icon={selectedCategories.includes(category) ? faCheckSquare : faSquare}
-                            size={20}
-                            color="#666"
-                          />
-                          <Text style={styles.filterOptionText}>{category}</Text>
-                        </TouchableOpacity>
-                      ))}
+                      <Text style={styles.sectionTitle}>Categories</Text>
+                      <View style={styles.chipContainer}>
+                        {categories.map((category) => (
+                          <TouchableOpacity
+                            key={category}
+                            onPress={() => toggleCategory(category)}
+                            style={[
+                              styles.chip,
+                              selectedCategories.includes(category) && styles.chipSelected
+                            ]}
+                          >
+                            <Text style={[
+                              styles.chipText,
+                              selectedCategories.includes(category) && styles.chipTextSelected
+                            ]}>
+                              {category}
+                            </Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
                     </View>
 
+                    {/* Price Range Section */}
                     <View style={styles.filterSection}>
-                      <Text style={styles.filterSubtitle}>Price Range</Text>
-                      {priceRanges.map((range) => (
-                        <TouchableOpacity
-                          key={range.value}
-                          style={styles.filterOption}
-                          onPress={() => togglePriceRange(range.value)}
-                        >
-                          <FontAwesomeIcon
-                            icon={selectedPriceRange.includes(range.value) ? faCheckSquare : faSquare}
-                            size={20}
-                            color="#666"
-                          />
-                          <Text style={styles.filterOptionText}>{range.label}</Text>
-                        </TouchableOpacity>
-                      ))}
+                      <Text style={styles.sectionTitle}>Price Range</Text>
+                      <View style={styles.chipContainer}>
+                        {priceRanges.map((range) => (
+                          <TouchableOpacity
+                            key={range.value}
+                            onPress={() => togglePriceRange(range.value)}
+                            style={[
+                              styles.chip,
+                              selectedPriceRange.includes(range.value) && styles.chipSelected
+                            ]}
+                          >
+                            <Text style={[
+                              styles.chipText,
+                              selectedPriceRange.includes(range.value) && styles.chipTextSelected
+                            ]}>
+                              {range.label}
+                            </Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
                     </View>
 
+                    {/* Availability Section */}
                     <View style={styles.filterSection}>
-                      <Text style={styles.filterSubtitle}>Availability</Text>
+                      <Text style={styles.sectionTitle}>Availability</Text>
                       <TouchableOpacity
-                        style={styles.filterOption}
+                        style={styles.toggleContainer}
                         onPress={() => setInStockOnly(!inStockOnly)}
                       >
-                        <FontAwesomeIcon
-                          icon={inStockOnly ? faCheckSquare : faSquare}
-                          size={20}
-                          color="#666"
-                        />
-                        <Text style={styles.filterOptionText}>In Stock Only</Text>
+                        <Text style={styles.toggleText}>Show only in-stock items</Text>
+                        <View style={[
+                          styles.toggleSwitch,
+                          inStockOnly && styles.toggleSwitchActive
+                        ]}>
+                          <Animated.View style={[
+                            styles.toggleHandle,
+                            inStockOnly && styles.toggleHandleActive
+                          ]} />
+                        </View>
                       </TouchableOpacity>
                     </View>
                   </ScrollView>
 
-                  <View style={styles.filterActions}>
-                    <TouchableOpacity style={styles.resetButton} onPress={resetFilters}>
-                      <Text style={styles.resetButtonText}>Reset</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
+                  {/* Footer */}
+                  <View style={styles.filterModalFooter}>
+                    <TouchableOpacity 
                       style={styles.applyButton}
                       onPress={() => setShowFilters(false)}
                     >
-                      <Text style={styles.applyButtonText}>Apply</Text>
+                      <Text style={styles.applyButtonText}>
+                        Show Results ({filteredProducts.length})
+                      </Text>
                     </TouchableOpacity>
                   </View>
-                </View>
-              </View>
+                </Animated.View>
+              </Animated.View>
             </Modal>
 
             <View style={styles.productContainer}>
