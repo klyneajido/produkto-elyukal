@@ -154,15 +154,19 @@ const SettingsScreen: React.FC = () => {
             animationType="fade"
             statusBarTranslucent
         >
-            <View style={styles.modalBackground}>
+            <Animated.View style={styles.modalBackground}>
                 <View style={styles.modalContainer}>
-                    <View style={styles.modalIconContainer}>
-                        <FontAwesomeIcon icon={faRightFromBracket} size={28} color="#FF6347" />
+                    <View style={styles.modalHeader}>
+                        <View style={styles.modalIconContainer}>
+                            <FontAwesomeIcon icon={faRightFromBracket} size={22} color={COLORS.alert} />
+                        </View>
+                        <Text style={styles.modalTitle}>Sign Out</Text>
                     </View>
-                    <Text style={styles.modalTitle}>Sign Out</Text>
+                    
                     <Text style={styles.modalDescription}>
-                        Are you sure you want to sign out of your account?
+                        You'll need to sign in again to access your account.
                     </Text>
+
                     <View style={styles.modalActions}>
                         <TouchableOpacity
                             style={styles.cancelButton}
@@ -174,17 +178,23 @@ const SettingsScreen: React.FC = () => {
                             style={styles.logoutButton}
                             onPress={logoutUser}
                         >
+                            <FontAwesomeIcon 
+                                icon={faRightFromBracket} 
+                                size={16} 
+                                color={COLORS.white}
+                                style={styles.logoutButtonIcon}
+                            />
                             <Text style={styles.logoutButtonText}>Sign Out</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </Animated.View>
         </Modal>
     );
 
     // User profile section with animation
     const ProfileSection = () => {
-        const defaultImage = require('../assets/img/default_avatar.png');
+        const defaultImage = require('../assets/img/avatartion.png');
         const userProfile = user as unknown as UserProfile;
         
         console.log('🖼️ Profile Section Rendering');
@@ -252,21 +262,6 @@ const SettingsScreen: React.FC = () => {
                         {getUserEmail() && <Text style={styles.profileEmail}>{getUserEmail()}</Text>}
                     </View>
                 </View>
-
-                <TouchableOpacity
-                    style={styles.editProfileButton}
-                    onPress={() => {
-                        console.log('✏️ Edit profile button pressed');
-                    }}
-                    disabled={isGuestUser(user)}
-                >
-                    <Text style={[
-                        styles.editProfileText,
-                        isGuestUser(user) && { opacity: 0.5 }
-                    ]}>
-                        Edit
-                    </Text>
-                </TouchableOpacity>
             </Animated.View>
         );
     };
@@ -338,13 +333,18 @@ const SettingsScreen: React.FC = () => {
                     />
                 </View>
 
-                {/* Sign Out Button */}
+                {/* Sign Out/Sign In Button */}
                 <TouchableOpacity
-                    style={styles.signOutButton}
-                    onPress={() => setLogoutModalVisible(true)}
+                    style={[styles.signOutButton, isGuestUser(user) && { backgroundColor: COLORS.primary }]}
+                    onPress={() => isGuestUser(user) ? navigation.navigate('Login') : setLogoutModalVisible(true)}
                     activeOpacity={0.8}
                 >
-                    <Text style={styles.signOutText}>Sign Out</Text>
+                    <Text style={[
+                        styles.signOutText, 
+                        isGuestUser(user) && { color: COLORS.white }
+                    ]}>
+                        {isGuestUser(user) ? "Sign In" : "Sign Out"}
+                    </Text>
                 </TouchableOpacity>
 
                 <View style={styles.footerContainer}>

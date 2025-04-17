@@ -17,13 +17,14 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../contextAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChevronLeft, faCheck, faExclamationTriangle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faCheck, faExclamationTriangle, faTimes, faLock, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { COLORS, FONT_SIZE, FONTS } from '../../assets/constants/constant';
 import InputText from '../../components/TextInput';
 import Footer from '../../components/Footer';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../../config/config';
+// import Modal from 'react-native-modal';
 
 interface ErrorState {
     visible: boolean;
@@ -44,19 +45,60 @@ const PersonalInformation = () => {
         message: '',
         type: 'error'
     });
+    const [isGuestModal, setIsGuestModal] = useState(false);
 
     const dismissError = () => {
         setError(prev => ({ ...prev, visible: false }));
     };
 
-    // Redirect guest users to Login screen
     useEffect(() => {
         if ((user as any)?.guest) {
-            Alert.alert('Access Denied', 'Please log in to manage your personal information.', [
-                { text: 'OK', onPress: () => navigation.navigate('Login' as never) },
-            ]);
+            setIsGuestModal(true);
         }
-    }, [user, navigation]);
+    }, [user]);
+
+    const AccessRestrictedModal = () => (
+        <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+                <View style={styles.modalHeader}>
+                    <View style={styles.modalIconContainer}>
+                        <FontAwesomeIcon icon={faLock} size={22} color={COLORS.alert} />
+                    </View>
+                    <Text style={styles.modalTitle}>Access Restricted</Text>
+                </View>
+                
+                <Text style={styles.modalDescription}>
+                    You need to sign in to access and manage your personal information.
+                </Text>
+
+                <View style={styles.modalActions}>
+                    <TouchableOpacity
+                        style={styles.cancelButton}
+                        onPress={() => {
+                            setIsGuestModal(false);
+                            navigation.goBack();
+                        }}
+                    >
+                        <Text style={styles.cancelButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.loginButton}
+                        onPress={() => {
+                            setIsGuestModal(false);
+                            navigation.navigate('Login' as never);
+                        }}
+                    >
+                        <FontAwesomeIcon 
+                            icon={faArrowRight} 
+                            size={16} 
+                            color={COLORS.white}
+                        />
+                        <Text style={styles.loginButtonText}>Sign In</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
+    );
 
     // Validate form before saving
     const validateForm = () => {
@@ -178,7 +220,7 @@ const PersonalInformation = () => {
 
     // Prevent rendering for guest users
     if ((user as any)?.guest) {
-        return null;
+        return <AccessRestrictedModal />;
     }
 
     return (
@@ -432,7 +474,90 @@ const styles = StyleSheet.create({
     errorDismiss: {
         padding: 6,
     },
+    modalBackground: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        backgroundColor: COLORS.white,
+        borderRadius: 16,
+        padding: 24,
+        width: '85%',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    modalIconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: `${COLORS.alert}15`,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    modalTitle: {
+        fontSize: FONT_SIZE.large,
+        fontFamily: FONTS.semibold,
+        color: COLORS.black,
+    },
+    modalDescription: {
+        fontSize: FONT_SIZE.medium,
+        fontFamily: FONTS.regular,
+        color: COLORS.gray,
+        marginBottom: 24,
+        textAlign: 'center',
+    },
+    modalActions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        gap: 12,
+    },
+    cancelButton: {
+        flex: 1,
+        padding: 12,
+        borderRadius: 10,
+        backgroundColor: COLORS.lightgray,
+        alignItems: 'center',
+    },
+    cancelButtonText: {
+        color: COLORS.black,
+        fontSize: FONT_SIZE.medium,
+        fontFamily: FONTS.medium,
+    },
+    loginButton: {
+        flex: 1,
+        flexDirection: 'row',
+        padding: 12,
+        borderRadius: 10,
+        backgroundColor: COLORS.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    loginButtonText: {
+        color: COLORS.white,
+        fontSize: FONT_SIZE.medium,
+        fontFamily: FONTS.medium,
+        marginLeft: 8,
+    },
 });
 
 export default PersonalInformation;
+
+
+
 
