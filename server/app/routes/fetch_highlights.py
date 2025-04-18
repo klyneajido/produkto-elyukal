@@ -1,6 +1,7 @@
+#routes/fetch_highlights.py
 from fastapi import APIRouter, HTTPException
-from db.database import supabase_client
-from schemas.highlights import Highlight
+from app.db.database import supabase_client
+from app.schemas.highlights import Highlight
 from typing import List
 
 router = APIRouter()

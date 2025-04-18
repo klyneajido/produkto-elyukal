@@ -1,6 +1,7 @@
+#routes/fetch_events.py
 from fastapi import APIRouter, HTTPException
-from db.database import supabase_client
-from schemas.events import Event
+from app.db.database import supabase_client
+from app.schemas.events import Event
 from typing import List
 
 router = APIRouter()

@@ -1,6 +1,7 @@
+#routes/fetch_stores.py
 from fastapi import APIRouter, HTTPException
-from db.database import supabase_client
-from schemas.stores import Store
+from app.db.database import supabase_client
+from app.schemas.stores import Store
 from typing import List
 import json
 
