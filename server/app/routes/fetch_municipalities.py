@@ -1,7 +1,7 @@
 # app/routes/fetch_municipalities.py
 from fastapi import APIRouter, HTTPException
-from app.db.database import supabase_client
-from app.schemas.municipalities import Municipality
+from db.database import supabase_client
+from schemas.municipalities import Municipality
 from typing import List
 
 router = APIRouter()

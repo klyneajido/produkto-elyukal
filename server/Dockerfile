@@ -1,27 +1,34 @@
-# Use official Python image
+# Use official Python base image
 FROM python:3.10-slim
 
-# Set working directory to /app/server (since both Dockerfile and start-backend.sh are inside the server folder)
-WORKDIR /app/server
+# Set working directory
+WORKDIR /app
 
-# Copy everything from the server folder into the container
-COPY server/ .
-
-# Install system dependencies
+# Install system dependencies for Rasa
 RUN apt-get update && apt-get install -y \
     build-essential \
     git \
+    curl \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Copy your app and chatbot
+COPY app/ ./app/
+COPY chatbot/ ./chatbot/
+COPY run.sh ./
 
-# Make sure the start-backend.sh script is executable
-RUN chmod +x start-backend.sh
+# Install dependencies for FastAPI
+RUN pip install --upgrade pip \
+    && pip install -r app/requirements.txt
 
-# Expose the necessary ports
+# Install dependencies for Rasa
+RUN pip install -r chatbot/requirements.txt
+
+# Make the script executable
+RUN chmod +x run.sh
+
+# Expose necessary ports
 EXPOSE 8000 5055 5056
 
-# Run the start-backend.sh script
-CMD ["bash", "run.sh"]
+# Start the backend script
+CMD ["./run.sh"]

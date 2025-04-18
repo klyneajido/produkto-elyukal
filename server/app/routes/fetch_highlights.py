@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.db.database import supabase_client
-from app.schemas.highlights import Highlight
+from db.database import supabase_client
+from schemas.highlights import Highlight
 from typing import List
 
 router = APIRouter()

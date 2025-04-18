@@ -1,0 +1,14 @@
+# ignore virtual environments
+venv/
+chatbot/venv/
+
+# ignore all Rasa models except the latest one
+chatbot/models/*
+!chatbot/models/20250417-194659-connected-asadero.tar.gz
+
+# ignore caches and compiled files
+__pycache__/
+*.pyc
+
+# ignore secret files
+.env

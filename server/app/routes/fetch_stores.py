@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.db.database import supabase_client
-from app.schemas.stores import Store
+from db.database import supabase_client
+from schemas.stores import Store
 from typing import List
 import json
 

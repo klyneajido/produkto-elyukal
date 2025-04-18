@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 import logging
-from app.db.database import supabase_client
-from app.schemas.review import ReviewCreate, ReviewResponse
-from app.auth.auth_handler import get_current_user
+from db.database import supabase_client
+from schemas.review import ReviewCreate, ReviewResponse
+from auth.auth_handler import get_current_user
 from typing import List
 
 router = APIRouter()

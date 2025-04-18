@@ -1,12 +1,7 @@
 # main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import auth, fetch_products
-from app.routes import auth, fetch_products, reviews
-from app.routes import auth, fetch_stores
-from app.routes import auth, fetch_events
-from app.routes import auth, fetch_highlights
-from app.routes import auth, fetch_municipalities
+from routes import auth, fetch_products, reviews, fetch_stores, fetch_events, fetch_highlights, fetch_municipalities
 
 app = FastAPI()
 
