@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy app and chatbot directories
+# Copy your app and chatbot
 COPY server/app/ ./app/
 COPY server/chatbot/ ./chatbot/
 COPY server/run.sh ./
