@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Colors (optional)
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -16,15 +16,15 @@ prefix_output() {
 
 # Start FastAPI server
 echo "Starting FastAPI..."
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload 2>&1 | prefix_output "[FastAPI]" "$RED" &
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload 2>&1 | prefix_output "[FastAPI]" "$RED" &
 
 # Start Rasa action server
 echo "Starting Rasa actions..."
-rasa run actions --actions chatbot.actions --port 5056 2>&1 | prefix_output "[Actions]" "$GREEN" &
+python -m rasa run actions --actions chatbot.actions --port 5056 2>&1 | prefix_output "[Actions]" "$GREEN" &
 
 # Start Rasa server
 echo "Starting Rasa server..."
-rasa run --enable-api --cors "*" --port 5055 2>&1 | prefix_output "[Rasa]" "$BLUE" &
+python -m rasa run --enable-api --cors "*" --port 5055 --model /app/chatbot/models/20250417-194659-connected-asadero.tar.gz 2>&1 | prefix_output "[Rasa]" "$BLUE" &
 
 # Wait for all background processes
 wait
