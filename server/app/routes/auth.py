@@ -5,7 +5,7 @@ from app.core.security import hash_password, create_access_token, verify_token
 from app.schemas.user import UserRegister, UserLogin, UserProfileUpdate, PasswordUpdate
 from datetime import datetime, timedelta
 import bcrypt
-from core.config import settings
+from app.core.config import settings
 
 router = APIRouter()
 
