@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy your app and chatbot
-COPY server/app/ ./app/
-COPY server/chatbot/ ./chatbot/
-COPY server/run.sh ./
+COPY app/ ./app/
+COPY chatbot/ ./chatbot/
+COPY run.sh ./
 
 # Create virtual environment for FastAPI and install dependencies
 RUN python -m venv /app/app_venv \
