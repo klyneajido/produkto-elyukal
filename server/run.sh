@@ -14,17 +14,17 @@ prefix_output() {
     done
 }
 
-# Start FastAPI server
+# Start FastAPI server using app_venv
 echo "Starting FastAPI..."
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload 2>&1 | prefix_output "[FastAPI]" "$RED" &
+/app/app_venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload 2>&1 | prefix_output "[FastAPI]" "$RED" &
 
-# Start Rasa action server
+# Start Rasa action server using chatbot_venv
 echo "Starting Rasa actions..."
-python -m rasa run actions --actions chatbot.actions --port 5056 2>&1 | prefix_output "[Actions]" "$GREEN" &
+/app/chatbot_venv/bin/python -m rasa run actions --actions chatbot.actions --port 5056 2>&1 | prefix_output "[Actions]" "$GREEN" &
 
-# Start Rasa server
+# Start Rasa server using chatbot_venv
 echo "Starting Rasa server..."
-python -m rasa run --enable-api --cors "*" --port 5055 --model /app/chatbot/models/20250417-194659-connected-asadero.tar.gz 2>&1 | prefix_output "[Rasa]" "$BLUE" &
+/app/chatbot_venv/bin/python -m rasa run --enable-api --cors "*" --port 5055 --model /app/chatbot/models/20250417-194659-connected-asadero.tar.gz 2>&1 | prefix_output "[Rasa]" "$BLUE" &
 
 # Wait for all background processes
 wait
