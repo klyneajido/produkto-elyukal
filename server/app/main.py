@@ -1,7 +1,12 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
+import logging
 from app.routes import auth, fetch_products, reviews, fetch_stores, fetch_events, fetch_highlights, fetch_municipalities
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -22,12 +27,31 @@ def read_root():
 # Proxy endpoint for Rasa
 @app.post("/rasa/webhooks/rest/webhook")
 async def proxy_rasa(request: Request):
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            "http://localhost:5055/webhooks/rest/webhook",
-            json=await request.json()
-        )
-        return response.json()
+    try:
+        # Log the raw request body for debugging
+        body = await request.body()
+        logger.info(f"Received request body: {body}")
+
+        # Check if body is empty
+        if not body:
+            raise HTTPException(status_code=400, detail="Request body is empty")
+
+        # Parse JSON
+        data = await request.json()
+        logger.info(f"Parsed JSON: {data}")
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "http://localhost:5055/webhooks/rest/webhook",
+                json=data
+            )
+            return response.json()
+    except ValueError as e:
+        logger.error(f"JSON parsing error: {str(e)}")
+        raise HTTPException(status_code=400, detail="Invalid JSON in request body")
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 # routes
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
