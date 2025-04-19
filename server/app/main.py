@@ -28,30 +28,40 @@ def read_root():
 @app.post("/rasa/webhooks/rest/webhook")
 async def proxy_rasa(request: Request):
     try:
-        # Log the raw request body for debugging
         body = await request.body()
         logger.info(f"Received request body: {body}")
-
-        # Check if body is empty
         if not body:
             raise HTTPException(status_code=400, detail="Request body is empty")
-
-        # Parse JSON
         data = await request.json()
         logger.info(f"Parsed JSON: {data}")
-
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.post(
-                "http://localhost:5055/webhooks/rest/webhook",
+                "http://0.0.0.0:5055/webhooks/rest/webhook",
                 json=data
             )
+            logger.info(f"Rasa response: {response.json()}")
             return response.json()
     except ValueError as e:
         logger.error(f"JSON parsing error: {str(e)}")
         raise HTTPException(status_code=400, detail="Invalid JSON in request body")
+    except httpx.TimeoutException as e:
+        logger.error(f"Timeout error: {str(e)}")
+        raise HTTPException(status_code=504, detail="Rasa server timed out")
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+# Test endpoint for Rasa
+@app.get("/test-rasa")
+async def test_rasa():
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get("http://0.0.0.0:5055")
+            logger.info(f"Rasa test response: {response.text}")
+            return {"status": "success", "response": response.text}
+    except Exception as e:
+        logger.error(f"Rasa test failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to reach Rasa: {str(e)}")
 
 # routes
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
