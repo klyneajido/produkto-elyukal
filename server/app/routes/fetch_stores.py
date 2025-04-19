@@ -37,18 +37,35 @@ async def search_stores_by_name(store_name: str):
         
         # Clean the store name by removing parentheses and special characters
         cleaned_store_name = store_name.replace("(", "").replace(")", "").strip()
+        print(f"Cleaned store name: {cleaned_store_name}")
         
-        # Query the stores table with case-insensitive partial match
+        # First try exact match
         response = supabase_client.table("stores").select(
             "store_id, name, description, latitude, longitude, rating, store_image, type, operating_hours, phone, town"
-        ).ilike("name", f"%{cleaned_store_name}%").execute()
+        ).eq("name", cleaned_store_name).execute()
+        
+        # If no exact match, try case-insensitive partial match
+        if not response.data:
+            print(f"No exact match, trying partial match for: {cleaned_store_name}")
+            response = supabase_client.table("stores").select(
+                "store_id, name, description, latitude, longitude, rating, store_image, type, operating_hours, phone, town"
+            ).ilike("name", f"%{cleaned_store_name}%").execute()
 
         print(f"Search results: {response.data if response.data else 'No results found'}")
         
         if not response.data:
+            # Try searching by splitting the name into parts
+            name_parts = cleaned_store_name.split()
+            if len(name_parts) > 1:
+                print(f"Trying search with first part: {name_parts[0]}")
+                response = supabase_client.table("stores").select(
+                    "store_id, name, description, latitude, longitude, rating, store_image, type, operating_hours, phone, town"
+                ).ilike("name", f"%{name_parts[0]}%").execute()
+
+        if not response.data:
             return {"stores": []}
             
-        # Clean the response data to ensure all text is properly encoded
+        # Clean the response data
         cleaned_stores = []
         for store in response.data:
             cleaned_store = {
@@ -65,13 +82,12 @@ async def search_stores_by_name(store_name: str):
                 "town": store.get("town", "").encode('utf-8', 'ignore').decode('utf-8')
             }
             cleaned_stores.append(cleaned_store)
-            
+        
         return {"stores": cleaned_stores}
-
+        
     except Exception as e:
-        print(f"Error searching stores: {str(e)}")
-        # Return empty result instead of throwing 500 error
-        return {"stores": []}
+        print(f"Error in search_stores_by_name: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/fetch_stores_by_town/{town}")
 async def fetch_stores_by_town(town: str):

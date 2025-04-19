@@ -252,68 +252,29 @@ const Chatbot: React.FC = () => {
   const searchStoreByName = async (storeName: string) => {
     try {
       console.log(`Searching for store: "${storeName}"`);
-      
-      // Clean the store name by removing emojis and special characters
+
+      // Clean the store name by removing emojis and special characters but preserve parentheses
       const cleanStoreName = storeName
         .replace(/[\u{1F600}-\u{1F64F}]/gu, '') // Remove emojis
         .replace(/[\u{1F300}-\u{1F5FF}]/gu, '') // Remove misc symbols and pictographs
         .replace(/[\u{1F680}-\u{1F6FF}]/gu, '') // Remove transport and map symbols
         .replace(/[\u{2700}-\u{27BF}]/gu, '')   // Remove dingbats
-        .replace(/[^\w\s()-]/g, '')             // Remove other special characters except ()- and spaces
+        .replace(/[^\w\s()-]/g, '')             // Remove special characters except ()- and spaces
         .trim();                                // Remove leading/trailing whitespace
 
       const searchResponse = await axios.get(
-        `${BASE_URL}/stores/search_stores/${encodeURIComponent(cleanStoreName)}`
+        `${BASE_URL}/stores/search_stores/${encodeURIComponent(cleanStoreName)}`,
+        {
+          headers: {
+            'Accept-Encoding': 'application/json',
+          }
+        }
       );
 
-      if (searchResponse.data?.stores?.[0]) {
-        const store = searchResponse.data.stores[0];
-        try {
-          const productsResponse = await axios.get(
-            `${BASE_URL}/products/fetch_products/${encodeURIComponent(store.id || store.store_id)}`
-          );
-          
-          setStoreInfoMap(prev => ({
-            ...prev,
-            [storeName]: {
-              ...store,
-              store_image: store.image_url || store.store_image,
-              products: productsResponse.data.products || [],
-              isLoading: false,
-            },
-          }));
-        } catch (error) {
-          console.log(`Error fetching products for store "${storeName}":`, error);
-          setStoreInfoMap(prev => ({
-            ...prev,
-            [storeName]: {
-              ...store,
-              store_image: store.image_url || store.store_image,
-              products: [],
-              isLoading: false,
-            },
-          }));
-        }
-      } else {
-        setStoreInfoMap(prev => ({
-          ...prev,
-          [storeName]: {
-            id: '',
-            name: storeName,
-            isLoading: false,
-          },
-        }));
-      }
+      return searchResponse.data?.stores?.[0] || null;
     } catch (error) {
-      console.log(`Error processing store "${storeName}":`, error);
-      setStoreInfoMap(prev => ({
-        ...prev,
-        [storeName]: {
-          id: '',
-          name: storeName,
-          isLoading: false,
-        },
-      }));
+      console.error(`Error searching for store "${storeName}":`, error);
+      return null;
     }
   };
 
@@ -518,61 +479,86 @@ const Chatbot: React.FC = () => {
     return undefined;
   };
 
+  const cleanStoreName = (name: string): string => {
+    // Remove text in parentheses and trim
+    return name.replace(/\s*\([^)]*\)/g, '').trim();
+  };
+
   const extractStores = async (message: string): Promise<Store[]> => {
     try {
-      // Get everything after the colon and split by comma
-      const colonIndex = message.indexOf(':');
-      if (colonIndex === -1) return [];
 
-      const storeNames = message
-          .slice(colonIndex + 1)
-          .split(',')
-          .map(name => name.trim())
-          .filter(name => name.length > 0);
+      const townMatch = message.match(/stores in ([^:]+):/i);
+      const town = townMatch ? townMatch[1].trim() : null;
 
-      console.log('Extracted store names:', storeNames);  // Debug log
+      if (!town) {
 
-      let mentionedStores: Store[] = [];
-      const productsResponse = await axios.get(`${BASE_URL}/products/fetch_products`);
-
-      for (const storeName of storeNames) {
-          try {
-              console.log(`Searching for store: "${storeName}"`);  // Debug log
-              const searchResponse = await axios.get(
-                  `${BASE_URL}/stores/search_stores/${encodeURIComponent(storeName)}`
-              );
-
-              if (searchResponse.data?.stores?.[0]) {
-                  const store = searchResponse.data.stores[0];
-                  const storeProducts = productsResponse.data.products.filter(
-                      (product: Product) => product.store_id === store.id
-                  );
-
-                  mentionedStores.push({
-                      id: store.id,
-                      name: store.name,
-                      description: store.description,
-                      store_image: store.image_url || store.store_image,
-                      rating: store.rating,
-                      type: store.type,
-                      operating_hours: store.operating_hours,
-                      phone: store.phone,
-                      products: storeProducts
-                  });
-              }
-          } catch (error) {
-              console.error(`Error fetching store "${storeName}":`, error);
-          }
+        return [];
       }
 
-      console.log('Final mentioned stores:', mentionedStores);  // Debug log
+      const storeListMatch = message.match(/:[^]*$/);
+      if (!storeListMatch) {
+
+        return [];
+      }
+
+      const storeNames = storeListMatch[0]
+        .substring(1)
+        .split(',')
+        .map(name => cleanStoreName(name.trim()))
+        .filter(name => name.length > 0);
+
+      const mentionedStores: Store[] = [];
+
+      for (const storeName of storeNames) {
+
+        try {
+          const searchUrl = `${BASE_URL}/stores/search_stores/${encodeURIComponent(storeName)}`;
+
+          const searchResponse = await axios.get(searchUrl);
+
+          if (searchResponse.data?.stores?.length > 0) {
+            const store = searchResponse.data.stores[0];
+            mentionedStores.push({
+              id: store.store_id,
+              name: store.name,
+              description: store.description,
+              store_image: store.store_image || store.image_url,
+              rating: store.rating,
+              type: store.type,
+              operating_hours: store.operating_hours,
+              phone: store.phone
+            });
+          } else {
+            // Try searching with just the first word of the store name
+            const firstWord = storeName.split(' ')[0];
+            const fallbackUrl = `${BASE_URL}/stores/search_stores/${encodeURIComponent(firstWord)}`;
+
+            const fallbackResponse = await axios.get(fallbackUrl);
+            if (fallbackResponse.data?.stores?.length > 0) {
+              const store = fallbackResponse.data.stores[0];
+              mentionedStores.push({
+                id: store.store_id,
+                name: store.name,
+                description: store.description,
+                store_image: store.store_image || store.image_url,
+                rating: store.rating,
+                type: store.type,
+                operating_hours: store.operating_hours,
+                phone: store.phone
+              });
+            } else {
+            }
+          }
+        } catch (error) {
+        }
+      }
+
       return mentionedStores;
     } catch (error) {
-      console.error('Error in extractStores:', error);
       return [];
     }
   };
-  
+
 
   const sendMessage = async (message: string) => {
     if (!message.trim()) return;
@@ -740,116 +726,71 @@ const Chatbot: React.FC = () => {
   };
 
   const StoreCard = React.memo(({ store }: { store: Store }) => {
-    const storeInfo = storeInfoMap[store.name] || store;
-    
-    // Use a ref to prevent re-renders from causing loops
-    const processedRef = useRef(false);
-  
-    useEffect(() => {
-      // Only try to fetch store info if needed and not already processed
-      if (!processedRef.current && store.name && !storeInfoMap[store.name]) {
-        processedRef.current = true;
-        // Don't update state in render cycle
-      }
-    }, [store.name]);
-  
-    if (!storeInfo || storeInfo.isLoading) {
-      return (
-        <View style={styles.storeCard}>
-          <ActivityIndicator size="small" color={COLORS.highlight} />
-        </View>
-      );
-    }
-  
-    // Don't render cards without an ID or with empty data
-    if (!storeInfo.id) {
+    console.log('Rendering StoreCard for:', store);
+
+    if (!store || !store.id) {
+      console.log('❌ Invalid store data, skipping render');
       return null;
     }
-  
+
     return (
       <TouchableOpacity
         style={styles.storeCard}
-        onPress={() => navigateToStoreDetails(storeInfo)}
+        onPress={() => navigateToStoreDetails(store)}
         activeOpacity={0.7}
       >
         <Image
           source={{
-            uri: storeInfo.store_image || 'https://via.placeholder.com/50',
+            uri: store.store_image || 'https://via.placeholder.com/50',
           }}
           style={styles.storeImage}
           defaultSource={require('../assets/img/events/culinary-arts.png')}
         />
         <View style={styles.storeInfo}>
           <Text style={styles.storeName} numberOfLines={1}>
-            {storeInfo.name}
+            {store.name}
           </Text>
           <View style={styles.storeMetaInfo}>
             <View style={styles.ratingContainer}>
               <FontAwesomeIcon icon={faStar} color="#FDD700" size={12} />
               <Text style={styles.ratingText}>
-                {storeInfo.rating?.toFixed(1) || '0.0'}
+                {store.rating?.toFixed(1) || '0.0'}
               </Text>
             </View>
-            {storeInfo.type && (
+            {store.type && (
               <Text style={styles.storeType} numberOfLines={1}>
-                {storeInfo.type}
+                {store.type}
               </Text>
             )}
           </View>
-          {storeInfo.products && storeInfo.products.length > 0 && (
-            <View style={styles.productPreview}>
-              <Text style={styles.productPreviewText}>
-                Products: {storeInfo.products.slice(0, 3).map(p => p.name).join(', ')}
-                {storeInfo.products.length > 3 ? '...' : ''}
-              </Text>
-            </View>
-          )}
         </View>
       </TouchableOpacity>
     );
   }, (prevProps, nextProps) => {
     // Implement a proper equality check to prevent unnecessary re-renders
-    return prevProps.store.id === nextProps.store.id && 
-           prevProps.store.name === nextProps.store.name;
+    return prevProps.store.id === nextProps.store.id &&
+      prevProps.store.name === nextProps.store.name;
   });
-  
+
 
   const renderStoreCards = (stores: Store[]) => {
+    console.log('=== RENDERING STORE CARDS ===');
+    console.log('Received stores:', stores);
+
     if (!stores || stores.length === 0) {
+      console.log('❌ No stores to render');
       return null;
     }
-  
-    // Create a unique list of stores by ID to prevent duplicates
-    const storeMap = new Map<string, Store>();
-    
-    stores.forEach(store => {
-      const storeInfo = storeInfoMap[store.name] || store;
-      if (storeInfo.id) {
-        storeMap.set(storeInfo.id, storeInfo);
-      }
-    });
-    
-    const availableStores = Array.from(storeMap.values())
-      .filter(store => !store.isLoading);
-  
+
+    const availableStores = stores.filter(store => store && store.id);
+    console.log('Filtered valid stores:', availableStores);
+
     if (availableStores.length === 0) {
-      const stillLoading = stores.some(store => {
-        const storeInfo = storeInfoMap[store.name];
-        return storeInfo && storeInfo.isLoading;
-      });
-  
-      if (stillLoading) {
-        return (
-          <View style={styles.loadingStoresContainer}>
-            <ActivityIndicator size="small" color={COLORS.white} />
-            <Text style={styles.loadingStoresText}>Loading stores...</Text>
-          </View>
-        );
-      }
-  
+      console.log('❌ No valid stores after filtering');
       return null;
     }
-  
+
+    console.log('✅ Rendering store cards for:', availableStores.length, 'stores');
     return (
       <View style={styles.storeCardsContainer}>
         {availableStores.map((store) => (
@@ -870,13 +811,13 @@ const Chatbot: React.FC = () => {
     );
   };
 
-  const Message = React.memo(({ 
-    item, 
-    index, 
-    messagesLength, 
-    productInfoMap, 
-    storeInfoMap 
-  }: { 
+  const Message = React.memo(({
+    item,
+    index,
+    messagesLength,
+    productInfoMap,
+    storeInfoMap
+  }: {
     item: Message;
     index: number;
     messagesLength: number;
@@ -884,7 +825,7 @@ const Chatbot: React.FC = () => {
     storeInfoMap: Record<string, any>;
   }) => {
     const isLastMessage = index === messagesLength - 1;
-    const showTime = index === messagesLength - 1 || 
+    const showTime = index === messagesLength - 1 ||
       messages[index + 1]?.sender !== item.sender;
 
     if (item.isTyping) {
