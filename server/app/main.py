@@ -1,11 +1,11 @@
-# main.py
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+import httpx
 from app.routes import auth, fetch_products, reviews, fetch_stores, fetch_events, fetch_highlights, fetch_municipalities
 
 app = FastAPI()
 
-#Enable CORS
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -13,13 +13,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-	
-#root
+    
+# root
 @app.get("/")
 def read_root():
     return {"message":"running all goods boss!"}
 
-#routes
+# Proxy endpoint for Rasa
+@app.post("/rasa/webhooks/rest/webhook")
+async def proxy_rasa(request: Request):
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            "http://localhost:5055/webhooks/rest/webhook",
+            json=await request.json()
+        )
+        return response.json()
+
+# routes
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(fetch_products.router, prefix="/products", tags=["Products"])
 app.include_router(reviews.router, prefix="/reviews", tags=["Reviews"])
