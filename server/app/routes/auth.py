@@ -1,11 +1,11 @@
 # auth/auth.py
 from fastapi import APIRouter, Depends, HTTPException
-from app.db.database import supabase_client
-from app.core.security import hash_password, create_access_token, verify_token
-from app.schemas.user import UserRegister, UserLogin, UserProfileUpdate, PasswordUpdate
+from db.database import supabase_client
+from core.security import hash_password, create_access_token, verify_token
+from schemas.user import UserRegister, UserLogin, UserProfileUpdate, PasswordUpdate
 from datetime import datetime, timedelta
 import bcrypt
-from app.core.config import settings
+from core.config import settings
 
 router = APIRouter()
 

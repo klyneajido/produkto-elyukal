@@ -1,7 +1,7 @@
 #routes/fetch_products.py
 from fastapi import APIRouter, HTTPException
-from app.db.database import supabase_client
-from app.schemas.product import Products
+from db.database import supabase_client
+from schemas.product import Products
 from typing import List
 
 router = APIRouter()

@@ -1,8 +1,8 @@
 #auth/auth_handler.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from app.core.security import verify_token
-from app.db.database import supabase_client
+from core.security import verify_token
+from db.database import supabase_client
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
