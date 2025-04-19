@@ -23,64 +23,243 @@ def clean_town_name(town: str) -> str:
     if not town:
         return town
     town = re.sub(r'\s+', ' ', town.strip().lower())
+    # Dictionary mapping town synonyms to standard town names (title case)
     town_synonyms = {
-        "ag": "agoo",
-        "city of san fernando": "san fernando",
-        "fernando": "san fernando",
-        "sfc": "san fernando",
-        "nags": "naguilian",
-        "santo": "santo tomas",
-        "tomas": "santo tomas",
-        "st": "santo tomas",
-        "sud": "sudipen",
-        "ros": "rosario",
-        "bau": "bauang",
-        "aring": "aringay",
-        "bac": "bacnotan",
-        "bal": "balaoan",
-        "bang": "bangar",
-        "cab": "caba",
-        "lun": "luna",
-        "pug": "pugo",
-        "sanj": "san juan",
-        "sj": "san juan",
-        "sant": "santol",
-        "tub": "tubao"
+        # Agoo
+        "ag": "Agoo",
+        "agoo": "Agoo",
+        "AGO": "Agoo",
+        "agoo city": "Agoo",
+        "agoo town": "Agoo",
+        "agooo": "Agoo",
+        "agoooo": "Agoo",
+
+        # San Fernando
+        "city of san fernando": "San Fernando",
+        "fernando": "San Fernando",
+        "san fernando la union": "San Fernando",
+        "sanfer": "San Fernando",
+        "san fer": "San Fernando",
+        "fernando": "San Fernando",
+        "sfc": "San Fernando",
+        "san fernando": "San Fernando",
+        "san fernnado": "San Fernando",  # Common typo
+        "san f": "San Fernando",
+        "sf": "San Fernando",
+        "san fernando city": "San Fernando",
+        "sanfernando": "San Fernando",
+
+        # Naguilian
+        "nags": "Naguilian",
+        "naguilian": "Naguilian",
+        "naguillian": "Naguilian",  # Common misspelling
+        "nagilyan": "Naguilian",  # From log typo
+        "nag": "Naguilian",
+        "nagu": "Naguilian",
+
+        # Santo Tomas
+        "santo": "Santo Tomas",
+        "tomas": "Santo Tomas",
+        "st": "Santo Tomas",
+        "santo tomas": "Santo Tomas",
+        "sto tomas": "Santo Tomas",
+        "sto. tomas": "Santo Tomas",
+        "santotomas": "Santo Tomas",
+        "santo thomas": "Santo Tomas",  # Misspelling
+
+        # Sudipen
+        "sud": "Sudipen",
+        "sudipen": "Sudipen",
+        "sudp": "Sudipen",
+        "sudippen": "Sudipen",  # Misspelling
+        "sodipen": "Sudipen",  # From log typo
+        "sudipan": "Sudipen",  # From log typo
+        
+
+        # Rosario
+        "ros": "Rosario",
+        "rosario": "Rosario",
+        "rosaryo": "Rosario",  # From log typo
+        "rosarioo": "Rosario",  # From log typo
+        "rosa": "Rosario",
+        "rosaio": "Rosario",  # From log typo
+        "rosario town": "Rosario",
+        "rosary": "Rosario",  # From log typo
+
+        # Bauang
+        "bau": "Bauang",
+        "bauang": "Bauang",
+        "baung": "Bauang",  # Misspelling
+        "bauan": "Bauang",
+        "bauang town": "Bauang",
+        "bawang": "Bauang",  # From log typo
+
+        # Aringay
+        "aring": "Aringay",
+        "aringay": "Aringay",
+        "aringgay": "Aringay",  # Misspelling
+        "arin": "Aringay",
+
+        # Bacnotan
+        "bac": "Bacnotan",
+        "bacnotan": "Bacnotan",
+        "bacnoton": "Bacnotan",  # Misspelling
+        "bacno": "Bacnotan",
+        "bacnotan town": "Bacnotan",
+        "bacnotn": "Bacnotan",  # From log typo
+
+        # Balaoan
+        "bal": "Balaoan",
+        "balaoan": "Balaoan",
+        "balaon": "Balaoan",  # Misspelling
+        "balawan": "Balaoan",
+        "baloan": "Balaoan",  # From log typo
+
+        # Bangar
+        "bang": "Bangar",
+        "bangar": "Bangar",
+        "banger": "Bangar",  # Misspelling
+
+        # Caba
+        "cab": "Caba",
+        "caba": "Caba",
+        "kaba": "Caba",  # Misspelling
+        "caba town": "Caba",
+        "cuba": "Caba",  # From log typo
+
+        # Luna
+        "lun": "Luna",
+        "luna": "Luna",
+        "luna town": "Luna",
+        "lona": "Luna",  # Misspelling
+
+        # Pugo
+        "pug": "Pugo",
+        "pugo": "Pugo",
+        "pogo": "Pugo",  # Misspelling
+
+        # San Juan
+        "sanj": "San Juan",
+        "sj": "San Juan",
+        "san juan": "San Juan",
+        "sanjuan": "San Juan",
+        "san j": "San Juan",
+
+        # Santol
+        "sant": "Santol",
+        "santol": "Santol",
+        "santoll": "Santol",  # Misspelling
+
+        # Tubao
+        "tub": "Tubao",
+        "tubao": "Tubao",
+        "tubo": "Tubao",  # Misspelling
+        "tubao town": "Tubao",
+        "tubaw": "Tubao",  # From log typo
+
+        # Additional towns from log
+        # Bagulin
+        "bag": "Bagulin",
+        "bagulin": "Bagulin",
+        "bagolin": "Bagulin",  # Misspelling
+        "bagullin": "Bagulin",  # Misspelling
+        
+
+        # Burgos
+        "burg": "Burgos",
+        "burgos": "Burgos",
+        "burges": "Burgos",  # Misspelling
+        "burgers": "Burgos",  # Misspelling
+
+        # San Gabriel
+        "sang": "San Gabriel",
+        "san gabriel": "San Gabriel",
+        "sangabriel": "San Gabriel",
+        "san g": "San Gabriel",
+        "san gab": "San Gabriel",
+        "sg": "San Gabriel",
     }
-    town = town_synonyms.get(town, town)
-    if town == "la union":
-        return "La Union"
-    if town.startswith("san "):
-        town = "San " + town[4:].capitalize()
-    else:
-        town = town.capitalize()
-    return town
+    town = town.lower()
+    return town_synonyms.get(town, town.title())
+
+def clean_product_name(product: str) -> str:
+    if not product:
+        return product
+    product = re.sub(r'\s+', ' ', product.strip().lower())
+    synonym_map = {
+        "inabel": "Inabel Towel", "towel": "Inabel Towel", "handloom": "Inabel Towel", "weaving": "Inabel Towel", "abel": "Inabel Towel",
+        "daing": "Dried Fish", "dried fish": "Dried Fish", "tuyo": "Dried Fish",
+        "baskets": "Labtang Basket", "basket": "Labtang Basket", "basket weaving": "Labtang Basket", "labtang": "Labtang Basket",
+        "colored brooms": "Colored Soft Broom", "colored broom": "Colored Soft Broom", "broom": "Colored Soft Broom",
+        "soft broom": "Colored Soft Broom", "walis tambo": "Colored Soft Broom", "buyboy": "Colored Soft Broom", "walis": "Colored Soft Broom",
+        "honey": "Honey", "pulot": "Honey",
+        "basi": "Naguilian Basi", "sugarcane wine": "Naguilian Basi", "alak na tubo": "Naguilian Basi", "innumin": "Naguilian Basi",
+        "grapes": "Fresh Grapes", "ubas": "Fresh Grapes", "grape wine": "Fresh Grapes", "alak na ubas": "Fresh Grapes",
+        "mushrooms": "Mushrooms", "kabute": "Mushrooms",
+        "sea urchin": "Sea Urchins", "sea urchins": "Sea Urchins", "maritangtang": "Sea Urchins", "tayom": "Sea Urchins",
+        "pebbles": "Pebble Crafts", "pebble crafts": "Pebble Crafts", "bato": "Pebble Crafts",
+        "pottery": "Damili", "clay pot": "Damili", "palayok": "Damili", "damili": "Damili",
+        "tea": "Lemongrass and Ginger Tea", "lemongrass tea": "Lemongrass and Ginger Tea", "ginger tea": "Lemongrass and Ginger Tea",
+        "salabat": "Lemongrass and Ginger Tea",
+        "chichacorn": "Chichacorn", "cornick": "Chichacorn", "mais": "Chichacorn",
+        "ube wine": "Ube Wine", "ube": "Ube Wine", "purple yam": "Ube Wine", "halayang ube": "Ube Wine",
+        "bamboo": "Bamboo Crafts", "bamboo crafts": "Bamboo Crafts", "kawayan": "Bamboo Crafts",
+        "furniture": "Wood Furniture", "wood": "Wood Furniture", "kagamitan sa bahay": "Wood Furniture", "upan": "Wood Furniture",
+        "bangus": "Milkfish", "milkfish": "Milkfish", "isda": "Milkfish"
+    }
+    return synonym_map.get(product, product.title())
+
 
 class ActionFetchProductsByTown(Action):
     def name(self) -> Text:
         return "action_fetch_products_by_town"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        town = clean_town_name(tracker.get_slot("town"))
-        logger.debug(f"Fetching products for town: {town}")
-        if not town:
-            dispatcher.utter_message(text="Ooh, which La Union town are we exploring today?")
-            return [SlotSet("products", None), SlotSet("store_name", None)]
+        try:
+            town = clean_town_name(tracker.get_slot("town"))
+            logger.debug(f"Fetching products for town: {town}")
+            
+            if not town:
+                dispatcher.utter_message(text="Which La Union town would you like to explore?")
+                return [SlotSet("products", None), SlotSet("store_name", None)]
 
-        if town.lower() == "la union":
-            products = data["products"]
-        else:
-            products = [p for p in data["products"] if clean_town_name(p["town"]).lower() == town.lower()]
-        
-        if not products:
-            nearby_towns = sorted(set(clean_town_name(p["town"]) for p in data["products"] if p["town"].lower() != town.lower()))
-            nearby_suggestion = f"Check out nearby towns like {', '.join(nearby_towns[:2])}!" if nearby_towns else "Try another town!"
-            dispatcher.utter_message(text=f"Ay, no products found in {town} yet. {nearby_suggestion}")
-            return [SlotSet("products", None), SlotSet("store_name", None)]
+            # Get the user's intent from the latest message
+            latest_message = tracker.latest_message.get("text", "").lower()
+            is_signature_product_query = any(keyword in latest_message for keyword in 
+                ["signature", "known", "common", "famous", "popular", "specialty"])
 
-        product_list = ", ".join(sorted(set(p["name"] for p in products)))
-        dispatcher.utter_message(text=f"In {town}, you’ve got these cool finds: {product_list}")
-        return [SlotSet("products", product_list), SlotSet("store_name", None)]
+            if is_signature_product_query:
+                # Handle signature product query
+                signature_products = [sp["product_name"] for sp in data["signature_products"] 
+                                   if clean_town_name(sp["town"]).lower() == town.lower()]
+                
+                if not signature_products:
+                    dispatcher.utter_message(text=f"No signature products found for {town}.")
+                    return [SlotSet("products", None), SlotSet("store_name", None)]
+                
+                product_list = ", ".join(signature_products)
+                dispatcher.utter_message(text=f"{town} is known for: {product_list}")
+                return [SlotSet("products", product_list), SlotSet("store_name", None)]
+            else:
+                # Handle regular products query
+                products = [p for p in data["products"] 
+                          if clean_town_name(p["town"]).lower() == town.lower()]
+                
+                if not products:
+                    nearby_towns = sorted(set(clean_town_name(p["town"]) for p in data["products"] 
+                                        if clean_town_name(p["town"]).lower() != town.lower()))
+                    nearby_suggestion = f"Check out nearby towns like {', '.join(nearby_towns[:2])}!" if nearby_towns else "Try another town!"
+                    dispatcher.utter_message(text=f"Ayy, no products found in {town} yet. {nearby_suggestion}")
+                    return [SlotSet("products", None), SlotSet("store_name", None)]
+
+                product_list = ", ".join(sorted(set(p["name"] for p in products)))
+                dispatcher.utter_message(text=f"In {town}, you've got these cool finds: {product_list}")
+                return [SlotSet("products", product_list), SlotSet("store_name", None)]
+
+        except Exception as e:
+            logger.error(f"Error in action_fetch_products_by_town: {str(e)}")
+            dispatcher.utter_message(text="I encountered an error while fetching products. Please try again.")
+            return [SlotSet("products", None), SlotSet("store_name", None)]
 
 class ActionFetchProductsByCategory(Action):
     def name(self) -> Text:
@@ -156,7 +335,7 @@ class ActionFetchProductByName(Action):
             "inabel": "inabel towel", "towel": "inabel towel", "handloom": "inabel towel", "weaving": "inabel towel", "abel": "inabel towel",
             "daing": "dried fish", "dried fish": "dried fish", "tuyo": "dried fish",
             "baskets": "Labtang Basket", "basket": "Labtang Basket", "basket weaving": "Labtang Basket", "labtang": "Labtang Basket",
-            "colored brooms": "colored soft broom", "colored broom": "colored soft broom", "broom": "colored soft broom", 
+            "colored brooms": "colored soft broom", "colored broom": "colored soft broom", "broom": "colored soft broom",
             "soft broom": "colored soft broom", "walis tambo": "colored soft broom", "buyboy": "colored soft broom",
             "honey": "honey", "pulot": "honey",
             "basi": "basi", "sugarcane wine": "basi", "alak na tubo": "basi", "innumin": "basi",
@@ -165,7 +344,7 @@ class ActionFetchProductByName(Action):
             "sea urchin": "sea urchins", "sea urchins": "sea urchins", "maritangtang": "sea urchins", "tayom": "sea urchins",
             "pebbles": "pebble crafts", "pebble crafts": "pebble crafts", "bato": "pebble crafts",
             "pottery": "damili", "clay pot": "damili", "palayok": "damili", "damili": "damili",
-            "tea": "lemongrass and ginger tea", "lemongrass tea": "lemongrass and ginger tea", "ginger tea": "lemongrass and ginger tea", 
+            "tea": "lemongrass and ginger tea", "lemongrass tea": "lemongrass and ginger tea", "ginger tea": "lemongrass and ginger tea",
             "salabat": "lemongrass and ginger tea",
             "chichacorn": "chichacorn", "cornick": "chichacorn", "mais": "chichacorn",
             "ube wine": "ube wine", "ube": "ube wine", "purple yam": "ube wine", "halayang ube": "ube wine",
@@ -200,7 +379,7 @@ class ActionFetchProductAvailability(Action):
             "inabel": "inabel towel", "towel": "inabel towel", "handloom": "inabel towel", "weaving": "inabel towel", "abel": "inabel towel",
             "daing": "dried fish", "dried fish": "dried fish", "tuyo": "dried fish",
             "baskets": "Labtang Basket", "basket": "Labtang Basket", "basket weaving": "Labtang Basket", "labtang": "Labtang Basket",
-            "colored brooms": "colored soft broom", "colored broom": "colored soft broom", "broom": "colored soft broom", 
+            "colored brooms": "colored soft broom", "colored broom": "colored soft broom", "broom": "colored soft broom",
             "soft broom": "colored soft broom", "walis tambo": "colored soft broom", "buyboy": "colored soft broom",
             "honey": "honey", "pulot": "honey",
             "basi": "basi", "sugarcane wine": "basi", "alak na tubo": "basi", "innumin": "basi",
@@ -209,7 +388,7 @@ class ActionFetchProductAvailability(Action):
             "sea urchin": "sea urchins", "sea urchins": "sea urchins", "maritangtang": "sea urchins", "tayom": "sea urchins",
             "pebbles": "pebble crafts", "pebble crafts": "pebble crafts", "bato": "pebble crafts",
             "pottery": "damili", "clay pot": "damili", "palayok": "damili", "damili": "damili",
-            "tea": "lemongrass and ginger tea", "lemongrass tea": "lemongrass and ginger tea", "ginger tea": "lemongrass and ginger tea", 
+            "tea": "lemongrass and ginger tea", "lemongrass tea": "lemongrass and ginger tea", "ginger tea": "lemongrass and ginger tea",
             "salabat": "lemongrass and ginger tea",
             "chichacorn": "chichacorn", "cornick": "chichacorn", "mais": "chichacorn",
             "ube wine": "ube wine", "ube": "ube wine", "purple yam": "ube wine", "halayang ube": "ube wine",
@@ -244,7 +423,7 @@ class ActionFetchProductLocation(Action):
             "inabel": "inabel towel", "towel": "inabel towel", "handloom": "inabel towel", "weaving": "inabel towel", "abel": "inabel towel",
             "daing": "dried fish", "dried fish": "dried fish", "tuyo": "dried fish",
             "baskets": "Labtang Basket", "basket": "Labtang Basket", "basket weaving": "Labtang Basket", "labtang": "Labtang Basket",
-            "colored brooms": "colored soft broom", "colored broom": "colored soft broom", "broom": "colored soft broom", 
+            "colored brooms": "colored soft broom", "colored broom": "colored soft broom", "broom": "colored soft broom",
             "soft broom": "colored soft broom", "walis tambo": "colored soft broom", "buyboy": "colored soft broom",
             "honey": "honey", "pulot": "honey",
             "basi": "basi", "sugarcane wine": "basi", "alak na tubo": "basi", "innumin": "basi",
@@ -253,7 +432,7 @@ class ActionFetchProductLocation(Action):
             "sea urchin": "sea urchins", "sea urchins": "sea urchins", "maritangtang": "sea urchins", "tayom": "sea urchins",
             "pebbles": "pebble crafts", "pebble crafts": "pebble crafts", "bato": "pebble crafts",
             "pottery": "damili", "clay pot": "damili", "palayok": "damili", "damili": "damili",
-            "tea": "lemongrass and ginger tea", "lemongrass tea": "lemongrass and ginger tea", "ginger tea": "lemongrass and ginger tea", 
+            "tea": "lemongrass and ginger tea", "lemongrass tea": "lemongrass and ginger tea", "ginger tea": "lemongrass and ginger tea",
             "salabat": "lemongrass and ginger tea",
             "chichacorn": "chichacorn", "cornick": "chichacorn", "mais": "chichacorn",
             "ube wine": "ube wine", "ube": "ube wine", "purple yam": "ube wine", "halayang ube": "ube wine",
@@ -294,7 +473,16 @@ class ActionFetchProductsByLocation(Action):
         return "action_fetch_products_by_location"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        # Check if town is in the latest message - this helps prioritize town entity
+        latest_message = tracker.latest_message.get("text", "").lower()
         town = clean_town_name(tracker.get_slot("town"))
+        logger.debug(f"Latest message: {latest_message}, Town slot: {town}")
+
+        # If the message contains 'san fernando' but town slot is not set, handle it specially
+        if "san fernando" in latest_message and not town:
+            town = "San Fernando"
+            logger.debug(f"Detected San Fernando in message, setting town to: {town}")
+
         logger.debug(f"Fetching products by location for town: {town}")
         if not town:
             dispatcher.utter_message(text="Ooh, which La Union town are we exploring today?")
@@ -304,7 +492,7 @@ class ActionFetchProductsByLocation(Action):
             products = data["products"]
         else:
             products = [p for p in data["products"] if clean_town_name(p["town"]).lower() == town.lower()]
-        
+
         if not products:
             nearby_towns = sorted(set(clean_town_name(p["town"]) for p in data["products"] if p["town"].lower() != town.lower()))
             nearby_suggestion = f"Check out nearby towns like {', '.join(nearby_towns[:2])}!" if nearby_towns else "Try another town!"
@@ -336,7 +524,7 @@ class ActionFetchProductsByType(Action):
             "souvenirs": ["souvenir", "craft", "inabel", "broom"],
             "pasalubong": ["bagoong", "chips", "wine", "dried fish"],
             "local snacks": ["chips", "talong", "okra"],
-            "inabel": ["inabel", "towel"], "towel": ["inabel", "towel"], "handloom": ["inabel", "towel"], 
+            "inabel": ["inabel", "towel"], "towel": ["inabel", "towel"], "handloom": ["inabel", "towel"],
             "weaving": ["inabel", "towel"], "abel": ["inabel", "towel"],
             "honey": ["honey"], "pulot": ["honey"],
             "daing": ["dried fish"], "dried fish": ["dried fish"], "tuyo": ["dried fish"],
@@ -344,16 +532,16 @@ class ActionFetchProductsByType(Action):
             "bamboo": ["bamboo"], "kawayan": ["bamboo"],
             "wood": ["wood", "narra"], "kagamitan sa bahay": ["wood"], "upan": ["wood"],
             "basi": ["basi", "sugarcane wine"], "sugarcane wine": ["basi"], "alak na tubo": ["basi"], "innumin": ["basi"],
-            "baskets": ["basket", "Labtang Basket"], "basket": ["Labtang Basket"], "basket weaving": ["Labtang Basket"], 
+            "baskets": ["basket", "Labtang Basket"], "basket": ["Labtang Basket"], "basket weaving": ["Labtang Basket"],
             "labtang": ["Labtang Basket"],
-            "colored brooms": ["colored soft broom"], "colored broom": ["colored soft broom"], "broom": ["colored soft broom"], 
+            "colored brooms": ["colored soft broom"], "colored broom": ["colored soft broom"], "broom": ["colored soft broom"],
             "soft broom": ["colored soft broom"], "walis tambo": ["colored soft broom"], "buyboy": ["colored soft broom"],
             "grapes": ["grapes"], "ubas": ["grapes"], "grape wine": ["grapes"], "alak na ubas": ["grapes"],
             "mushrooms": ["mushrooms"], "kabute": ["mushrooms"],
             "sea urchin": ["sea urchins"], "sea urchins": ["sea urchins"], "maritangtang": ["sea urchins"], "tayom": ["sea urchins"],
             "pebbles": ["pebble crafts"], "pebble crafts": ["pebble crafts"], "bato": ["pebble crafts"],
             "pottery": ["damili"], "clay pot": ["damili"], "palayok": ["damili"], "damili": ["damili"],
-            "tea": ["lemongrass and ginger tea"], "lemongrass tea": ["lemongrass and ginger tea"], 
+            "tea": ["lemongrass and ginger tea"], "lemongrass tea": ["lemongrass and ginger tea"],
             "ginger tea": ["lemongrass and ginger tea"], "salabat": ["lemongrass and ginger tea"],
             "chichacorn": ["chichacorn"], "cornick": ["chichacorn"], "mais": ["chichacorn"],
             "ube wine": ["ube wine"], "ube": ["ube wine"], "purple yam": ["ube wine"], "halayang ube": ["ube wine"],
@@ -377,9 +565,32 @@ class ActionFetchStoreByProduct(Action):
         return "action_fetch_store_by_product"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        product_name = tracker.get_slot("product_name") or tracker.get_slot("product_category") or tracker.get_slot("product_type")
+        # Check if town is in the latest message - this helps prioritize town entity
+        latest_message = tracker.latest_message.get("text", "").lower()
         town = clean_town_name(tracker.get_slot("town"))
+        logger.debug(f"Latest message: {latest_message}, Town slot: {town}")
+
+        # If the message contains 'san fernando' but town slot is not set, handle it specially
+        if "san fernando" in latest_message and not town:
+            town = "San Fernando"
+            logger.debug(f"Detected San Fernando in message, setting town to: {town}")
+
+        product_name = tracker.get_slot("product_name") or tracker.get_slot("product_category") or tracker.get_slot("product_type")
         logger.debug(f"Fetching store for product: {product_name}, town: {town}")
+
+        # If we have a town but no product, we should redirect to products by town
+        if town and not product_name and "buy" in latest_message:
+            logger.debug(f"Redirecting to fetch products by town for: {town}")
+            products = [p for p in data["products"] if clean_town_name(p["town"]).lower() == town.lower()]
+            if not products:
+                nearby_towns = sorted(set(clean_town_name(p["town"]) for p in data["products"] if p["town"].lower() != town.lower()))
+                nearby_suggestion = f"Check out nearby towns like {', '.join(nearby_towns[:2])}!" if nearby_towns else "Try another town!"
+                dispatcher.utter_message(text=f"Ayy, no products found in {town} yet. {nearby_suggestion}")
+                return [SlotSet("products", None), SlotSet("store_name", None)]
+
+            product_list = ", ".join(sorted(set(p["name"] for p in products)))
+            dispatcher.utter_message(text=f"In {town}, you've got these cool finds: {product_list}")
+            return [SlotSet("products", product_list), SlotSet("store_name", None)]
 
         if not product_name:
             dispatcher.utter_message(text="What cool product are you hunting for today?")
@@ -389,7 +600,7 @@ class ActionFetchStoreByProduct(Action):
             "inabel": "inabel towel", "towel": "inabel towel", "handloom": "inabel towel", "weaving": "inabel towel", "abel": "inabel towel",
             "daing": "dried fish", "dried fish": "dried fish", "tuyo": "dried fish",
             "baskets": "Labtang Basket", "basket": "Labtang Basket", "basket weaving": "Labtang Basket", "labtang": "Labtang Basket",
-            "colored brooms": "colored soft broom", "colored broom": "colored soft broom", "broom": "colored soft broom", 
+            "colored brooms": "colored soft broom", "colored broom": "colored soft broom", "broom": "colored soft broom",
             "soft broom": "colored soft broom", "walis tambo": "colored soft broom", "buyboy": "colored soft broom",
             "honey": "honey", "pulot": "honey",
             "basi": "basi", "sugarcane wine": "basi", "alak na tubo": "basi", "innumin": "basi",
@@ -398,7 +609,7 @@ class ActionFetchStoreByProduct(Action):
             "sea urchin": "sea urchins", "sea urchins": "sea urchins", "maritangtang": "sea urchins", "tayom": "sea urchins",
             "pebbles": "pebble crafts", "pebble crafts": "pebble crafts", "bato": "pebble crafts",
             "pottery": "damili", "clay pot": "damili", "palayok": "damili", "damili": "damili",
-            "tea": "lemongrass and ginger tea", "lemongrass tea": "lemongrass and ginger tea", "ginger tea": "lemongrass and ginger tea", 
+            "tea": "lemongrass and ginger tea", "lemongrass tea": "lemongrass and ginger tea", "ginger tea": "lemongrass and ginger tea",
             "salabat": "lemongrass and ginger tea",
             "chichacorn": "chichacorn", "cornick": "chichacorn", "mais": "chichacorn",
             "ube wine": "ube wine", "ube": "ube wine", "purple yam": "ube wine", "halayang ube": "ube wine",
@@ -440,23 +651,26 @@ class ActionFetchRecommendation(Action):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         town = clean_town_name(tracker.get_slot("town"))
-        logger.debug(f"Fetching recommendation for town: {town}")
+        
         if town and town.lower() != "la union":
             products = [p for p in data["products"] if clean_town_name(p["town"]).lower() == town.lower()]
+            message = f"In {town}, I recommend checking out: "
         else:
             products = data["products"]
+            message = "Here are some popular products from La Union: "
 
         if not products:
-            dispatcher.utter_message(text="No products available to recommend. Check back later!")
-            return [SlotSet("products", None), SlotSet("store_name", None)]
+            dispatcher.utter_message(text=f"No products available in {town} yet. Try nearby towns!")
+            return []
 
-        popular_products = [p for p in products if any(keyword in p["name"].lower() for keyword in ["basi", "chips", "grapes", "inabel"])]
-        if not popular_products:
-            popular_products = products[:5]
+        # Prioritize signature products
+        signature_products = [p for p in products if p.get("is_signature", False)]
+        if signature_products:
+            products = signature_products
 
-        product_list = ", ".join(sorted(set(p["name"] for p in popular_products)))
-        dispatcher.utter_message(text=f"Oh, you gotta try these La Union faves: {product_list}! Naguilian Basi and Talong Chips are total stars!")
-        return [SlotSet("products", product_list), SlotSet("store_name", None)]
+        product_names = sorted(set(p["name"] for p in products[:5]))
+        dispatcher.utter_message(text=f"{message}{', '.join(product_names)}")
+        return [SlotSet("products", ", ".join(product_names))]
 
 class ActionFetchLocationNearMe(Action):
     def name(self) -> Text:
@@ -495,7 +709,7 @@ class ActionFetchProductDetails(Action):
             "inabel": "inabel towel", "towel": "inabel towel", "handloom": "inabel towel", "weaving": "inabel towel", "abel": "inabel towel",
             "daing": "dried fish", "dried fish": "dried fish", "tuyo": "dried fish",
             "baskets": "Labtang Basket", "basket": "Labtang Basket", "basket weaving": "Labtang Basket", "labtang": "Labtang Basket",
-            "colored brooms": "colored soft broom", "colored broom": "colored soft broom", "broom": "colored soft broom", 
+            "colored brooms": "colored soft broom", "colored broom": "colored soft broom", "broom": "colored soft broom",
             "soft broom": "colored soft broom", "walis tambo": "colored soft broom", "buyboy": "colored soft broom",
             "honey": "honey", "pulot": "honey",
             "basi": "basi", "sugarcane wine": "basi", "alak na tubo": "basi", "innumin": "basi",
@@ -504,7 +718,7 @@ class ActionFetchProductDetails(Action):
             "sea urchin": "sea urchins", "sea urchins": "sea urchins", "maritangtang": "sea urchins", "tayom": "sea urchins",
             "pebbles": "pebble crafts", "pebble crafts": "pebble crafts", "bato": "pebble crafts",
             "pottery": "damili", "clay pot": "damili", "palayok": "damili", "damili": "damili",
-            "tea": "lemongrass and ginger tea", "lemongrass tea": "lemongrass and ginger tea", "ginger tea": "lemongrass and ginger tea", 
+            "tea": "lemongrass and ginger tea", "lemongrass tea": "lemongrass and ginger tea", "ginger tea": "lemongrass and ginger tea",
             "salabat": "lemongrass and ginger tea",
             "chichacorn": "chichacorn", "cornick": "chichacorn", "mais": "chichacorn",
             "ube wine": "ube wine", "ube": "ube wine", "purple yam": "ube wine", "halayang ube": "ube wine",
@@ -530,66 +744,19 @@ class ActionFetchSignatureProduct(Action):
         town = clean_town_name(tracker.get_slot("town"))
         logger.debug(f"Fetching signature product for town: {town}")
         if not town:
-            dispatcher.utter_message(text="Ooh, which La Union town are we exploring today?")
+            dispatcher.utter_message(response="utter_ask_town")
             return [SlotSet("products", None), SlotSet("store_name", None)]
 
-        synonym_map = {
-            "inabel": "inabel towel", "towel": "inabel towel", "handloom": "inabel towel", "weaving": "inabel towel", "abel": "inabel towel",
-            "daing": "dried fish", "dried fish": "dried fish", "tuyo": "dried fish",
-            "baskets": "Labtang Basket", "basket": "Labtang Basket", "basket weaving": "Labtang Basket", "labtang": "Labtang Basket",
-            "colored brooms": "colored soft broom", "colored broom": "colored soft broom", "broom": "colored soft broom", 
-            "soft broom": "colored soft broom", "walis tambo": "colored soft broom", "buyboy": "colored soft broom",
-            "honey": "honey", "pulot": "honey",
-            "basi": "basi", "sugarcane wine": "basi", "alak na tubo": "basi", "innumin": "basi",
-            "grapes": "grapes", "ubas": "grapes", "grape wine": "grapes", "alak na ubas": "grapes",
-            "mushrooms": "mushrooms", "kabute": "mushrooms",
-            "sea urchin": "sea urchins", "sea urchins": "sea urchins", "maritangtang": "sea urchins", "tayom": "sea urchins",
-            "pebbles": "pebble crafts", "pebble crafts": "pebble crafts", "bato": "pebble crafts",
-            "pottery": "damili", "clay pot": "damili", "palayok": "damili", "damili": "damili",
-            "tea": "lemongrass and ginger tea", "lemongrass tea": "lemongrass and ginger tea", "ginger tea": "lemongrass and ginger tea", 
-            "salabat": "lemongrass and ginger tea",
-            "chichacorn": "chichacorn", "cornick": "chichacorn", "mais": "chichacorn",
-            "ube wine": "ube wine", "ube": "ube wine", "purple yam": "ube wine", "halayang ube": "ube wine",
-            "bamboo": "bamboo crafts", "bamboo crafts": "bamboo crafts", "kawayan": "bamboo crafts",
-            "furniture": "wood furniture", "wood": "wood furniture", "kagamitan sa bahay": "wood furniture", "upan": "wood furniture",
-            "bangus": "milkfish", "milkfish": "milkfish", "isda": "milkfish",
-            "walis": "colored soft broom"
-        }
-
-        signature_products = {
-            "agoo": ["mushrooms"],
-            "aringay": ["milkfish"],
-            "bacnotan": ["honey"],
-            "bagulin": ["Tiger Grass Soft Broom"],
-            "balaoan": ["sea urchins"],
-            "bangar": ["inabel towel"],
-            "bauang": ["grapes"],
-            "burgos": ["colored soft broom"],
-            "caba": ["bamboo crafts"],
-            "luna": ["pebble crafts"],
-            "naguilian": ["basi"],
-            "pugo": ["wood furniture"],
-            "rosario": ["wood furniture"],
-            "san fernando": ["colored soft broom", "lemongrass and ginger tea", "ube wine"],
-            "san gabriel": ["coffee"],
-            "san juan": ["damili"],
-            "santol": ["coffee"],
-            "santo tomas": ["dried fish"],
-            "sudipen": ["Labtang Basket"],
-            "tubao": ["chichacorn"]
-        }
-
-        products = signature_products.get(town.lower(), [])
-        if not products:
-            dispatcher.utter_message(text=f"No signature products found for {town}. Try asking about specific products or other towns!")
+        signature_products = [sp["product_name"] for sp in data["signature_products"] if clean_town_name(sp["town"]).lower() == town.lower()]
+        if not signature_products:
+            dispatcher.utter_message(response="utter_no_signature_products", town=town)
             return [SlotSet("products", None), SlotSet("store_name", None)]
 
-        # Map synonyms to canonical names for display
-        product_list = ", ".join(synonym_map.get(p.lower(), p) for p in products)
+        product_list = ", ".join(signature_products)
         dispatcher.utter_message(text=f"{town} is famous for these signature products: {product_list}")
         if "where" in tracker.latest_message.get("text", "").lower():
-            products_mapped = [synonym_map.get(p.lower(), p.lower()) for p in products]
-            matched_products = [p for p in data["products"] if any(pm in p["name"].lower() or pm in p["description"].lower() for pm in products_mapped)]
+            products_mapped = [clean_product_name(p) for p in signature_products]
+            matched_products = [p for p in data["products"] if any(pm.lower() in p["name"].lower() or pm.lower() in p["description"].lower() for pm in products_mapped)]
             store_ids = set(p["store_id"] for p in matched_products if "store_id" in p)
             stores = [s for s in data["stores"] if s["store_id"] in store_ids and clean_town_name(s["town"]).lower() == town.lower()]
             store_name = stores[0]["name"] if stores else "local shops"
@@ -602,16 +769,56 @@ class ActionFetchStoresByTown(Action):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         town = clean_town_name(tracker.get_slot("town"))
-        logger.debug(f"Fetching stores for town: {town}")
         if not town:
-            dispatcher.utter_message(text="Ooh, which La Union town are we exploring today?")
-            return [SlotSet("stores", None), SlotSet("products", None)]
+            dispatcher.utter_message(text="Which La Union town would you like to explore?")
+            return []
 
         stores = [s for s in data["stores"] if clean_town_name(s["town"]).lower() == town.lower()]
         if not stores:
-            dispatcher.utter_message(text=f"No stores found in {town}. Try another town or check out nearby places like San Fernando!")
-            return [SlotSet("stores", None), SlotSet("products", None)]
+            nearby_towns = sorted(set(clean_town_name(p["town"]) for p in data["products"] if p["town"].lower() != town.lower()))[:2]
+            nearby_msg = f" Check out nearby towns like {', '.join(nearby_towns)}!" if nearby_towns else ""
+            dispatcher.utter_message(text=f"No stores found in {town}.{nearby_msg}")
+            return []
 
         store_list = ", ".join(sorted(set(s["name"] for s in stores)))
         dispatcher.utter_message(text=f"Here are the stores in {town}: {store_list}")
+        return [SlotSet("stores", store_list)]
+
+class ActionTellAboutMunicipality(Action):
+    def name(self) -> Text:
+        return "action_tell_about_municipality"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        town = clean_town_name(tracker.get_slot("town"))
+        if not town:
+            dispatcher.utter_message(text="Which La Union town would you like to know more about?")
+            return []
+
+        municipality = next((m for m in data["municipalities"] if clean_town_name(m["name"]).lower() == town.lower()), None)
+        if municipality:
+            dispatcher.utter_message(text=municipality["description"])
+        else:
+            dispatcher.utter_message(text=f"I don't have detailed information about {town} yet.")
+        return []
+
+class ActionDefaultFallback(Action):
+    def name(self) -> Text:
+        return "action_default_fallback"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+
+        # Get the confidence of the last intent
+        last_intent_confidence = tracker.latest_message.get('intent', {}).get('confidence', 1.0)
+
+        if last_intent_confidence < 0.3:
+            message = ("I'm not quite sure what you mean. Would you like to:\n"
+                      "1. Ask about products in a specific town?\n"
+                      "2. Find stores near you?\n"
+                      "3. Learn about local specialties?")
+        else:
+            message = "I understand you're asking about La Union, but could you rephrase that?"
+
+        dispatcher.utter_message(text=message)
         return [SlotSet("stores", store_list), SlotSet("products", None)]

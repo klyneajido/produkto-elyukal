@@ -26,7 +26,27 @@ rules:
   - intent: ask_stores_by_town
   - action: action_fetch_stores_by_town
 
-- rule: Fallback
+- rule: Ask products by town
   steps:
-  - intent: nlu_fallback
-  - action: utter_fallback
+  - intent: ask_products_in_town
+  - action: action_fetch_products_by_town
+
+- rule: Ask signature product
+  steps:
+  - intent: ask_signature_product
+  - action: action_fetch_signature_product
+
+- rule: Ask product location
+  steps:
+  - intent: ask_product_location
+  - action: action_fetch_product_location
+
+- rule: Ask products by location
+  steps:
+  - intent: ask_products_by_location
+  - action: action_fetch_products_by_location
+
+- rule: Follow up where is it
+  steps:
+  - intent: follow_up_where_is_it
+  - action: action_fetch_product_location

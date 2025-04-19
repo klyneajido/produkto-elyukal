@@ -10,6 +10,15 @@ nlu:
     - yo
     - kumusta
     - naimbag nga aldaw
+    - magandang umaga
+    - hello po
+    - kamusta ka
+    - hi elyu
+    - hello elyubot
+    - hey elyubot
+    - [morning] {"entity": "time"}
+    - [afternoon] {"entity": "time"}
+    - [evening] {"entity": "time"}
 
 - intent: goodbye
   examples: |
@@ -40,6 +49,29 @@ nlu:
     - list products in [Bangar]{"entity": "town"}
     - what can I buy in [Ag]{"entity": "town"}?
     - products in [City of San Fernando]{"entity": "town"}?
+    - what products can I find in [san fernando]{"entity": "town"}
+    - show me items from [bauang]{"entity": "town"}
+    - what can I buy in [san juan]{"entity": "town"}
+    - products available in [agoo]{"entity": "town"}
+    - what's popular in [san gabriel]{"entity": "town"}
+    - local products in [bacnotan]{"entity": "town"}
+    - what can i buy in [san fernando]{"entity": "town"}
+    - what products are in [san fernando]{"entity": "town"}
+    - what can i get in [san fernando]{"entity": "town"}
+    - what's available in [SAN FERNANDO]{"entity": "town"}
+    - products in [burgos]{"entity": "town"}
+    - items in [caba]{"entity": "town"}
+    - what can i purchase in [pugo]{"entity": "town"}
+    - products from [rosario]{"entity": "town"}
+    - products from [naguilian]{"entity": "town"}
+    - products in [santo tomas]{"entity": "town"}
+    - products from [sudipen]{"entity": "town"}
+    - products in [san gabriel]{"entity": "town"}
+    - what are some products in [luna]{"entity": "town"}
+    - products from [balaoan]{"entity": "town"}
+    - products in [bangar]{"entity": "town"}
+    - ano ang mga produkto sa [caba]{"entity": "town"}
+    - what can I buy in [SAN JUAN]{"entity": "town"}
 
 - intent: ask_products_by_category
   examples: |
@@ -95,6 +127,9 @@ nlu:
     - do you have [labtang]{"entity": "product_name"}?
     - any [kabute]{"entity": "product_name"}?
     - what about [salabat]{"entity": "product_name"}?
+    - I'm looking for [inabel]{"entity": "product_name"}
+    - I want [inabel]{"entity": "product_name"}
+    - Where can I get [inabel towel]{"entity": "product_name"}?
 
 - intent: ask_product_availability
   examples: |
@@ -137,6 +172,9 @@ nlu:
     - where can I get [ube]{"entity": "product_name"}?
     - where to find [kawayan]{"entity": "product_name"}?
     - where can I buy [isda]{"entity": "product_name"}?
+    - where to find [pottery]{"entity": "product_name"}?
+    - where can I get [kultur shak]{"entity": "store_name"}?
+    - where to find [gapuz grape farm]{"entity": "store_name"}?
 
 - intent: ask_products_by_location
   examples: |
@@ -146,6 +184,7 @@ nlu:
     - what can I buy in [La Union]{"entity": "town"}?
     - what’s available near [Bacnotan]{"entity": "town"}?
     - products in [Nags]{"entity": "town"}?
+    - products in [san fernando]{"entity": "town"}
 
 - intent: ask_products_by_type
   examples: |
@@ -255,6 +294,9 @@ nlu:
     - what is [Ag]{"entity": "town"} known for?
     - what’s famous in [Nags]{"entity": "town"}?
     - what’s [Santo]{"entity": "town"} famous for?
+    - what is [san fernando]{"entity": "town"} known for?
+    - what’s [caba]{"entity": "town"} famous for?
+    - famous products in [burgos]{"entity": "town"}?
 
 - intent: ask_stores_by_town
   examples: |
@@ -267,10 +309,16 @@ nlu:
     - what are the stores in [Bacnotan]{"entity": "town"}?
     - where can I find shops in [Sudipen]{"entity": "town"}?
     - shops located in [Naguilian]{"entity": "town"}?
-    - stores in [San Fernando]{"entity": "town"}?
-    - stores in [Bangar]{"entity": "town"}?
-    - stores in [Ag]{"entity": "town"}?
-    - shops in [Santo]{"entity": "town"}?
+    - stores in [san fernando]{"entity": "town"}?
+    - stores in [bangar]{"entity": "town"}?
+    - stores in [agoo]{"entity": "town"}?
+    - shops in [santo tomas]{"entity": "town"}?
+    - stores in [caba]{"entity": "town"}?
+    - stores in [burgos]{"entity": "town"}?
+    - what are the stores in [pugo]{"entity": "town"}?
+    - stores in [rosario]{"entity": "town"}?
+    - stores in [naguilian]{"entity": "town"}?
+    - what stores are in [san gabriel]{"entity": "town"}?
 
 - intent: follow_up_where_is_it
   examples: |
@@ -324,7 +372,7 @@ nlu:
     - maanghang
     - nagasang
 
-- synonym: inabel towel
+- synonym: Inabel Towel
   examples: |
     - inabel
     - towel
@@ -332,7 +380,7 @@ nlu:
     - weaving
     - abel
 
-- synonym: dried fish
+- synonym: Dried Fish
   examples: |
     - daing
     - dried fish
@@ -345,7 +393,7 @@ nlu:
     - basket weaving
     - labtang
 
-- synonym: colored soft broom
+- synonym: Colored Soft Broom
   examples: |
     - colored brooms
     - colored broom
@@ -355,84 +403,84 @@ nlu:
     - buyboy
     - walis
 
-- synonym: honey
+- synonym: Honey
   examples: |
     - honey
     - pulot
 
-- synonym: basi
+- synonym: Naguilian Basi
   examples: |
     - basi
     - sugarcane wine
     - alak na tubo
     - innumin
 
-- synonym: grapes
+- synonym: Fresh Grapes
   examples: |
     - grapes
     - ubas
     - grape wine
     - alak na ubas
 
-- synonym: mushrooms
+- synonym: Mushrooms
   examples: |
     - mushrooms
     - kabute
 
-- synonym: sea urchins
+- synonym: Sea Urchins
   examples: |
     - sea urchin
     - sea urchins
     - maritangtang
     - tayom
 
-- synonym: pebble crafts
+- synonym: Pebble Crafts
   examples: |
     - pebbles
     - pebble crafts
     - bato
 
-- synonym: damili
+- synonym: Damili
   examples: |
     - pottery
     - clay pot
     - palayok
     - damili
 
-- synonym: lemongrass and ginger tea
+- synonym: Lemongrass and Ginger Tea
   examples: |
     - tea
     - lemongrass tea
     - ginger tea
     - salabat
 
-- synonym: chichacorn
+- synonym: Chichacorn
   examples: |
     - chichacorn
     - cornick
     - mais
 
-- synonym: ube wine
+- synonym: Ube Wine
   examples: |
     - ube wine
     - ube
     - purple yam
     - halayang ube
 
-- synonym: bamboo crafts
+- synonym: Bamboo Crafts
   examples: |
     - bamboo
     - bamboo crafts
     - kawayan
 
-- synonym: wood furniture
+- synonym: Wood Furniture
   examples: |
     - furniture
     - wood
     - kagamitan sa bahay
     - upan
 
-- synonym: milkfish
+- synonym: Milkfish
   examples: |
     - bangus
     - milkfish
@@ -440,76 +488,163 @@ nlu:
 
 - synonym: Agoo
   examples: |
-    - Ag
+    - ag
+    - agoo
+    - AGO
+    - agoo city
+    - agoo town
 
 - synonym: San Fernando
   examples: |
-    - City of San Fernando
-    - Fernando
-    - SFC
+    - city of san fernando
+    - fernando
+    - sfc
+    - san fernando
+    - san fernnado
+    - san f
+    - sf
+    - san fernando city
+    - sanfernando
+    - san fernando la union
 
 - synonym: Naguilian
   examples: |
-    - Nags
+    - nags
+    - naguilian
+    - naguillian
+    - nag
+    - nagu
 
 - synonym: Santo Tomas
   examples: |
-    - Santo
-    - Tomas
-    - ST
+    - santo
+    - tomas
+    - st
+    - santo tomas
+    - sto tomas
+    - sto. tomas
+    - santotomas
+    - santo thomas
 
 - synonym: Sudipen
   examples: |
-    - Sud
+    - sud
+    - sudipen
+    - sudp
+    - sudippen
 
 - synonym: Rosario
   examples: |
-    - Ros
+    - ros
+    - rosario
+    - rosaryo
+    - rosarioo
+    - rosa
 
 - synonym: Bauang
   examples: |
-    - Bau
+    - bau
+    - bauang
+    - baung
+    - bauan
 
 - synonym: Aringay
   examples: |
-    - Aring
+    - aring
+    - aringay
+    - aringgay
+    - arin
 
 - synonym: Bacnotan
   examples: |
-    - Bac
+    - bac
+    - bacnotan
+    - bacnoton
+    - bacno
 
 - synonym: Balaoan
   examples: |
-    - Bal
+    - bal
+    - balaoan
+    - balaon
+    - balawan
 
 - synonym: Bangar
   examples: |
-    - Bang
+    - bang
+    - bangar
+    - banger
 
 - synonym: Caba
   examples: |
-    - Cab
+    - cab
+    - caba
+    - kaba
+    - caba town
 
 - synonym: Luna
   examples: |
-    - Lun
+    - lun
+    - luna
+    - luna town
+    - lona
 
 - synonym: Pugo
   examples: |
-    - Pug
+    - pug
+    - pugo
+    - pogo
 
 - synonym: San Juan
   examples: |
-    - Sanj
-    - SJ
+    - sanj
+    - sj
+    - san juan
+    - sanjuan
+    - san j
 
 - synonym: Santol
   examples: |
-    - Sant
+    - sant
+    - santol
+    - santoll
 
 - synonym: Tubao
   examples: |
-    - Tub
+    - tub
+    - tubao
+    - tubo
+    - tubao town
+
+- synonym: Bagulin
+  examples: |
+    - bag
+    - bagulin
+    - bagolin
+
+- synonym: Burgos
+  examples: |
+    - burg
+    - burgos
+    - burges
+
+- synonym: San Gabriel
+  examples: |
+    - sang
+    - san gabriel
+    - sangabriel
+    - san g
+
+- synonym: Kultur Siak - OTOP Hub La Union
+  examples: |
+    - kultur shak
+    - otop hub
+    - kultur siak
+
+- synonym: Gapuz Grape Farm
+  examples: |
+    - gapuz grape farm
+    - gapuz farm
 
 - lookup: town
   examples: |
@@ -534,16 +669,27 @@ nlu:
     - Sudipen
     - Tubao
     - La Union
-    - Ag
-    - City of San Fernando
-    - Fernando
-    - Nags
-    - Santo
-    - Tomas
-    - Sud
-    - Ros
-    - Bau
-    - Aring
-    - Bac
-    - Bal
-   
+    - ag
+    - city of san fernando
+    - fernando
+    - nags
+    - santo
+    - tomas
+    - sud
+    - ros
+    - bau
+    - aring
+    - bac
+    - bal
+    - cab
+    - lun
+    - pug
+    - sanj
+    - sant
+    - tub
+    - bag
+    - burg
+    - sang
+    - san fernnado
+    - rosarioo
+    - sanfernando

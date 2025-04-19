@@ -13,21 +13,23 @@ import {
   Dimensions,
   PanResponder,
   ActivityIndicator,
-  Pressable,
+  Image,
 } from 'react-native';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faClose, faPaperPlane, faChevronDown, faInfoCircle, faShoppingBag, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { ipaddress } from '../config/config';
+import { faClose, faPaperPlane, faChevronDown, faInfoCircle, faXmark, faStar, faStore } from '@fortawesome/free-solid-svg-icons';
+import { BASE_URL, RASA_URL } from '../config/config';
 import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 import FastImage from 'react-native-fast-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+
 interface Message {
   text: string;
   sender: 'user' | 'bot';
   timestamp: number;
   products?: Product[];
+  stores?: Store[];
   isTyping?: boolean;
   isError?: boolean;
 }
@@ -49,6 +51,21 @@ interface Product {
   isLoading?: boolean;
 }
 
+interface Store {
+  id: string;
+  name: string;
+  description?: string;
+  address?: string;
+  town?: string;
+  store_image?: string;
+  rating?: number;
+  type?: string;
+  operating_hours?: string;
+  phone?: string;
+  isLoading?: boolean;
+  products?: Product[];
+}
+
 const { width, height } = Dimensions.get('window');
 
 const CHAT_BUTTON_SIZE = 70;
@@ -56,7 +73,7 @@ const CHAT_BUTTON_RADIUS = CHAT_BUTTON_SIZE / 2;
 const BUTTON_POSITION_KEY = 'chatbot_button_position';
 const EDGE_PADDING = 10;
 const TYPING_DOTS_DURATION = 500;
-const API_BASE_URL = `http://${ipaddress}:8000`; // FastAPI server URL
+const API_BASE_URL = BASE_URL;
 
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -65,38 +82,37 @@ const Chatbot: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [typingAnimation] = useState(new Animated.Value(0));
   const [productInfoMap, setProductInfoMap] = useState<{ [name: string]: Product }>({});
+  const [storeInfoMap, setStoreInfoMap] = useState<{ [name: string]: Store }>({});
   const [showBetaNotice, setShowBetaNotice] = useState(true);
-  
+
   const navigation = useNavigation();
   const flatListRef = useRef<FlatList>(null);
-  const position = useRef(new Animated.ValueXY({ 
-    x: width - CHAT_BUTTON_SIZE - EDGE_PADDING, 
-    y: height - 180 
+  const position = useRef(new Animated.ValueXY({
+    x: width - CHAT_BUTTON_SIZE - EDGE_PADDING,
+    y: height - 180
   })).current;
-  
+
   const isDragging = useRef(false);
 
-  // Load saved position on mount and handle orientation changes
   useEffect(() => {
     loadButtonPosition();
-    
+
     const dimensionsListener = Dimensions.addEventListener('change', () => {
       const { width: newWidth, height: newHeight } = Dimensions.get('window');
       const currentPos = getCurrentPosition();
-      
+
       const newX = Math.min(Math.max(EDGE_PADDING, currentPos.x), newWidth - CHAT_BUTTON_SIZE - EDGE_PADDING);
       const newY = Math.min(Math.max(EDGE_PADDING, currentPos.y), newHeight - CHAT_BUTTON_SIZE - EDGE_PADDING);
-      
+
       position.setValue({ x: newX, y: newY });
       saveButtonPosition();
     });
-    
+
     return () => {
       dimensionsListener.remove();
     };
   }, []);
 
-  // Typing animation
   useEffect(() => {
     const startTypingAnimation = () => {
       Animated.loop(
@@ -122,13 +138,11 @@ const Chatbot: React.FC = () => {
     }
   }, [messages, typingAnimation]);
 
-  // Fetch product info when products are detected
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage?.products && lastMessage.products.length > 0) {
       lastMessage.products.forEach(product => {
         if (!productInfoMap[product.name]) {
-          // Set initial loading state
           setProductInfoMap(prev => ({
             ...prev,
             [product.name]: {
@@ -137,9 +151,28 @@ const Chatbot: React.FC = () => {
               isLoading: true
             }
           }));
-          
-          // Search for product in database
+
           searchProductByName(product.name);
+        }
+      });
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.stores && lastMessage.stores.length > 0) {
+      lastMessage.stores.forEach(store => {
+        if (!storeInfoMap[store.name]) {
+          setStoreInfoMap(prev => ({
+            ...prev,
+            [store.name]: {
+              id: '',
+              name: store.name,
+              isLoading: true
+            }
+          }));
+
+          searchStoreByName(store.name);
         }
       });
     }
@@ -180,13 +213,12 @@ const Chatbot: React.FC = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/products/search_products/${encodeURIComponent(productName)}`);
       console.log(`API response for ${productName}:`, JSON.stringify(response.data, null, 2));
-      
+
       if (response.data && response.data.products && response.data.products.length > 0) {
-        // Prioritize exact match, fallback to first result
         const matchedProduct = response.data.products.find(
           (p: Product) => p.name.toLowerCase() === productName.toLowerCase()
         ) || response.data.products[0];
-        
+
         setProductInfoMap(prev => ({
           ...prev,
           [productName]: {
@@ -195,7 +227,6 @@ const Chatbot: React.FC = () => {
           }
         }));
       } else {
-        // No match found
         setProductInfoMap(prev => ({
           ...prev,
           [productName]: {
@@ -215,6 +246,132 @@ const Chatbot: React.FC = () => {
           isLoading: false
         }
       }));
+    }
+  };
+
+  const searchStoreByName = async (storeName: string) => {
+    try {
+      console.log(`Searching for store: "${storeName}"`);
+      
+      // Clean the store name by removing emojis and special characters
+      const cleanStoreName = storeName
+        .replace(/[\u{1F600}-\u{1F64F}]/gu, '') // Remove emojis
+        .replace(/[\u{1F300}-\u{1F5FF}]/gu, '') // Remove misc symbols and pictographs
+        .replace(/[\u{1F680}-\u{1F6FF}]/gu, '') // Remove transport and map symbols
+        .replace(/[\u{2700}-\u{27BF}]/gu, '')   // Remove dingbats
+        .replace(/[^\w\s()-]/g, '')             // Remove other special characters except ()- and spaces
+        .trim();                                // Remove leading/trailing whitespace
+
+      const searchResponse = await axios.get(
+        `${BASE_URL}/stores/search_stores/${encodeURIComponent(cleanStoreName)}`
+      );
+
+      if (searchResponse.data?.stores?.[0]) {
+        const store = searchResponse.data.stores[0];
+        try {
+          const productsResponse = await axios.get(
+            `${BASE_URL}/products/fetch_products/${encodeURIComponent(store.id || store.store_id)}`
+          );
+          
+          setStoreInfoMap(prev => ({
+            ...prev,
+            [storeName]: {
+              ...store,
+              store_image: store.image_url || store.store_image,
+              products: productsResponse.data.products || [],
+              isLoading: false,
+            },
+          }));
+        } catch (error) {
+          console.log(`Error fetching products for store "${storeName}":`, error);
+          setStoreInfoMap(prev => ({
+            ...prev,
+            [storeName]: {
+              ...store,
+              store_image: store.image_url || store.store_image,
+              products: [],
+              isLoading: false,
+            },
+          }));
+        }
+      } else {
+        setStoreInfoMap(prev => ({
+          ...prev,
+          [storeName]: {
+            id: '',
+            name: storeName,
+            isLoading: false,
+          },
+        }));
+      }
+    } catch (error) {
+      console.log(`Error processing store "${storeName}":`, error);
+      setStoreInfoMap(prev => ({
+        ...prev,
+        [storeName]: {
+          id: '',
+          name: storeName,
+          isLoading: false,
+        },
+      }));
+    }
+  };
+
+  const fetchStoreByName = async (storeName: string): Promise<Store | null> => {
+    try {
+      const response = await axios.get(`${BASE_URL}/stores/fetch_stores`);
+      const stores = response.data;
+
+      const matchingStore = stores.find(
+        (store: Store) => store.name.toLowerCase() === storeName.toLowerCase()
+      );
+
+      if (matchingStore) {
+        // Fetch products for this store
+        const productsResponse = await axios.get(`${BASE_URL}/products/fetch_products`);
+        const storeProducts = productsResponse.data.products.filter(
+          (product: Product) => product.store_id === (matchingStore.id || matchingStore.store_id)
+        );
+
+        return {
+          id: matchingStore.id || matchingStore.store_id,
+          name: matchingStore.name,
+          description: matchingStore.description,
+          store_image: matchingStore.image_url || matchingStore.store_image,
+          rating: matchingStore.rating,
+          type: matchingStore.type,
+          operating_hours: matchingStore.operating_hours,
+          phone: matchingStore.phone,
+          products: storeProducts,
+        };
+      }
+
+      const searchResponse = await axios.get(`${BASE_URL}/stores/search_stores/${encodeURIComponent(storeName)}`);
+      if (searchResponse.data?.stores?.length > 0) {
+        const store = searchResponse.data.stores[0];
+        // Fetch products for this store
+        const productsResponse = await axios.get(`${BASE_URL}/products/fetch_products`);
+        const storeProducts = productsResponse.data.products.filter(
+          (product: Product) => product.store_id === (store.id || store.store_id)
+        );
+
+        return {
+          id: store.id || store.store_id,
+          name: store.name,
+          description: store.description,
+          store_image: store.image_url || store.store_image,
+          rating: store.rating,
+          type: store.type,
+          operating_hours: store.operating_hours,
+          phone: store.phone,
+          products: storeProducts,
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error fetching store:', error);
+      return null;
     }
   };
 
@@ -241,10 +398,10 @@ const Chatbot: React.FC = () => {
         position.flattenOffset();
 
         const currentPos = getCurrentPosition();
-        
+
         let newX = Math.min(Math.max(EDGE_PADDING, currentPos.x), width - CHAT_BUTTON_SIZE - EDGE_PADDING);
         let newY = Math.min(Math.max(EDGE_PADDING, currentPos.y), height - CHAT_BUTTON_SIZE - EDGE_PADDING);
-        
+
         const isHorizontalMovement = Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
         if (isHorizontalMovement) {
           newX = newX < width / 2 ? EDGE_PADDING : width - CHAT_BUTTON_SIZE - EDGE_PADDING;
@@ -275,10 +432,8 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  // Add welcome message when chat is opened
   useEffect(() => {
     if (modalVisible && messages.length === 0) {
-      // Add typing indicator
       setMessages([{
         text: '',
         sender: 'bot',
@@ -286,7 +441,6 @@ const Chatbot: React.FC = () => {
         isTyping: true
       }]);
 
-      // After 2 seconds, replace typing indicator with welcome message
       setTimeout(() => {
         setMessages([{
           text: 'Hi there! How can I help you today?',
@@ -297,7 +451,6 @@ const Chatbot: React.FC = () => {
     }
   }, [modalVisible]);
 
-  // Scroll to the latest message
   useEffect(() => {
     if (flatListRef.current && messages.length > 0) {
       setTimeout(() => {
@@ -306,7 +459,6 @@ const Chatbot: React.FC = () => {
     }
   }, [messages]);
 
-  // Format timestamp
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
     let hours = date.getHours();
@@ -318,41 +470,42 @@ const Chatbot: React.FC = () => {
     return `${hours}:${minutesStr} ${ampm}`;
   };
 
-  // Navigate to product details
   const navigateToProductDetails = (product: Product) => {
     setModalVisible(false);
     // @ts-ignore: Navigation params not typed
     navigation.navigate('ProductDetails', { product });
   };
 
+  const navigateToStoreDetails = (store: Store) => {
+    setModalVisible(false);
+    navigation.navigate('StoreDetails', { store });
+  };
+
   const extractProducts = (message: string): Product[] | undefined => {
     console.log(`Extracting products from message: "${message}"`);
-    // Check if message likely contains product listings
     if (
       message.toLowerCase().includes("products") ||
       message.toLowerCase().includes("we have") ||
       message.toLowerCase().includes("you've got these") ||
       message.toLowerCase().includes("here are") ||
-      message.includes(":") // Look for colon-separated lists
+      message.includes(":")
     ) {
-      // Extract the product list after a colon or similar marker
       const productListMatch = message.match(/: (.*?)(?:$|\.)/);
       let potentialProducts: string[] = [];
 
       if (productListMatch && productListMatch[1]) {
-        // Split by commas, clean up each product name
         potentialProducts = productListMatch[1]
           .split(',')
           .map((p) => p.trim())
-          .filter((p) => p.length > 2 && p.match(/[A-Za-z]/)) // Ensure valid name
-          .map((name) => name.replace(/[^A-Za-z\s]/g, "")); // Clean special characters
+          .filter((p) => p.length > 2 && p.match(/[A-Za-z]/))
+          .map((name) => name.trim().replace(/[^A-Za-z\s.]/g, ""))
       } else {
-        // Fallback: Split by commas or "and" if no colon
         potentialProducts = message
           .split(/,|and/)
           .map((p) => p.trim())
           .filter((p) => p.length > 2 && p.match(/[A-Za-z]/))
-          .map((name) => name.replace(/[^A-Za-z\s]/g, ""));
+          .map((name) => name.trim().replace(/[^A-Za-z\s.]/g, ""))
+
       }
 
       if (potentialProducts.length > 0) {
@@ -365,7 +518,62 @@ const Chatbot: React.FC = () => {
     return undefined;
   };
 
-  // Send message to Rasa server
+  const extractStores = async (message: string): Promise<Store[]> => {
+    try {
+      // Get everything after the colon and split by comma
+      const colonIndex = message.indexOf(':');
+      if (colonIndex === -1) return [];
+
+      const storeNames = message
+          .slice(colonIndex + 1)
+          .split(',')
+          .map(name => name.trim())
+          .filter(name => name.length > 0);
+
+      console.log('Extracted store names:', storeNames);  // Debug log
+
+      let mentionedStores: Store[] = [];
+      const productsResponse = await axios.get(`${BASE_URL}/products/fetch_products`);
+
+      for (const storeName of storeNames) {
+          try {
+              console.log(`Searching for store: "${storeName}"`);  // Debug log
+              const searchResponse = await axios.get(
+                  `${BASE_URL}/stores/search_stores/${encodeURIComponent(storeName)}`
+              );
+
+              if (searchResponse.data?.stores?.[0]) {
+                  const store = searchResponse.data.stores[0];
+                  const storeProducts = productsResponse.data.products.filter(
+                      (product: Product) => product.store_id === store.id
+                  );
+
+                  mentionedStores.push({
+                      id: store.id,
+                      name: store.name,
+                      description: store.description,
+                      store_image: store.image_url || store.store_image,
+                      rating: store.rating,
+                      type: store.type,
+                      operating_hours: store.operating_hours,
+                      phone: store.phone,
+                      products: storeProducts
+                  });
+              }
+          } catch (error) {
+              console.error(`Error fetching store "${storeName}":`, error);
+          }
+      }
+
+      console.log('Final mentioned stores:', mentionedStores);  // Debug log
+      return mentionedStores;
+    } catch (error) {
+      console.error('Error in extractStores:', error);
+      return [];
+    }
+  };
+  
+
   const sendMessage = async (message: string) => {
     if (!message.trim()) return;
 
@@ -374,14 +582,13 @@ const Chatbot: React.FC = () => {
       sender: 'user',
       timestamp: Date.now()
     };
-    
+
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
 
-    // Add typing indicator
     setMessages((prev) => [
-      ...prev, 
+      ...prev,
       {
         text: '',
         sender: 'bot',
@@ -391,11 +598,10 @@ const Chatbot: React.FC = () => {
     ]);
 
     try {
-      // Delay to show typing animation (2-3 seconds)
       await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
-      
+
       const response = await axios.post(
-        `http://${ipaddress}:5055/webhooks/rest/webhook`,
+        `${RASA_URL}/webhooks/rest/webhook`,
         {
           sender: 'user',
           message: message,
@@ -404,23 +610,23 @@ const Chatbot: React.FC = () => {
 
       console.log('Rasa response:', JSON.stringify(response.data, null, 2));
 
-      // Remove typing indicator
       setMessages((prev) => prev.filter(msg => !msg.isTyping));
 
       const botResponses = response.data as { text: string }[];
       if (botResponses.length > 0) {
-        botResponses.forEach((botMsg) => {
-          // Check if response contains products
+        for (const botMsg of botResponses) {
           const products = extractProducts(botMsg.text);
-          
+          const stores = await extractStores(botMsg.text);
+
           const botMessage: Message = {
             text: botMsg.text,
             sender: 'bot',
             timestamp: Date.now(),
-            products
+            products,
+            stores
           };
           setMessages((prev) => [...prev, botMessage]);
-        });
+        }
       } else {
         setMessages((prev) => [...prev, {
           text: "I didn't understand that. Could you please rephrase?",
@@ -430,10 +636,9 @@ const Chatbot: React.FC = () => {
       }
     } catch (error) {
       console.log('Error communicating with Rasa:', error);
-      
-      // Remove typing indicator
+
       setMessages((prev) => prev.filter(msg => !msg.isTyping));
-      
+
       setMessages((prev) => [...prev, {
         text: 'Oops! It seems there\'s a server problem. Please try again later or contact support if the issue persists.',
         sender: 'bot',
@@ -445,12 +650,11 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  // Render typing animation
   const renderTypingAnimation = () => {
     return (
       <View style={styles.typingContainer}>
         <View style={styles.typingDot} />
-        <Animated.View 
+        <Animated.View
           style={[
             styles.typingDot,
             {
@@ -459,9 +663,9 @@ const Chatbot: React.FC = () => {
                 outputRange: [0.3, 1, 0.3]
               })
             }
-          ]} 
+          ]}
         />
-        <Animated.View 
+        <Animated.View
           style={[
             styles.typingDot,
             {
@@ -470,55 +674,193 @@ const Chatbot: React.FC = () => {
                 outputRange: [0.3, 0.3, 1]
               })
             }
-          ]} 
+          ]}
         />
       </View>
     );
   };
 
   const renderProductCards = (products: Product[]) => {
+    if (!products || products.length === 0) {
+      return null;
+    }
+
+    const availableProducts = products.filter(product => {
+      const productInfo = productInfoMap[product.name];
+      return productInfo && productInfo.id !== '' && !productInfo.isLoading;
+    });
+
+    if (availableProducts.length === 0) {
+      const stillLoading = products.some(product => {
+        const productInfo = productInfoMap[product.name];
+        return productInfo && productInfo.isLoading;
+      });
+
+      if (stillLoading) {
+        return (
+          <View style={styles.loadingProductsContainer}>
+            <ActivityIndicator size="small" color={COLORS.white} />
+            <Text style={styles.loadingProductsText}>Loading products...</Text>
+          </View>
+        );
+      }
+
+      return null;
+    }
+
     return (
       <View style={styles.productCardsContainer}>
-        {products.map((product, index) => {
-          const productInfo = productInfoMap[product.name] || { id: '', isLoading: true };
-          const isLoading = productInfo.isLoading;
-          const hasValidId = productInfo.id !== '';
+        {availableProducts.map((product, index) => {
+          const productInfo = productInfoMap[product.name];
 
           return (
             <TouchableOpacity
-              key={`${product.name}-${index}`} // Ensure unique key
-              style={[styles.productCard, !hasValidId && !isLoading && styles.productCardDisabled]}
-              onPress={() => {
-                if (!isLoading && hasValidId) {
-                  navigateToProductDetails(productInfo);
-                }
-              }}
+              key={`${product.name}-${index}`}
+              style={[
+                styles.productCard,
+                availableProducts.length === 1 && styles.singleProductCard,
+                availableProducts.length === 2 && styles.doubleProductCard,
+              ]}
+              onPress={() => navigateToProductDetails(productInfo)}
               activeOpacity={0.7}
-              disabled={isLoading || !hasValidId}
             >
-              {isLoading ? (
-                <ActivityIndicator size="small" color={COLORS.white} />
-              ) : (
-                <FastImage
-                  source={productInfo.image_urls?.[0] ? { uri: productInfo.image_urls[0] } : require('../assets/img/placeholder.png')}
-                  style={styles.productImage}
-                  resizeMode="cover"
-                />
-              )}
+              <FastImage
+                source={productInfo.image_urls?.[0] ? { uri: productInfo.image_urls[0] } : require('../assets/img/placeholder.png')}
+                style={styles.productImage}
+                resizeMode="cover"
+              />
               <Text style={styles.productName} numberOfLines={2}>
                 {product.name}
               </Text>
-              {!hasValidId && !isLoading && (
-                <Text style={styles.productNotFoundText}>Not available</Text>
-              )}
             </TouchableOpacity>
           );
         })}
       </View>
     );
-  };  
+  };
 
-  // Render error message with improved styling
+  const StoreCard = React.memo(({ store }: { store: Store }) => {
+    const storeInfo = storeInfoMap[store.name] || store;
+    
+    // Use a ref to prevent re-renders from causing loops
+    const processedRef = useRef(false);
+  
+    useEffect(() => {
+      // Only try to fetch store info if needed and not already processed
+      if (!processedRef.current && store.name && !storeInfoMap[store.name]) {
+        processedRef.current = true;
+        // Don't update state in render cycle
+      }
+    }, [store.name]);
+  
+    if (!storeInfo || storeInfo.isLoading) {
+      return (
+        <View style={styles.storeCard}>
+          <ActivityIndicator size="small" color={COLORS.highlight} />
+        </View>
+      );
+    }
+  
+    // Don't render cards without an ID or with empty data
+    if (!storeInfo.id) {
+      return null;
+    }
+  
+    return (
+      <TouchableOpacity
+        style={styles.storeCard}
+        onPress={() => navigateToStoreDetails(storeInfo)}
+        activeOpacity={0.7}
+      >
+        <Image
+          source={{
+            uri: storeInfo.store_image || 'https://via.placeholder.com/50',
+          }}
+          style={styles.storeImage}
+          defaultSource={require('../assets/img/events/culinary-arts.png')}
+        />
+        <View style={styles.storeInfo}>
+          <Text style={styles.storeName} numberOfLines={1}>
+            {storeInfo.name}
+          </Text>
+          <View style={styles.storeMetaInfo}>
+            <View style={styles.ratingContainer}>
+              <FontAwesomeIcon icon={faStar} color="#FDD700" size={12} />
+              <Text style={styles.ratingText}>
+                {storeInfo.rating?.toFixed(1) || '0.0'}
+              </Text>
+            </View>
+            {storeInfo.type && (
+              <Text style={styles.storeType} numberOfLines={1}>
+                {storeInfo.type}
+              </Text>
+            )}
+          </View>
+          {storeInfo.products && storeInfo.products.length > 0 && (
+            <View style={styles.productPreview}>
+              <Text style={styles.productPreviewText}>
+                Products: {storeInfo.products.slice(0, 3).map(p => p.name).join(', ')}
+                {storeInfo.products.length > 3 ? '...' : ''}
+              </Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  }, (prevProps, nextProps) => {
+    // Implement a proper equality check to prevent unnecessary re-renders
+    return prevProps.store.id === nextProps.store.id && 
+           prevProps.store.name === nextProps.store.name;
+  });
+  
+
+  const renderStoreCards = (stores: Store[]) => {
+    if (!stores || stores.length === 0) {
+      return null;
+    }
+  
+    // Create a unique list of stores by ID to prevent duplicates
+    const storeMap = new Map<string, Store>();
+    
+    stores.forEach(store => {
+      const storeInfo = storeInfoMap[store.name] || store;
+      if (storeInfo.id) {
+        storeMap.set(storeInfo.id, storeInfo);
+      }
+    });
+    
+    const availableStores = Array.from(storeMap.values())
+      .filter(store => !store.isLoading);
+  
+    if (availableStores.length === 0) {
+      const stillLoading = stores.some(store => {
+        const storeInfo = storeInfoMap[store.name];
+        return storeInfo && storeInfo.isLoading;
+      });
+  
+      if (stillLoading) {
+        return (
+          <View style={styles.loadingStoresContainer}>
+            <ActivityIndicator size="small" color={COLORS.white} />
+            <Text style={styles.loadingStoresText}>Loading stores...</Text>
+          </View>
+        );
+      }
+  
+      return null;
+    }
+  
+    return (
+      <View style={styles.storeCardsContainer}>
+        {availableStores.map((store) => (
+          <StoreCard
+            key={store.id}
+            store={store}
+          />
+        ))}
+      </View>
+    );
+  };
   const renderErrorMessage = (message: string) => {
     return (
       <View style={styles.errorContainer}>
@@ -528,13 +870,23 @@ const Chatbot: React.FC = () => {
     );
   };
 
-  // Render individual message
-  const renderMessage = ({ item, index }: { item: Message, index: number }) => {
-    const isLastMessage = index === messages.length - 1;
-    const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
-    const showTime = !nextMessage || nextMessage.sender !== item.sender;
+  const Message = React.memo(({ 
+    item, 
+    index, 
+    messagesLength, 
+    productInfoMap, 
+    storeInfoMap 
+  }: { 
+    item: Message;
+    index: number;
+    messagesLength: number;
+    productInfoMap: Record<string, any>;
+    storeInfoMap: Record<string, any>;
+  }) => {
+    const isLastMessage = index === messagesLength - 1;
+    const showTime = index === messagesLength - 1 || 
+      messages[index + 1]?.sender !== item.sender;
 
-    // Handle typing animation
     if (item.isTyping) {
       return (
         <View style={styles.messageWrapper}>
@@ -581,9 +933,10 @@ const Chatbot: React.FC = () => {
               {item.text}
             </Text>
           )}
-          
+
           {item.products && item.products.length > 0 && renderProductCards(item.products)}
-          
+          {item.stores && item.stores.length > 0 && renderStoreCards(item.stores)}
+
           {showTime && (
             <Text style={styles.timestamp}>{formatTime(item.timestamp)}</Text>
           )}
@@ -591,7 +944,7 @@ const Chatbot: React.FC = () => {
         {item.sender === 'user' && <View style={styles.userIconSpace} />}
       </View>
     );
-  };
+  });
 
   const BetaNotice = () => {
     const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -623,14 +976,14 @@ const Chatbot: React.FC = () => {
             This AI assistant is currently in beta and may have limited knowledge. It works best with simple queries about La Union's local products and stores.
           </Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={handleDismiss}
           style={styles.dismissButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <FontAwesomeIcon 
-            icon={faXmark} 
-            color={COLORS.gray} 
+          <FontAwesomeIcon
+            icon={faXmark}
+            color={COLORS.gray}
             size={16}
           />
         </TouchableOpacity>
@@ -640,7 +993,6 @@ const Chatbot: React.FC = () => {
 
   return (
     <>
-      {/* Draggable Floating Chat Button */}
       <Animated.View
         style={[
           styles.floatingButtonContainer,
@@ -666,7 +1018,6 @@ const Chatbot: React.FC = () => {
         </TouchableOpacity>
       </Animated.View>
 
-      {/* Chat Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -706,12 +1057,24 @@ const Chatbot: React.FC = () => {
               <FlatList
                 ref={flatListRef}
                 data={messages}
-                renderItem={renderMessage}
-                keyExtractor={(item, index) => `${item.sender}-${item.timestamp}-${index}`} // Ensure unique keys
+                renderItem={({ item, index }) => (
+                  <Message
+                    item={item}
+                    index={index}
+                    messagesLength={messages.length}
+                    productInfoMap={productInfoMap}
+                    storeInfoMap={storeInfoMap}
+                  />
+                )}
+                keyExtractor={(item, index) => `${item.sender}-${item.timestamp}-${index}`}
                 style={styles.messageList}
                 contentContainerStyle={styles.messageListContent}
                 ListFooterComponent={<View style={styles.messageFooterSpace} />}
                 showsVerticalScrollIndicator={false}
+                removeClippedSubviews={true}
+                maxToRenderPerBatch={10}
+                windowSize={10}
+                initialNumToRender={10}
               />
             </View>
 
@@ -747,7 +1110,6 @@ const Chatbot: React.FC = () => {
   );
 };
 
-// Styles remain unchanged
 const styles = StyleSheet.create({
   floatingButtonContainer: {
     position: 'absolute',
@@ -952,7 +1314,6 @@ const styles = StyleSheet.create({
   productCardsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
     marginTop: FONT_SIZE.medium,
     marginBottom: FONT_SIZE.small,
   },
@@ -962,13 +1323,25 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 6,
     marginBottom: 5,
+    marginRight: '2%',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
-  productCardDisabled: {
-    opacity: 0.6,
-    backgroundColor: COLORS.gray,
+  loadingProductsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: FONT_SIZE.medium,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 8,
+    borderRadius: 8,
+  },
+  loadingProductsText: {
+    color: COLORS.white,
+    marginLeft: 8,
+    fontSize: FONT_SIZE.small,
+    fontFamily: FONTS.regular,
   },
   productImage: {
     width: 40,
@@ -982,27 +1355,23 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     textAlign: 'center',
   },
-  productNotFoundText: {
-    fontSize: FONT_SIZE.extraSmall,
-    fontFamily: FONTS.regular,
-    color: COLORS.red,
-    marginTop: 4,
-  },
   errorMessageContainer: {
-    backgroundColor: 'rgba(255, 200, 200, 0.9)',
-    borderLeftWidth: 3,
-    borderLeftColor: COLORS.red,
+    backgroundColor: '#FEE2E2',
+    borderRadius: 12,
+    padding: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#EF4444',
   },
   errorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
   },
   errorText: {
-    fontSize: FONT_SIZE.medium,
+    color: '#991B1B',
+    fontSize: 14,
     fontFamily: FONTS.regular,
-    color: COLORS.darkGray,
-    marginLeft: 8,
-    flex: 1,
+    lineHeight: 20,
   },
   betaNoticeContainer: {
     backgroundColor: 'rgba(66, 153, 225, 0.1)',
@@ -1045,6 +1414,95 @@ const styles = StyleSheet.create({
     padding: 4,
     borderRadius: 12,
     backgroundColor: 'rgba(66, 153, 225, 0.1)',
+  },
+  singleProductCard: {
+    width: '60%',
+    marginRight: 0,
+  },
+  doubleProductCard: {
+    width: '48%',
+    marginRight: '2%',
+  },
+  storeCardsContainer: {
+    flexDirection: 'column',
+    marginTop: FONT_SIZE.medium,
+    marginBottom: FONT_SIZE.small,
+  },
+  storeCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  productPreview: {
+    marginTop: 4,
+  },
+  productPreviewText: {
+    fontSize: FONT_SIZE.small,
+    color: COLORS.white,
+    opacity: 0.8,
+    fontFamily: FONTS.regular,
+  },
+  storeImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+    marginRight: 8,
+  },
+  storeInfo: {
+    flex: 1,
+  },
+  storeName: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.medium,
+    color: COLORS.white,
+    marginBottom: 2,
+  },
+  storeMetaInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  ratingText: {
+    color: COLORS.white,
+    fontSize: FONT_SIZE.small,
+    marginLeft: 4,
+    fontFamily: FONTS.medium,
+  },
+  storeType: {
+    color: COLORS.white,
+    fontSize: FONT_SIZE.small,
+    opacity: 0.8,
+    fontFamily: FONTS.regular,
+  },
+  placeholderImage: {
+    backgroundColor: COLORS.lightBackground,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingStoresContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: FONT_SIZE.medium,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 8,
+    borderRadius: 8,
+  },
+  loadingStoresText: {
+    color: COLORS.white,
+    marginLeft: 8,
+    fontSize: FONT_SIZE.small,
+    fontFamily: FONTS.regular,
   },
 });
 

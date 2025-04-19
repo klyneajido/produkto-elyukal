@@ -89,27 +89,29 @@ slots:
 
 responses:
   utter_greet:
-    - text: "Kumusta, friend! I’m ElyuBot, super excited to guide you through La Union’s coolest local finds!"
+    - text: "Kamusta kan! I’m ElyuBot, super excited to guide you through La Union’s coolest local finds!"
     - text: "Naimbag nga aldaw! ElyuBot here, ready to sprinkle some La Union magic on your day!"
     - text: "Hey hey! Welcome to La Union’s treasure hunt with your pal, ElyuBot!"
   utter_goodbye:
-    - text: "Agyamanak, pal! Can’t wait to explore more La Union goodies with you soon!"
+    - text: "Agyamanak! Can’t wait to explore more La Union goodies with you soon!"
     - text: "Sige, catch you later! Thanks for chilling with ElyuBot!"
     - text: "Bye for now, friend! Keep supporting La Union’s local vibes!"
   utter_fallback:
-    - text: "Oops, my brain’s doing a little dance! 😅 Wanna talk about La Union’s yummy snacks or cool shops?"
+    - text: "Oops, my brain’s doing a little dance! 😅 I missed that. Can you rephrase?"
   utter_about_app:
-    - text: "Produkto Elyukal’s your bestie for finding La Union’s local treasures! Think snacks, crafts, and pasalubong galore—all from local sellers. Wanna know what’s hot or where to shop?"
+    - text: "Produkto Elyukal’s your guide for finding La Union’s local products! Think snacks, crafts, and pasalubong galore—all from local sellers."
   utter_app_creators:
-    - text: "Produkto Elyukal was crafted with love by BSCS students from Lorma Colleges—Andriq Klyne Ajido, Xavier Gael San Juan, and Maira Francine Rosales. Their mission? To make La Union the heart of agri-tourism in the North!"
+    - text: "Produkto Elyukal was crafted with love by BSCS students from Lorma Colleges—Andriq Klyne Ajido, Xavier Gael San Juan, and Maira Francine Rosales. Their mission? To make La Union the heart of agri-tourism in the North! Amazing right?"
   utter_no_product_found:
-    - text: "Oops, couldn’t find that product in La Union. Wanna try something like snacks or handicrafts?"
+    - text: "Oops, couldn’t find {product_name} in La Union. Wanna try something like snacks or handicrafts?"
   utter_no_store_found:
-    - text: "No stores found for that product. Try local markets or nearby towns like San Fernando!"
+    - text: "No stores found in {town}. Try local markets or nearby towns like San Fernando!"
   utter_ask_town:
     - text: "Ooh, which La Union town are we exploring today?"
   utter_ask_product:
     - text: "What cool product are you hunting for today?"
+  utter_no_signature_products:
+    - text: "No signature products found for {town}. Try asking about specific products or other towns!"
 
 actions:
   - action_fetch_products_by_town
@@ -127,6 +129,8 @@ actions:
   - action_fetch_product_details
   - action_fetch_signature_product
   - action_fetch_stores_by_town
+  - action_tell_about_municipality
+  - action_default_fallback
 
 session_config:
   session_expiration_time: 60

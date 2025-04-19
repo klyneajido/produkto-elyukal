@@ -1,0 +1,9 @@
+version: "2"
+authtoken: 2uSsU27V9PijDCJmjdKMUrw8yzw_5L6EcByXfuxcAezHK8y5P  # Replace with your ngrok authtoken
+tunnels:
+  fastapi:
+    proto: http
+    addr: 8000
+  rasa:
+    proto: http
+    addr: 5055
