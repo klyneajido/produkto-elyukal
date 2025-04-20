@@ -38,7 +38,7 @@ export default function ReviewList() {
             } catch (error: any) {
                 // Only handle the error if it's not an abort error
                 if (!axios.isCancel(error)) {
-                    console.error('Error fetching reviews:', error.message, error.response?.data);
+                    console.log('Error fetching reviews:', error.message, error.response?.data);
                     // You might want to set some error state here to show to the user
                 }
             } finally {

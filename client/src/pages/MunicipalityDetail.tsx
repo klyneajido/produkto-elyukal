@@ -66,7 +66,7 @@ const MunicipalityDetail: React.FC = () => {
                 const fetchedProducts = productsResponse.data.products || [];
                 setProducts(fetchedProducts);
             } catch (err) {
-                console.error('Error loading data:', err);
+                console.log('Error loading data:', err);
                 setError('Failed to load data');
                 Alert.alert(
                     'Error',
@@ -87,7 +87,7 @@ const MunicipalityDetail: React.FC = () => {
                 message: `Check out the amazing products from ${municipalityName} in our app!`,
             });
         } catch (err) {
-            console.error('Share error:', err);
+            console.log('Share error:', err);
             Alert.alert('Error', 'Failed to share municipality products');
         }
     };

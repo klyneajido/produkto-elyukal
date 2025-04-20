@@ -61,7 +61,7 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                 );
             }
         } catch (err) {
-            console.error('Error fetching products:', err);
+            console.log('Error fetching products:', err);
             setError('Failed to load products');
         } finally {
             setLoading(false);

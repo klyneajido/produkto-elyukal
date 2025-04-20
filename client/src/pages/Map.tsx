@@ -82,7 +82,7 @@ const MapView = () => {
                             Math.abs(store.latitude) > 90 ||
                             Math.abs(store.longitude) > 180
                         ) {
-                            console.error(`Invalid coordinates for store ${store.store_id}`);
+                            console.log(`Invalid coordinates for store ${store.store_id}`);
                             return null;
                         }
                         return {
@@ -210,7 +210,7 @@ const MapView = () => {
                 });
             }
         } catch (error) {
-            console.error('Route fetching error', error);
+            console.log('Route fetching error', error);
             Alert.alert('Error', 'Failed to fetch route information. Please try again.');
         }
     };
@@ -278,7 +278,7 @@ const MapView = () => {
                     });
                 }
             } catch (error) {
-                console.error('Error fetching route:', error);
+                console.log('Error fetching route:', error);
                 Alert.alert('Error', 'Unable to fetch route. Please try again.');
             }
             return;
@@ -320,7 +320,7 @@ const MapView = () => {
                     });
                 }
             } catch (error) {
-                console.error('Error fetching route:', error);
+                console.log('Error fetching route:', error);
                 Alert.alert('Error', 'Unable to fetch route. Please try again.');
             }
         } else {

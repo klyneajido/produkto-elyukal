@@ -277,7 +277,7 @@ const Chatbot: React.FC = () => {
 
       return searchResponse.data?.stores?.[0] || null;
     } catch (error) {
-      console.error(`Error searching for store "${storeName}":`, error);
+      console.log(`Error searching for store "${storeName}":`, error);
       return null;
     }
   };
@@ -346,7 +346,7 @@ const Chatbot: React.FC = () => {
 
       return null;
     } catch (error) {
-      console.error('Error fetching store:', error);
+      console.log('Error fetching store:', error);
       return null;
     }
   };
@@ -602,13 +602,13 @@ const Chatbot: React.FC = () => {
             }
           }
         } catch (error) {
-          console.error('Error processing store:', storeName, error);
+          console.log('Error processing store:', storeName, error);
         }
       }
 
       return mentionedStores;
     } catch (error) {
-      console.error('Error in extractStores:', error);
+      console.log('Error in extractStores:', error);
       return [];
     }
   };

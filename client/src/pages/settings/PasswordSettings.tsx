@@ -197,7 +197,7 @@ const PasswordSettings = () => {
             }, 1500);
 
         } catch (error: any) {
-            console.error('Failed to update password:', error);
+            console.log('Failed to update password:', error);
             let errorMessage = 'Failed to update your password. Please try again.';
 
             if (axios.isAxiosError(error)) {

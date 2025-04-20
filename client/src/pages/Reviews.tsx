@@ -48,7 +48,7 @@ const ReviewScreen: React.FC = () => {
         });
         setReviews(response.data);
       } catch (error: any) {
-        console.error('Error fetching reviews:', error);
+        console.log('Error fetching reviews:', error);
       } finally {
         setLoading(false);
       }

@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar, faTag, faBox, faArrowLeft, faCheckCircle, faShoppingCart, faPercent } from '@fortawesome/free-solid-svg-icons';
 import { RootStackParamList } from '../../types/types';
 import { styles } from '../assets/style/priceComparisonStyle';
+import { COLORS } from '../assets/constants/constant';
 
 type PriceComparisonRouteProp = RouteProp<RootStackParamList, 'PriceComparison'>;
 
@@ -93,7 +94,7 @@ const PriceComparison: React.FC = () => {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={goBack} style={styles.backButton}>
-                    <FontAwesomeIcon icon={faArrowLeft} size={20} color={styles.backButtonIcon.color} />
+                    <FontAwesomeIcon icon={faArrowLeft} size={20} color={COLORS.white} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Price Comparison</Text>
             </View>
@@ -104,12 +105,11 @@ const PriceComparison: React.FC = () => {
                         <Image
                             source={{ uri: product.image_urls[0] }}
                             style={styles.productImage}
+                            resizeMode="cover"
                         />
                     )}
                     <View style={styles.productNameContainer}>
-                        <Text style={styles.productName}>
-                            {product.name}
-                        </Text>
+                        <Text style={styles.productName}>{product.name}</Text>
                         <Text style={styles.comparisonText}>
                             Compare prices across {allProducts.length} stores
                         </Text>
@@ -127,7 +127,7 @@ const PriceComparison: React.FC = () => {
                         {bestDeal && (
                             <View style={styles.bestDealContainer}>
                                 <View style={styles.bestDealHeader}>
-                                    <FontAwesomeIcon icon={faTag} size={16} color={styles.bestDealIcon.color} />
+                                    <FontAwesomeIcon icon={faTag} size={16} color={COLORS.white} />
                                     <Text style={styles.bestDealHeaderText}>BEST DEAL</Text>
                                 </View>
                                 <View style={styles.bestDealContent}>
@@ -136,6 +136,7 @@ const PriceComparison: React.FC = () => {
                                             <Image
                                                 source={{ uri: bestDeal.image_urls[0] }}
                                                 style={styles.bestDealImage}
+                                                resizeMode="cover"
                                             />
                                         )}
                                         <View>
@@ -143,9 +144,9 @@ const PriceComparison: React.FC = () => {
                                                 {bestDeal.store_name}
                                             </Text>
                                             <View style={styles.bestDealRatingContainer}>
-                                                <FontAwesomeIcon icon={faStar} size={12} color={styles.bestDealStarIcon.color} />
+                                                <FontAwesomeIcon icon={faStar} size={12} color="#FDD700" />
                                                 <Text style={styles.bestDealRating}>
-                                                    {bestDeal.stores?.rating || 'N/A'}
+                                                    {bestDeal.stores?.rating?.toFixed(1) || 'N/A'}
                                                 </Text>
                                             </View>
                                         </View>
@@ -167,9 +168,7 @@ const PriceComparison: React.FC = () => {
                         )}
 
                         <View style={styles.allOptionsContainer}>
-                            <Text style={styles.allOptionsTitle}>
-                                All Available Options
-                            </Text>
+                            <Text style={styles.allOptionsTitle}>All Available Options</Text>
 
                             {sortedProducts.map((item, index) => {
                                 const savings = calculateSavings(item);
@@ -188,59 +187,21 @@ const PriceComparison: React.FC = () => {
                                                 <Image
                                                     source={{ uri: item.image_urls[0] }}
                                                     style={styles.storeImage}
+                                                    resizeMode="cover"
                                                 />
                                             )}
-
                                             <View style={styles.storeInfo}>
                                                 <Text style={styles.storeName}>
                                                     {item.store_name}
                                                 </Text>
-
-                                                {item.stores && (
-                                                    <View style={styles.storeRatingContainer}>
-                                                        <FontAwesomeIcon icon={faStar} size={12} color={styles.storeStarIcon.color} />
-                                                        <Text style={styles.storeRating}>
-                                                            {item.stores.rating || 'N/A'}
-                                                        </Text>
-                                                        <Text style={styles.storeType}>
-                                                            {item.stores.type || 'Store'}
-                                                        </Text>
-                                                    </View>
-                                                )}
-
-                                                <View style={styles.stockContainer}>
-                                                    <FontAwesomeIcon
-                                                        icon={faBox}
-                                                        color={item.in_stock ? styles.inStockIcon.color : styles.outOfStockIcon.color}
-                                                        size={12}
-                                                    />
-                                                    <Text style={[
-                                                        styles.stockText,
-                                                        item.in_stock ? styles.inStockText : styles.outOfStockText
-                                                    ]}>
-                                                        {item.in_stock ? 'In Stock' : 'Out of Stock'}
+                                                <View style={styles.priceContainer}>
+                                                    <Text style={styles.price}>
+                                                        ₱{item.price_min?.toFixed(2)}
                                                     </Text>
                                                 </View>
-                                            </View>
-
-                                            <View style={styles.priceInfoContainer}>
-                                                <Text style={[
-                                                    styles.storePrice,
-                                                    item.id === bestDeal?.id && styles.bestDealStorePrice
-                                                ]}>
-                                                    ₱{item.price_min?.toFixed(2)}
-                                                </Text>
-
-                                                {item.id === bestDeal?.id && (
-                                                    <View style={styles.bestPriceTag}>
-                                                        <FontAwesomeIcon icon={faCheckCircle} size={12} color={styles.bestPriceTagIcon.color} />
-                                                        <Text style={styles.bestPriceTagText}>Best Price</Text>
-                                                    </View>
-                                                )}
-
                                                 {savings && (
                                                     <View style={styles.savingsContainer}>
-                                                        <FontAwesomeIcon icon={faPercent} size={10} color={styles.savingsIcon.color} />
+                                                        <FontAwesomeIcon icon={faPercent} size={12} color="#4CAF50" />
                                                         <Text style={styles.savingsText}>
                                                             Save {savings.percentage}% (₱{savings.amount})
                                                         </Text>
@@ -248,14 +209,6 @@ const PriceComparison: React.FC = () => {
                                                 )}
                                             </View>
                                         </View>
-
-                                        {item.id === product.id && (
-                                            <View style={styles.currentSelectionBadge}>
-                                                <Text style={styles.currentSelectionText}>
-                                                    Current Selection
-                                                </Text>
-                                            </View>
-                                        )}
                                     </TouchableOpacity>
                                 );
                             })}

@@ -190,7 +190,7 @@ const PersonalInformation = () => {
             }, 1500);
 
         } catch (error: any) {
-            console.error('Failed to save personal information:', error);
+            console.log('Failed to save personal information:', error);
             let errorMessage = 'Failed to update your information. Please try again.';
 
             if (axios.isAxiosError(error)) {

@@ -112,7 +112,7 @@ const SettingsScreen: React.FC = () => {
             setLogoutModalVisible(false);
             navigation.navigate("Login");
         } catch (error) {
-            console.error('❌ Logout error:', error);
+            console.log('❌ Logout error:', error);
         }
     };
 
@@ -254,7 +254,7 @@ const SettingsScreen: React.FC = () => {
                         source={getProfileImage()}
                         style={styles.profileImage}
                         onError={(error) => {
-                            console.error('❌ Profile image loading error:', error.nativeEvent.error);
+                            console.log('❌ Profile image loading error:', error.nativeEvent.error);
                         }}
                     />
                     <View style={styles.profileInfo}>

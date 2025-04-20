@@ -198,7 +198,7 @@ const ProductARScene: React.FC<ProductARSceneProps> = ({ product, onClose, onTak
                             }
                         }}
 
-                        onError={(event) => console.error("3D Object Loading Error:", event)}
+                        onError={(event) => console.log("3D Object Loading Error:", event)}
                     />
 
                     {!showText && (
@@ -353,9 +353,9 @@ const ProductDetails: React.FC = () => {
             setSimilarProducts(response.data.similar_products || []);
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                console.error('Error fetching similar products:', error.response?.status, error.response?.data);
+                console.log('Error fetching similar products:', error.response?.status, error.response?.data);
             } else {
-                console.error('Error fetching similar products:', error);
+                console.log('Error fetching similar products:', error);
             }
             setSimilarProducts([]);
         } finally {
@@ -395,7 +395,7 @@ const ProductDetails: React.FC = () => {
             }
             return false;
         } catch (err) {
-            console.error('Error requesting camera permission:', err);
+            console.log('Error requesting camera permission:', err);
             return false;
         }
     };
@@ -412,7 +412,7 @@ const ProductDetails: React.FC = () => {
             }
             return false;
         } catch (err) {
-            console.error('Error requesting storage permission:', err);
+            console.log('Error requesting storage permission:', err);
             return false;
         }
     };
@@ -439,7 +439,7 @@ const ProductDetails: React.FC = () => {
                 throw new Error('No photo URL returned');
             }
         } catch (error: any) {
-            console.error('Error taking photo:', error);
+            console.log('Error taking photo:', error);
             Alert.alert('Error', 'Failed to save photo: ' + error.message);
         } finally {
             setIsTakingPhoto(false);
@@ -495,7 +495,7 @@ const handleShare = async () =>{
       }
     }
     catch (error){
-        console.error('Error sharing:', error);
+        console.log('Error sharing:', error);
     }
 }
 

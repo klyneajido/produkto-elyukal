@@ -94,7 +94,7 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
           navigation.navigate("Login");
         }
       } catch (error) {
-        console.error("Authentication check error:", error);
+        console.log("Authentication check error:", error);
         setError({
           visible: true,
           message: "Failed to validate your session. Please try logging in again.",
@@ -294,7 +294,7 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
 
       results.push(...filteredMunicipalities);
     } catch (error) {
-      console.error('Municipality search error:', error);
+      console.log('Municipality search error:', error);
       hasError = true;
       
       // More specific error handling
@@ -365,7 +365,7 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
 
       results.push(...filteredProducts);
     } catch (error) {
-      console.error('Product search error:', error);
+      console.log('Product search error:', error);
       hasError = true;
       
       if (!(error as { visible?: boolean })?.visible) {
@@ -459,7 +459,7 @@ const Home: React.FC<TabProps> = ({ onScroll }) => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       console.log("Page refreshed!");
     } catch (error) {
-      console.error("Refresh failed:", error);
+      console.log("Refresh failed:", error);
       setError({
         visible: true,
         message: "Couldn't refresh the content. Please try again.",

@@ -45,7 +45,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProduct, limit
             // Extract the products array from the response
             // Check if response.data has a products property
             if (!response.data || !response.data.products || !Array.isArray(response.data.products)) {
-                console.error('Invalid products data:', response.data);
+                console.log('Invalid products data:', response.data);
                 setError('Failed to load similar products - invalid data format');
                 setLoading(false);
                 return;
@@ -84,7 +84,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProduct, limit
 
             setSimilarProducts(filtered.slice(0, limit));
         } catch (err) {
-            console.error('Error fetching similar products:', err);
+            console.log('Error fetching similar products:', err);
             setError('Failed to load similar products');
         } finally {
             setLoading(false);

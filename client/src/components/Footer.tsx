@@ -11,17 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faX, faBrain, faLink, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
 const Footer: React.FC = () => {
-    const socialLinks = [
-        { icon: faX, url: 'https://twitter.com/yourhandle', label: 'Twitter' },
-        { icon: faBrain, url: 'https://github.com/yourhandle', label: 'GitHub' },
-        { icon: faLink, url: 'https://linkedin.com/in/yourhandle', label: 'LinkedIn' },
-        { icon: faEnvelope, url: 'mailto:owner@produkto.com', label: 'Email' },
-    ];
-
-    const handleSocialPress = (url: string) => {
-        Linking.openURL(url).catch(err => console.error('Failed to open URL:', err));
-    };
-
     return (
         <View style={styles.container}>
             <View style={styles.content}>
@@ -31,19 +20,6 @@ const Footer: React.FC = () => {
                     Produkto Elyukal is created by LORMA students.
                     Visit our Help center or check our service advisories for any concerns
                 </Text>
-
-                {/* Social Links
-                <View style={styles.socialContainer}>
-                    {socialLinks.map((link, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            style={styles.socialItem}
-                            onPress={() => handleSocialPress(link.url)}
-                        >
-                            <FontAwesomeIcon icon={link.icon} size={20} color={COLORS.black} />
-                        </TouchableOpacity>
-                    ))}
-                </View> */}
 
                 {/* Version Info */}
                 <Text style={styles.versionText}>
@@ -79,14 +55,6 @@ const styles = StyleSheet.create({
         color: 'rgba(53, 50, 50, 0.9)',
         marginBottom: 15,
         textAlign: 'center',
-    },
-    socialContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: 15,
-    },
-    socialItem: {
-        marginHorizontal: 12,
     },
     versionText: {
         fontFamily: FONTS.regular,

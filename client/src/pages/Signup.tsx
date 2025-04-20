@@ -148,7 +148,7 @@ const SignupScreen: React.FC = () => {
         );
       }
     } catch (error: any) {
-      console.error("Signup Error:", error);
+      console.log("Signup Error:", error);
       if (error.response) {
         const errorMessage =
           error.response?.data?.detail || "Error during registration";
