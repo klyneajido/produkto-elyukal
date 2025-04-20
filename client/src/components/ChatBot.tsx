@@ -23,6 +23,10 @@ import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
 import FastImage from 'react-native-fast-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../types/types';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 interface Message {
   text: string;
@@ -290,11 +294,14 @@ const Chatbot: React.FC = () => {
       if (matchingStore) {
         // Fetch products for this store
         const productsResponse = await axios.get(`${BASE_URL}/products/fetch_products`);
+        console.log('ChatBot - Total products fetched:', productsResponse.data.products?.length || 0);
+        
         const storeProducts = productsResponse.data.products.filter(
           (product: Product) => product.store_id === (matchingStore.id || matchingStore.store_id)
         );
+        console.log('ChatBot - Filtered products for store:', storeProducts.length);
 
-        return {
+        const storeWithProducts = {
           id: matchingStore.id || matchingStore.store_id,
           name: matchingStore.name,
           description: matchingStore.description,
@@ -305,6 +312,14 @@ const Chatbot: React.FC = () => {
           phone: matchingStore.phone,
           products: storeProducts,
         };
+
+        console.log('ChatBot - Store object with products:', {
+          store_id: storeWithProducts.id,
+          name: storeWithProducts.name,
+          products_count: storeWithProducts.products.length
+        });
+
+        return storeWithProducts;
       }
 
       const searchResponse = await axios.get(`${BASE_URL}/stores/search_stores/${encodeURIComponent(storeName)}`);
@@ -438,8 +453,25 @@ const Chatbot: React.FC = () => {
   };
 
   const navigateToStoreDetails = (store: Store) => {
+    console.log('ChatBot - Store object before navigation:', store); // Add full store object logging
+
+    // Ensure we pass the complete store object
+    navigation.navigate('StoreDetails', { 
+      store: {
+        store_id: store.id,
+        name: store.name,
+        description: store.description || '',
+        latitude: 0, // Required by Store interface
+        longitude: 0, // Required by Store interface
+        rating: store.rating || 0,
+        store_image: store.store_image || null,
+        type: store.type || null,
+        operating_hours: store.operating_hours,
+        phone: store.phone
+      } 
+    });
+    
     setModalVisible(false);
-    navigation.navigate('StoreDetails', { store });
   };
 
   const extractProducts = (message: string): Product[] | undefined => {
@@ -486,18 +518,15 @@ const Chatbot: React.FC = () => {
 
   const extractStores = async (message: string): Promise<Store[]> => {
     try {
-
       const townMatch = message.match(/stores in ([^:]+):/i);
       const town = townMatch ? townMatch[1].trim() : null;
 
       if (!town) {
-
         return [];
       }
 
       const storeListMatch = message.match(/:[^]*$/);
       if (!storeListMatch) {
-
         return [];
       }
 
@@ -510,14 +539,24 @@ const Chatbot: React.FC = () => {
       const mentionedStores: Store[] = [];
 
       for (const storeName of storeNames) {
-
         try {
           const searchUrl = `${BASE_URL}/stores/search_stores/${encodeURIComponent(storeName)}`;
-
           const searchResponse = await axios.get(searchUrl);
 
           if (searchResponse.data?.stores?.length > 0) {
             const store = searchResponse.data.stores[0];
+            
+            // Fetch products for this store
+            const productsResponse = await axios.get(`${BASE_URL}/products/fetch_products`);
+            const storeProducts = productsResponse.data.products.filter(
+              (product: Product) => product.store_id === (store.store_id || store.id)
+            );
+            
+            console.log('ChatBot - Found products for store:', {
+              store_name: store.name,
+              products_count: storeProducts.length
+            });
+
             mentionedStores.push({
               id: store.store_id,
               name: store.name,
@@ -526,7 +565,8 @@ const Chatbot: React.FC = () => {
               rating: store.rating,
               type: store.type,
               operating_hours: store.operating_hours,
-              phone: store.phone
+              phone: store.phone,
+              products: storeProducts // Add the products array here
             });
           } else {
             // Try searching with just the first word of the store name
@@ -536,6 +576,18 @@ const Chatbot: React.FC = () => {
             const fallbackResponse = await axios.get(fallbackUrl);
             if (fallbackResponse.data?.stores?.length > 0) {
               const store = fallbackResponse.data.stores[0];
+              
+              // Fetch products for fallback store
+              const productsResponse = await axios.get(`${BASE_URL}/products/fetch_products`);
+              const storeProducts = productsResponse.data.products.filter(
+                (product: Product) => product.store_id === (store.store_id || store.id)
+              );
+
+              console.log('ChatBot - Found products for fallback store:', {
+                store_name: store.name,
+                products_count: storeProducts.length
+              });
+
               mentionedStores.push({
                 id: store.store_id,
                 name: store.name,
@@ -544,17 +596,19 @@ const Chatbot: React.FC = () => {
                 rating: store.rating,
                 type: store.type,
                 operating_hours: store.operating_hours,
-                phone: store.phone
+                phone: store.phone,
+                products: storeProducts // Add the products array here
               });
-            } else {
             }
           }
         } catch (error) {
+          console.error('Error processing store:', storeName, error);
         }
       }
 
       return mentionedStores;
     } catch (error) {
+      console.error('Error in extractStores:', error);
       return [];
     }
   };

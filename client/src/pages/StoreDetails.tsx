@@ -17,7 +17,9 @@ import {
     faArrowLeft,
     faClock,
     faPhone,
-    faChevronRight
+    faChevronRight,
+    faBoxOpen,
+    faShoppingBag
 } from '@fortawesome/free-solid-svg-icons';
 import * as Animatable from 'react-native-animatable';
 import { COLORS } from '../assets/constants/constant';
@@ -239,10 +241,20 @@ const StoreDetails: React.FC<StoreDetailsProps> = ({ route, navigation }) => {
                         <Text style={styles.errorText}>{error}</Text>
                     ) : products.length === 0 ? (
                         <View style={styles.emptyProductsContainer}>
-                            <FontAwesomeIcon icon={faStore} size={50} color={COLORS.lightGray} />
-                            <Text style={styles.emptyProductsText}>
-                                Empty, this store doesn't have any products yet
-                            </Text>
+                            <View style={styles.emptyStateWrapper}>
+                                <View style={styles.emptyIconContainer}>
+                                    <FontAwesomeIcon icon={faBoxOpen} size={32} color={COLORS.primary} />
+                                    <View style={styles.storeIconWrapper}>
+                                        <FontAwesomeIcon icon={faShoppingBag} size={16} color={COLORS.secondary} />
+                                    </View>
+                                </View>
+                                <Text style={styles.emptyProductsTitle}>
+                                    No Products Listed
+                                </Text>
+                                <Text style={styles.emptyProductsText}>
+                                    This store hasn't added any products to their catalog yet. Check back soon!
+                                </Text>
+                            </View>
                         </View>
                     ) : (
                         <View style={styles.productsContainer}>

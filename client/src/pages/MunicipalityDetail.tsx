@@ -21,6 +21,8 @@ import {
     faShoppingBag,
     faInfoCircle,
     faStar,
+    faBoxOpen,
+    faMapPin,
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { BASE_URL } from '../config/config.ts';
@@ -264,12 +266,20 @@ const MunicipalityDetail: React.FC = () => {
                             </View>
                         ) : (
                             <View style={styles.emptyProductsContainer}>
-                                <View style={styles.emptyIconContainer}>
-                                    <FontAwesomeIcon icon={faShoppingBag} size={24} color={COLORS.primary} />
+                                <View style={styles.emptyStateWrapper}>
+                                    <View style={styles.emptyIconContainer}>
+                                        <FontAwesomeIcon icon={faBoxOpen} size={32} color={COLORS.primary} />
+                                        <View style={styles.locationPinWrapper}>
+                                            <FontAwesomeIcon icon={faMapPin} size={16} color={COLORS.secondary} />
+                                        </View>
+                                    </View>
+                                    <Text style={styles.emptyProductsTitle}>
+                                        No Products Yet
+                                    </Text>
+                                    <Text style={styles.emptyProductsText}>
+                                        We haven't discovered any products in {municipalityName} yet. Check back soon!
+                                    </Text>
                                 </View>
-                                <Text style={styles.emptyProductsText}>
-                                    No products available for {municipalityName} yet!
-                                </Text>
                             </View>
                         )}
                     </View>

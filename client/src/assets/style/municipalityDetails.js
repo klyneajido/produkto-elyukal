@@ -3,7 +3,7 @@ import { COLORS, FONTS, FONT_SIZE } from "../constants/constant";
 
 const { width } = Dimensions.get("window");
 const COLUMN_GAP = 15;
-const PRODUCT_COLUMN_WIDTH = (width - 40 - COLUMN_GAP) / 2; // 40 for container padding
+const PRODUCT_COLUMN_WIDTH = (width - 40 - COLUMN_GAP) / 2;
 
 export default StyleSheet.create({
   container: {
@@ -208,28 +208,55 @@ export default StyleSheet.create({
     marginLeft: 4,
   },
   emptyProductsContainer: {
-    backgroundColor: COLORS.container,
+    backgroundColor: COLORS.white,
     borderRadius: 15,
-    padding: 20,
+    padding: 24,
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 10,
-    height: 150,
+    height: 250,
+    shadowColor: COLORS.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  emptyStateWrapper: {
+    alignItems: "center",
+    maxWidth: 280,
   },
   emptyIconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "rgba(128, 128, 128, 0.1)",
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: `${COLORS.primary}10`,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 20,
+    position: 'relative',
+  },
+  locationPinWrapper: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: `${COLORS.secondary}20`,
+    padding: 8,
+    borderRadius: 20,
+    transform: [{ translateX: 10 }, { translateY: 10 }],
+  },
+  emptyProductsTitle: {
+    fontSize: FONT_SIZE.large,
+    fontFamily: FONTS.bold,
+    color: COLORS.black,
+    marginBottom: 8,
+    textAlign: "center",
   },
   emptyProductsText: {
-    fontFamily: FONTS.regular,
     fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.regular,
     color: COLORS.gray,
     textAlign: "center",
+    lineHeight: 22,
   },
     eventsContainer: {
         marginBottom: 20,
