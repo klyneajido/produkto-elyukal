@@ -10,6 +10,7 @@ import {
     Animated,
     Easing,
     Dimensions,
+    Image,
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -253,7 +254,8 @@ const LoginScreen: React.FC = () => {
                                 containerSize={containerSize}
                             />
                         ))}
-                        <Text style={styles.text}>Naragsak nga Isasangbay!</Text>
+                        <Text style={styles.miniText}>Welcome to</Text>
+                        <Text style={styles.text}>Produkto Elyu-kal</Text>
                         <Text style={styles.subText}>Sign In & Pick Up Where You Left Off!</Text>
                     </LinearGradient>
                 </View>

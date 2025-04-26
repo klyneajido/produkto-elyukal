@@ -18,12 +18,13 @@ const { width, height } = Dimensions.get('window');
 const Welcome = () => {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
-    // Simplified animations
+    // Animations
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const scaleAnim = useRef(new Animated.Value(0.95)).current;
+    const floatAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        // Animation sequence
+        // Main animation sequence
         Animated.parallel([
             Animated.timing(fadeAnim, {
                 toValue: 1,
@@ -37,14 +38,29 @@ const Welcome = () => {
             }),
         ]).start();
 
+        // Floating animation
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(floatAnim, {
+                    toValue: -10, // Move up by 10 units
+                    duration: 1500,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(floatAnim, {
+                    toValue: 0, // Move back to original position
+                    duration: 1500,
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+
         // Navigate to Login screen after delay
         const navigationTimeout = setTimeout(() => {
             navigation.replace('Login');
         }, 2000);
 
-        // Cleanup timeout on unmount
         return () => clearTimeout(navigationTimeout);
-    }, [fadeAnim, scaleAnim, navigation]);
+    }, [fadeAnim, scaleAnim, floatAnim, navigation]);
 
     return (
         <LinearGradient
@@ -62,13 +78,19 @@ const Welcome = () => {
                     },
                 ]}
             >
-                {/* Circular logo container */}
-                <View style={styles.logoContainer}>
+                <Animated.View
+                    style={[
+                        styles.logoContainer,
+                        {
+                            transform: [{ translateY: floatAnim }]
+                        }
+                    ]}
+                >
                     <Image
                         source={require('../assets/img/logo_plain.png')}
                         style={styles.logo}
                     />
-                </View>
+                </Animated.View>
 
                 <Text style={styles.appTitle}>Produkto Elyukal</Text>
                 <Text style={styles.subtitle}>Explore, Discover, Experience</Text>

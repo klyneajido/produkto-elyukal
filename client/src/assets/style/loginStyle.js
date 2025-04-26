@@ -28,13 +28,22 @@ const loginSignupStyles = StyleSheet.create({
     height: 200,
     width: screenWidth,
     padding: 15,
+
   },
-  text: {
-    fontFamily: FONTS.bold,
-    fontSize: 35,
+  miniText: {
+    fontFamily: FONTS.semibold,
+    fontSize: FONT_SIZE.large,
     marginLeft: 15,
     marginTop: 30,
     color: COLORS.white,
+    letterSpacing: 0.3,
+  },
+  text: {
+    fontFamily: FONTS.bold,
+    fontSize: FONT_SIZE.xxxLarge,
+    marginLeft: 15,
+    color: COLORS.white,  
+    letterSpacing: 0.3,
   },
   subText: {
     marginLeft: 15,
@@ -178,10 +187,8 @@ const loginSignupStyles = StyleSheet.create({
     padding: 5,
   },
   logo: {
-    width: 150,
-    height: 150,
-    marginTop: 20,
-    marginBottom: 20,
+    width: 40,
+    height: 40,
   },
 
   footerContainer: {

@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
   exploreText:{
     fontFamily:FONTS.semibold,
     letterSpacing:0.2,
+    color:COLORS.white,
   
   },
   searchResultsContainer: {
