@@ -1,4 +1,4 @@
-package com.virostarterkit
+package com.produktoelyukal
 import com.viromedia.bridge.ReactViroPackage
 
 import android.app.Application
