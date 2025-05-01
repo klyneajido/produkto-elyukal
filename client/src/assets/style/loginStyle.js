@@ -10,11 +10,25 @@ const loginSignupStyles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
   },
-  logoContainer: {
+  upperContainer: {
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 10,
     borderBottomLeftRadius: 20,
     overflow: "hidden",
+  },
+  logoContainer: {
+    flexDirection:'row',
+    alignItems:'center',
+    marginBottom:15 ,
+  },
+  logo: {
+    width: 40,
+    height: 40,
+    backgroundColor:'rgba(255,255,255,0.5)',
+    borderRadius: 20, 
+    marginLeft:10,
+    padding:13,
+
   },
   float:{
     borderWidth:2
@@ -50,15 +64,9 @@ const loginSignupStyles = StyleSheet.create({
     fontFamily: FONTS.regular,
     color: COLORS.lightgray,
   },
-
-  appTitle: {
-    fontFamily: FONTS.bold,
-    fontSize: 22,
-    color: COLORS.black,
-    marginTop: 15,
-  },
   formContainer: {
     paddingHorizontal: 20,
+    paddingVertical: 15,
   },
   inputContainer: {
     alignItems: "center",
@@ -207,10 +215,7 @@ const loginSignupStyles = StyleSheet.create({
     right: 10,
     padding: 5,
   },
-  logo: {
-    width: 40,
-    height: 40,
-  },
+
 
   footerContainer: {
     marginTop: 100,
@@ -271,7 +276,8 @@ const loginSignupStyles = StyleSheet.create({
     fontFamily: FONTS.regular,
     color: COLORS.gray,
     textAlign: "center",
-    marginVertical: 15,
+    marginBottom: 20,
+    marginTop: 10,
   },
 });
 

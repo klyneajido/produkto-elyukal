@@ -7,6 +7,7 @@ import {
     Platform,
     ScrollView,
     Dimensions,
+    Image,
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -78,8 +79,6 @@ const LoginScreen: React.FC = () => {
             // Try without any additional options
             scopes: ['email', 'profile']
         });
-
-        console.log("Reconfigured Google Sign In with minimal options");
     }, []);
 
     const handleGoogleSignIn = async () => {
@@ -391,7 +390,7 @@ const LoginScreen: React.FC = () => {
                     </View>
                 )}
 
-                <View style={styles.logoContainer}>
+                <View style={styles.upperContainer}>
                     <LinearGradient
                         colors={['#6B48FF', '#8E2DE2']}
                         start={{ x: 0, y: 0 }}
@@ -408,12 +407,13 @@ const LoginScreen: React.FC = () => {
                             />
                         ))}
                         <Text style={styles.miniText}>Welcome to</Text>
-                        <Text style={styles.text}>Produkto Elyu-kal</Text>
+                        <Text style={styles.text}>Produkto Elyukal</Text>
                         <Text style={styles.subText}>Sign In & Pick Up Where You Left Off!</Text>
                     </LinearGradient>
                 </View>
 
                 <View style={styles.formContainer}>
+
                     <View style={[styles.inputContainer, { marginBottom: 20 }]}>
                         <InputText
                             labelName="Email"
@@ -463,17 +463,10 @@ const LoginScreen: React.FC = () => {
                             {isLoading ? 'Signing in...' : 'Login'}
                         </Text>
                     </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.continueGuestButton} onPress={handleGuest}>
-                        <Text style={styles.continueGuestButtonText}>Continue as Guest</Text>
-                    </TouchableOpacity>
-                            <Text style={styles.orText}>
-                                or
-                            </Text>
                     <TouchableOpacity
                         style={[
                             styles.loginGoogleButton,
-                    
+
                         ]}
                         onPress={handleGoogleSignIn}
                         disabled={isLoading}
@@ -485,6 +478,14 @@ const LoginScreen: React.FC = () => {
                             style={styles.googleIcon}
                         />
                         <Text style={styles.loginGoogleButtonText}>Sign in with Google</Text>
+                    </TouchableOpacity>
+
+                    <Text style={styles.orText}>
+                        or
+                    </Text>
+
+                    <TouchableOpacity style={styles.continueGuestButton} onPress={handleGuest}>
+                        <Text style={styles.continueGuestButtonText}>Continue as Guest</Text>
                     </TouchableOpacity>
 
                     <View style={styles.loginContainer}>

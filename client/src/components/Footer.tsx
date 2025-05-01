@@ -2,27 +2,27 @@ import React from 'react';
 import {
     View,
     Text,
-    TouchableOpacity,
-    Linking,
     StyleSheet,
 } from 'react-native';
 import { COLORS, FONT_SIZE, FONTS } from '../assets/constants/constant';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faX, faBrain, faLink, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+    lightMode?: boolean;
+}
+
+const Footer: React.FC<FooterProps> = ({ lightMode = false }) => {
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, lightMode && styles.containerLight]}>
             <View style={styles.content}>
                 {/* Owner Credits */}
-                <Text style={styles.title}>elyukal.</Text>
-                <Text style={styles.subtitle}>
+                <Text style={[styles.title, lightMode && styles.titleLight]}>elyukal.</Text>
+                <Text style={[styles.subtitle, lightMode && styles.subtitleLight]}>
                     Produkto Elyukal is created by LORMA students.
                     Visit our Help center or check our service advisories for any concerns
                 </Text>
 
                 {/* Version Info */}
-                <Text style={styles.versionText}>
+                <Text style={[styles.versionText, lightMode && styles.versionTextLight]}>
                     Version: Beta | © {new Date().getFullYear()}
                 </Text>
             </View>
@@ -38,6 +38,9 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 20,
         overflow: 'hidden',
     },
+    containerLight: {
+        backgroundColor: 'transparent',
+    },
     content: {
         alignItems: 'center',
     },
@@ -49,6 +52,9 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
         textTransform: 'lowercase',
     },
+    titleLight: {
+        color: 'rgba(255, 255, 255, 0.7)',
+    },
     subtitle: {
         fontFamily: FONTS.regular,
         fontSize: FONT_SIZE.small,
@@ -56,10 +62,16 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
     },
+    subtitleLight: {
+        color: 'rgba(255, 255, 255, 0.3)',
+    },
     versionText: {
         fontFamily: FONTS.regular,
         fontSize: 12,
-        color: 'rgba(117, 115, 115, 0.8)',
+        color: 'rgba(117, 115, 115, 0.4)',
+    },
+    versionTextLight: {
+        color: 'rgba(255, 255, 255, 0.4)',
     },
 });
 
