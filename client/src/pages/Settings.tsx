@@ -72,9 +72,16 @@ const SettingsScreen: React.FC = () => {
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [darkModeEnabled, setDarkModeEnabled] = useState(false);
     const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+    const [googleAccountModalVisible, setGoogleAccountModalVisible] = useState(false);
+    const [guestAccountModalVisible, setGuestAccountModalVisible] = useState(false);
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { user } = useAuth();
     const [profileAnimation] = useState(new Animated.Value(0));
+
+    // Add this to check if user is Google-authenticated
+    const isGoogleUser = React.useMemo(() => {
+        return (user as any)?.app_metadata?.provider === 'google';
+    }, [user]);
 
     // Add debug logging for component mount and user state
     useEffect(() => {
@@ -192,6 +199,111 @@ const SettingsScreen: React.FC = () => {
         </Modal>
     );
 
+    // Add Google Account Modal
+    const GoogleAccountModal = () => (
+        <Modal
+            transparent={true}
+            visible={googleAccountModalVisible}
+            animationType="fade"
+            statusBarTranslucent
+        >
+            <Animated.View style={styles.modalBackground}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalHeader}>
+                        <View style={styles.modalIconContainer}>
+                            <FontAwesomeIcon icon={faLock} size={22} color={COLORS.alert} />
+                        </View>
+                        <Text style={styles.modalTitle}>Google Account</Text>
+                    </View>
+                    
+                    <Text style={styles.modalDescription}>
+                        Your profile information is managed by your Google account. To change your name or password, please update it in your Google account settings.
+                    </Text>
+
+                    <View style={styles.modalActions}>
+                        <TouchableOpacity
+                            style={styles.cancelButton}
+                            onPress={() => setGoogleAccountModalVisible(false)}
+                        >
+                            <Text style={styles.cancelButtonText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Animated.View>
+        </Modal>
+    );
+
+    // Add Guest Account Modal
+    const GuestAccountModal = () => (
+        <Modal
+            transparent={true}
+            visible={guestAccountModalVisible}
+            animationType="fade"
+            statusBarTranslucent
+        >
+            <Animated.View style={styles.modalBackground}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalHeader}>
+                        <View style={styles.modalIconContainer}>
+                            <FontAwesomeIcon icon={faLock} size={22} color={COLORS.alert} />
+                        </View>
+                        <Text style={styles.modalTitle}>Access Restricted</Text>
+                    </View>
+                    
+                    <Text style={styles.modalDescription}>
+                        You need to sign in to access and manage your account settings.
+                    </Text>
+
+                    <View style={styles.modalActions}>
+                        <TouchableOpacity
+                            style={styles.cancelButton}
+                            onPress={() => setGuestAccountModalVisible(false)}
+                        >
+                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.logoutButton}
+                            onPress={() => {
+                                setGuestAccountModalVisible(false);
+                                navigation.navigate("Login");
+                            }}
+                        >
+                            <FontAwesomeIcon 
+                                icon={faRightFromBracket} 
+                                size={16} 
+                                color={COLORS.white}
+                                style={styles.logoutButtonIcon}
+                            />
+                            <Text style={styles.logoutButtonText}>Sign In</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Animated.View>
+        </Modal>
+    );
+
+    // Handle navigation to Personal Information
+    const handlePersonalInfoPress = () => {
+        if (isGuestUser(user)) {
+            setGuestAccountModalVisible(true);
+        } else if (isGoogleUser) {
+            setGoogleAccountModalVisible(true);
+        } else {
+            navigation.navigate('PersonalInformation');
+        }
+    };
+
+    // Handle navigation to Password Settings
+    const handlePasswordPress = () => {
+        if (isGuestUser(user)) {
+            setGuestAccountModalVisible(true);
+        } else if (isGoogleUser) {
+            setGoogleAccountModalVisible(true);
+        } else {
+            navigation.navigate('PasswordSettings');
+        }
+    };
+
     // User profile section with animation
     const ProfileSection = () => {
         const defaultImage = require('../assets/img/avatartion.png');
@@ -289,16 +401,15 @@ const SettingsScreen: React.FC = () => {
                     <SettingItem
                         icon={faUser}
                         title="Personal Information"
-                        subtitle="Manage your personal details"
-                        onPress={() => navigation.navigate('PersonalInformation')}
-                       
+                        subtitle={isGoogleUser ? "Managed by Google" : "Manage your personal details"}
+                        onPress={handlePersonalInfoPress}
                     />
                     <SettingItem
                         icon={faLock}
                         title="Password"
-                        subtitle="Update your account password"
+                        subtitle={isGoogleUser ? "Managed by Google" : "Update your account password"}
                         showDivider={false}
-                        onPress={() => navigation.navigate('PasswordSettings')}
+                        onPress={handlePasswordPress}
                     />
                 </View>
 
@@ -362,6 +473,8 @@ const SettingsScreen: React.FC = () => {
             </ScrollView>
 
             <LogoutModal />
+            <GoogleAccountModal />
+            <GuestAccountModal />
         </SafeAreaView>
     );
 };

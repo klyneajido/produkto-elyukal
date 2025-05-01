@@ -331,11 +331,15 @@ const PasswordSettings = () => {
                             />
                         </View>
                     </View>
-                    <Footer />
+                  
                 </ScrollView>
+                <View style={styles.footerContainer}>
+                   <Footer />
+                   </View>
             </KeyboardAvoidingView>
 
             <View style={styles.footer}>
+
                 <Animated.View style={{ opacity: saveButtonOpacity, width: '100%' }}>
                     <Pressable
                         style={({ pressed }) => [
@@ -460,6 +464,11 @@ const styles = StyleSheet.create({
     },
     inputGroup: {
         marginBottom: 12,
+    },
+    footerContainer: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
     },
     footer: {
         backgroundColor: COLORS.white,
