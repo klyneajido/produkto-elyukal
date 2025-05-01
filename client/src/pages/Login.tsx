@@ -5,12 +5,8 @@ import {
     TouchableOpacity,
     KeyboardAvoidingView,
     Platform,
-    StyleSheet,
     ScrollView,
-    Animated,
-    Easing,
     Dimensions,
-    Image,
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -24,10 +20,14 @@ import { BASE_URL } from '../config/config.ts';
 import LinearGradient from 'react-native-linear-gradient';
 import Footer from '../components/Footer.tsx';
 import FloatingARElement from '../components/Floatingelements.tsx';
-import { ActivityIndicator } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons'; // ✅ Correct
+
 import SpinningCubeLoader from '../components/SpinningCubeLoader';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { supabase } from '../../supabaseClient.ts';
+
 
 const { width, height } = Dimensions.get('window');
 type FloatingElement = {
@@ -70,6 +70,99 @@ const LoginScreen: React.FC = () => {
         return Object.keys(newErrors).length === 0;
     };
 
+    useEffect(() => {
+        // Try with a completely different configuration
+        GoogleSignin.configure({
+            // Use ONLY the Web client ID
+            webClientId: process.env.WEB_CLIENT_ID || '',
+            // Try without any additional options
+            scopes: ['email', 'profile']
+        });
+
+        console.log("Reconfigured Google Sign In with minimal options");
+    }, []);
+
+    const handleGoogleSignIn = async () => {
+        try {
+            setIsLoading(true);
+            setErrors({});
+
+            // Check Play Services
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+
+            // Sign out any existing user to ensure clean state
+            try {
+                await GoogleSignin.signOut();
+            } catch (e) {
+                console.log("Google Signout:", e);
+            }
+
+            // Get Google user info
+            const userInfo = await GoogleSignin.signIn();
+
+            // Get tokens explicitly
+            const tokens = await GoogleSignin.getTokens();
+
+            if (!tokens.idToken) {
+                throw new Error("No ID token received from Google");
+            }
+
+            // Sign in with Supabase using the Google token
+            const { data, error } = await supabase.auth.signInWithIdToken({
+                provider: 'google',
+                token: tokens.idToken,
+            });
+
+            if (error) {
+                throw error;
+            }
+
+            // Set user in context and store session
+            if (data.user) {
+                setUser(data.user);
+
+                if (data.session) {
+                    await AsyncStorage.setItem("token", data.session.access_token);
+                }
+
+                // Navigate to main app
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Tabs' }],
+                });
+            }
+        } catch (error: unknown) {
+            console.error("Google Sign In Error:", error);
+
+            // Type guard for Google Sign In errors
+            if (error && typeof error === 'object' && 'code' in error) {
+                const googleError = error as { code: string; message?: string };
+
+                if (googleError.code === statusCodes.SIGN_IN_CANCELLED) {
+                    setErrors(prev => ({ ...prev, general: 'Sign-in was cancelled' }));
+                } else if (googleError.code === statusCodes.IN_PROGRESS) {
+                    setErrors(prev => ({ ...prev, general: 'Sign-in is already in progress' }));
+                } else if (googleError.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                    setErrors(prev => ({ ...prev, general: 'Play services not available or outdated' }));
+                } else {
+                    setErrors(prev => ({
+                        ...prev,
+                        general: `Google Sign In failed: ${googleError.message || 'Unknown error'}`
+                    }));
+                }
+            } else {
+                // Handle generic errors
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+                setErrors(prev => ({
+                    ...prev,
+                    general: `Sign in failed: ${errorMessage}`
+                }));
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const loginUser = async (email: string, password: string) => {
         try {
             console.log('Attempting to login with:', { email, password });
@@ -80,7 +173,7 @@ const LoginScreen: React.FC = () => {
             return access_token;
         } catch (error: any) {
             let errorMessage = 'Something went wrong. Please try again.';
-            
+
             if (error.response) {
                 if (error.response.status === 401) {
                     errorMessage = 'Invalid email or password';
@@ -126,13 +219,13 @@ const LoginScreen: React.FC = () => {
 
     const handleLogin = async () => {
         setErrors({});
-        
+
         if (!validateForm()) {
             return;
         }
 
         setIsLoading(true);
-        
+
         // Set a timeout for 15 seconds
         const timeout = setTimeout(() => {
             setIsLoading(false);
@@ -141,7 +234,7 @@ const LoginScreen: React.FC = () => {
                 general: 'Login is taking longer than expected. Please check your connection and try again.'
             }));
         }, 15000);
-        
+
         setLoginTimeout(timeout);
 
         try {
@@ -209,10 +302,10 @@ const LoginScreen: React.FC = () => {
         return (
             <View style={styles.modernErrorContainer}>
                 <View style={styles.modernErrorContent}>
-                    <FontAwesomeIcon 
-                        icon={faExclamationTriangle} 
-                        size={20} 
-                        color="#fff" 
+                    <FontAwesomeIcon
+                        icon={faExclamationTriangle}
+                        size={20}
+                        color="#fff"
                         style={styles.errorIcon}
                     />
                     <Text style={styles.modernErrorText}>{errorMessage}</Text>
@@ -221,20 +314,80 @@ const LoginScreen: React.FC = () => {
         );
     };
 
+    // Add this new function for testing
+    const testGoogleSignIn = async () => {
+        try {
+            console.log("=== TESTING GOOGLE SIGN IN ===");
+            console.log("1. Checking if user is already signed in");
+
+            // First sign out to ensure clean state
+            try {
+                await GoogleSignin.signOut();
+                console.log("2. Signed out any existing user");
+            } catch (e) {
+                console.log("2. No user was signed in or error signing out:", e);
+            }
+
+            // Check Play Services with more detailed error handling
+            try {
+                await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+                console.log("3. Play Services check passed");
+            } catch (e) {
+                console.log("3. Play Services check failed:", e);
+                throw e;
+            }
+
+            // Try to get available user info
+            try {
+                const userInfo = await GoogleSignin.signIn();
+                console.log("4. Sign in successful:", userInfo);
+
+                // If we get here, we can try to get the token
+                const tokens = await GoogleSignin.getTokens();
+                console.log("5. Got tokens:", tokens);
+
+                // Now try Supabase
+                if (tokens.idToken) {
+                    console.log("6. Attempting Supabase sign in with token");
+                    const { data, error } = await supabase.auth.signInWithIdToken({
+                        provider: 'google',
+                        token: tokens.idToken,
+                    });
+
+                    if (error) {
+                        console.log("7. Supabase auth error:", error);
+                    } else {
+                        console.log("7. Supabase auth successful:", data);
+                        // Success! Now you can navigate
+                    }
+                }
+            } catch (e) {
+                console.log("4. Sign in failed:", e);
+                throw e;
+            }
+        } catch (error) {
+            console.error("TEST FAILED:", error);
+            console.log("Error details:", {
+                code: error && typeof error === 'object' && 'code' in error ? (error as any).code : undefined,
+                message: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined
+            });
+        }
+    };
+
+
     return (
         <ScrollView style={styles.container}>
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.container}
             >
-                {/* Add the error display right after KeyboardAvoidingView opening */}
                 {renderError()}
-                
-                {/* Add loading overlay */}
+
                 {isLoading && (
                     <View style={styles.loadingOverlay}>
                         <SpinningCubeLoader size={25} />
-                    
+
                     </View>
                 )}
 
@@ -246,10 +399,10 @@ const LoginScreen: React.FC = () => {
                         style={[styles.gradientContainer, { position: 'relative' }]}
                         onLayout={onGradientLayout}
                     >
-                       {floatingElements.map((element, index) => (
-                            <FloatingARElement 
-                                key={index} 
-                                type={element.type} 
+                        {floatingElements.map((element, index) => (
+                            <FloatingARElement
+                                key={index}
+                                type={element.type}
                                 initialPosition={element.initialPosition}
                                 containerSize={containerSize}
                             />
@@ -272,7 +425,7 @@ const LoginScreen: React.FC = () => {
                                 setErrors((prev) => ({ ...prev, email: undefined }));
                             }}
                             error={!!errors.email}
-                            errorText={errors.email} 
+                            errorText={errors.email}
                             extraStyle={{ marginBottom: 0 }}
                         />
                     </View>
@@ -288,7 +441,7 @@ const LoginScreen: React.FC = () => {
                                 setErrors((prev) => ({ ...prev, password: undefined }));
                             }}
                             error={!!errors.password}
-                            errorText={errors.password} 
+                            errorText={errors.password}
                             secureTextEntry={true}
                             extraStyle={{ marginBottom: 0 }}
                         />
@@ -298,11 +451,11 @@ const LoginScreen: React.FC = () => {
                         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={[
                             styles.loginButton,
                             isLoading && styles.loginButtonDisabled
-                        ]} 
+                        ]}
                         onPress={handleLogin}
                         disabled={isLoading}
                     >
@@ -314,6 +467,25 @@ const LoginScreen: React.FC = () => {
                     <TouchableOpacity style={styles.continueGuestButton} onPress={handleGuest}>
                         <Text style={styles.continueGuestButtonText}>Continue as Guest</Text>
                     </TouchableOpacity>
+                            <Text style={styles.orText}>
+                                or
+                            </Text>
+                    <TouchableOpacity
+                        style={[
+                            styles.loginGoogleButton,
+                    
+                        ]}
+                        onPress={handleGoogleSignIn}
+                        disabled={isLoading}
+                    >
+                        <FontAwesomeIcon
+                            icon={faGoogle}
+                            size={20}
+                            color={COLORS.white}
+                            style={styles.googleIcon}
+                        />
+                        <Text style={styles.loginGoogleButtonText}>Sign in with Google</Text>
+                    </TouchableOpacity>
 
                     <View style={styles.loginContainer}>
                         <Text style={styles.loginText}>Don't have an account? </Text>
@@ -322,7 +494,7 @@ const LoginScreen: React.FC = () => {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.footerContainer}>
-                        <Footer/>
+                        <Footer />
                     </View>
                 </View>
             </KeyboardAvoidingView>

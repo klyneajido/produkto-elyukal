@@ -75,9 +75,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.produktoelyukal"
+    namespace "com.produktoelyukal.beta"
     defaultConfig {
-        applicationId "com.produktoelyukal"
+        applicationId "com.produktoelyukal.beta"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -110,7 +110,8 @@ dependencies {
     implementation("com.facebook.react:react-android")
     implementation("com.facebook.react:flipper-integration")
     implementation 'com.google.android.gms:play-services-location:21.0.1'
-
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
+    implementation 'com.google.android.gms:play-services-base:18.2.0'
 
     // ========================================================================
     // https://viro-community.readme.io/docs/installation-instructions#2-in-your-androidappbuildgradle-add-the-following-lines-to-the-dependencies-section

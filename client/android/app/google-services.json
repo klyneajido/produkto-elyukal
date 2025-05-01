@@ -1,6 +1,6 @@
 {
   "project_info": {
-    "project_number": "64630119463",
+    "project_number": "490829750134",
     "project_id": "elyukal-c73f7",
     "storage_bucket": "elyukal-c73f7.firebasestorage.app"
   },
@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:64630119463:android:1aa6c842e9c44b70a98202",
         "android_client_info": {
-          "package_name": "com.produktoelyukal"
+          "package_name": "com.produktoelyukal.beta"
         }
       },
       "oauth_client": [],

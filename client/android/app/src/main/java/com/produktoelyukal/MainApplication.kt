@@ -1,4 +1,4 @@
-package com.produktoelyukal
+package com.produktoelyukal.beta
 import com.viromedia.bridge.ReactViroPackage
 
 import android.app.Application

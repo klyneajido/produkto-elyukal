@@ -42,7 +42,7 @@ const loginSignupStyles = StyleSheet.create({
     fontFamily: FONTS.bold,
     fontSize: FONT_SIZE.xxxLarge,
     marginLeft: 15,
-    color: COLORS.white,  
+    color: COLORS.white,
     letterSpacing: 0.3,
   },
   subText: {
@@ -86,6 +86,7 @@ const loginSignupStyles = StyleSheet.create({
   loginButton: {
     backgroundColor: COLORS.primary,
     height: 50,
+    flexDirection: "row",
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
@@ -123,11 +124,31 @@ const loginSignupStyles = StyleSheet.create({
     fontSize: FONT_SIZE.large,
     letterSpacing: 0.5,
   },
+  loginGoogleButtonText: {
+    fontFamily: FONTS.semibold,
+    color: COLORS.white,
+    fontSize: FONT_SIZE.large,
+    letterSpacing: 0.5,
+    
+  },
   continueGuestButtonText: {
     fontFamily: FONTS.semibold,
     color: COLORS.secondary,
     fontSize: FONT_SIZE.large,
     letterSpacing: 0.5,
+  },
+  loginGoogleButton: {
+    backgroundColor: COLORS.primary,
+    height: 50,
+    flexDirection: "row",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    marginHorizontal: 15,
+  },
+  googleIcon: {
+    marginRight: 10,
   },
   signupButton: {
     backgroundColor: COLORS.secondary,
@@ -245,6 +266,12 @@ const loginSignupStyles = StyleSheet.create({
   },
   loginButtonDisabled: {
     opacity: 0.7,
+  },
+  orText: {
+    fontFamily: FONTS.regular,
+    color: COLORS.gray,
+    textAlign: "center",
+    marginVertical: 15,
   },
 });
 

@@ -1,4 +1,4 @@
-package com.produktoelyukal
+package com.produktoelyukal.beta
 
 import android.os.Bundle
 import com.facebook.react.ReactActivity
