@@ -2,16 +2,13 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  ImageBackground,
   TouchableOpacity,
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   Dimensions,
   Modal,
-  TextInput,
 } from "react-native";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -57,6 +54,9 @@ const SignupScreen: React.FC = () => {
   const [containerSize, setContainerSize] = useState({ width: width, height: 200 });
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
+  const [verificationAttempts, setVerificationAttempts] = useState(0);
+  const [resendDisabled, setResendDisabled] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(0);
 
   const apiURL = `${BASE_URL}/auth/register`;
   const verifyURL = `${BASE_URL}/auth/verify-email`;
@@ -145,10 +145,13 @@ const SignupScreen: React.FC = () => {
       );
 
       if (response.status === 200) {
-        Alert.alert("Success", "Please check your email for verification code.");
+        console.log("Success", "Please check your email for verification code.");
         setShowVerificationModal(true);
+        // Clear any previous verification errors
+        setErrors(prev => ({ ...prev, verificationCode: undefined }));
+        setVerificationCode("");
       } else {
-        Alert.alert("Unsuccess", "Registration Unsuccessful!");
+        console.log("Unsuccess", "Registration Unsuccessful!");
         throw new Error(
           response.data?.detail || "Unexpected error during registration."
         );
@@ -158,14 +161,29 @@ const SignupScreen: React.FC = () => {
       if (error.response) {
         const errorMessage =
           error.response?.data?.detail || "Error during registration";
-        Alert.alert("Error", errorMessage);
+        console.log("Error", errorMessage);
+        
+        // If the error is that the user already exists but is verified
+        if (error.response.status === 400 && errorMessage.includes("already exists")) {
+          setErrors(prev => ({ 
+            ...prev, 
+            email: "This email is already registered. Please log in instead." 
+          }));
+        } else {
+          setErrors(prev => ({ ...prev, general: errorMessage }));
+        }
       } else if (error.request) {
-        Alert.alert(
+        console.log(
           "Error",
           "Network Error. Please check your internet connection."
         );
+        setErrors(prev => ({ 
+          ...prev, 
+          general: "Network Error. Please check your internet connection." 
+        }));
       } else {
-        Alert.alert("Error", `Unexpected error: ${error.message}`);
+        console.log("Error", `Unexpected error: ${error.message}`);
+        setErrors(prev => ({ ...prev, general: `Unexpected error: ${error.message}` }));
       }
     } finally {
       setIsLoading(false);
@@ -197,9 +215,9 @@ const SignupScreen: React.FC = () => {
       );
 
       if (response.status === 200) {
-        Alert.alert("Success", "Email verified successfully!");
+        console.log("Success", "Email verified successfully!");
         setShowVerificationModal(false);
-        navigation.navigate("Login");
+        navigation.navigate("Login", { email });
       } else {
         throw new Error(
           response.data?.detail || "Unexpected error during verification."
@@ -207,21 +225,70 @@ const SignupScreen: React.FC = () => {
       }
     } catch (error: any) {
       console.log("Verification Error:", error);
+      setVerificationAttempts(prev => prev + 1);
+      
       if (error.response) {
-        const errorMessage =
-          error.response?.data?.detail || "Error during verification";
-        Alert.alert("Error", errorMessage);
+        const errorMessage = error.response?.data?.detail || "Invalid verification code";
         setErrors((prev) => ({
           ...prev,
           verificationCode: errorMessage,
         }));
-      } else if (error.request) {
-        Alert.alert(
-          "Error",
-          "Network Error. Please check your internet connection."
-        );
       } else {
-        Alert.alert("Error", `Unexpected error: ${error.message}`);
+        setErrors((prev) => ({
+          ...prev,
+          verificationCode: "Network error. Please try again.",
+        }));
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/auth/resend-verification`,
+        { email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setErrors({});
+        setVerificationCode("");
+        setVerificationAttempts(0);
+        
+        // Disable resend button for 60 seconds
+        setResendDisabled(true);
+        setResendCountdown(60);
+        
+        const countdownInterval = setInterval(() => {
+          setResendCountdown(prev => {
+            if (prev <= 1) {
+              clearInterval(countdownInterval);
+              setResendDisabled(false);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
+    } catch (error: any) {
+      console.log("Resend Error:", error);
+      if (error.response) {
+        setErrors((prev) => ({
+          ...prev,
+          general: error.response?.data?.detail || "Failed to resend verification code",
+        }));
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          general: "Network error. Please try again.",
+        }));
       }
     } finally {
       setIsLoading(false);
@@ -369,92 +436,78 @@ const SignupScreen: React.FC = () => {
           </View>
         </ScrollView>
 
-        {/* Verification Modal */}
         <Modal
           animationType="slide"
           transparent={true}
           visible={showVerificationModal}
           onRequestClose={() => setShowVerificationModal(false)}
         >
-          <View style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-          }}>
-            <View style={{
-              backgroundColor: COLORS.white,
-              padding: 20,
-              borderRadius: 10,
-              width: '80%',
-              alignItems: 'center',
-            }}>
-              <Text style={{
-                fontSize: 18,
-                fontWeight: 'bold',
-                marginBottom: 20,
-                color: COLORS.black,
-              }}>
-                Enter Verification Code
+          <View style={styles.modalBackdrop}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.verificationModalTitle}>Email Verification</Text>
+              <Text style={styles.verificationModalText}>
+                Please enter the verification code sent to your email.
               </Text>
-              <TextInput
-                style={{
-                  width: '100%',
-                  padding: 10,
-                  borderWidth: 1,
-                  borderColor: errors.verificationCode ? COLORS.red : COLORS.gray,
-                  borderRadius: 5,
-                  marginBottom: 10,
-                }}
-                placeholder="Enter code"
+              
+              <InputText
+                labelName="Verification Code"
+                placeholder="Enter verification code..."
+                placeholderTextColor={COLORS.gray}
                 value={verificationCode}
                 onChangeText={(text) => {
                   setVerificationCode(text);
                   setErrors((prev) => ({ ...prev, verificationCode: undefined }));
                 }}
-                keyboardType="numeric"
+                error={!!errors.verificationCode}
+                errorText={errors.verificationCode}
+                keyboardType="number-pad"
+                maxLength={6}
               />
+              
               {errors.verificationCode && (
-                <Text style={{
-                  color: COLORS.red,
-                  marginBottom: 10,
-                }}>
-                  {errors.verificationCode}
-                </Text>
+                <Text style={styles.verificationErrorText}>{errors.verificationCode}</Text>
               )}
-              <TouchableOpacity
-                style={{
-                  backgroundColor: isLoading ? COLORS.gray : COLORS.primary,
-                  padding: 10,
-                  borderRadius: 5,
-                  width: '100%',
-                  alignItems: 'center',
-                }}
-                onPress={handleVerifyCode}
-                disabled={isLoading}
-              >
-                <Text style={{
-                  color: COLORS.white,
-                  fontWeight: 'bold',
-                }}>
-                  {isLoading ? "Verifying..." : "Verify"}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  marginTop: 10,
-                }}
+
+              <View style={styles.verificationButtonRow}>
+                <TouchableOpacity 
+                  style={[styles.verificationButton, styles.verifyButton]} 
+                  onPress={handleVerifyCode}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.verificationButtonText}>
+                    {isLoading ? "Verifying..." : "Verify"}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.verificationButton, 
+                    styles.resendButton,
+                    resendDisabled && styles.disabledButton
+                  ]}
+                  onPress={handleResendCode}
+                  disabled={resendDisabled || isLoading}
+                >
+                  <Text style={styles.verificationButtonText}>
+                    {resendDisabled 
+                      ? `Resend (${resendCountdown}s)` 
+                      : "Resend Code"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity 
+                style={[styles.verificationButton, styles.cancelVerificationButton]} 
                 onPress={() => setShowVerificationModal(false)}
               >
-                <Text style={{
-                  color: COLORS.primary,
-                }}>
+                <Text style={[styles.verificationButtonText, { color: COLORS.gray }]}>
                   Cancel
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
         </Modal>
+
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

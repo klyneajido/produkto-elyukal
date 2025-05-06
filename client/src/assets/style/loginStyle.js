@@ -362,6 +362,79 @@ modalAgreeButtonText: {
     marginBottom: 20,
     marginTop: 10,
   },
+  verificationModalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  verificationModalContent: {
+    width: '85%',
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    padding: 24,
+  },
+  verificationModalTitle: {
+    fontSize: FONT_SIZE.large,
+    fontFamily: FONTS.semibold,
+    color: COLORS.black,
+    marginBottom: 12,
+  },
+  verificationModalText: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.regular,
+    color: COLORS.gray,
+    marginBottom: 20,
+  
+    lineHeight: 22,
+  },
+resendButtonText:{
+  color: COLORS.white,
+  fontSize: FONT_SIZE.medium,
+  fontFamily: FONTS.medium,
+  textAlign: 'center',
+  },
+  verificationErrorText: {
+    color: COLORS.error || 'red',
+    fontSize: FONT_SIZE.small,
+    fontFamily: FONTS.regular,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  verificationButtonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 16,
+  },
+  verificationButton: {
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  verifyButton: {
+    flex: 1,
+    marginRight: 8,
+    backgroundColor: COLORS.primary,
+  },
+  resendButton: {
+    flex: 1,
+    marginLeft: 8,
+    backgroundColor: COLORS.secondary,
+  },
+  cancelVerificationButton: {
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+  },
+  verificationButtonText: {
+    fontSize: FONT_SIZE.medium,
+    fontFamily: FONTS.medium,
+    color: COLORS.white,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
 });
 
 export default loginSignupStyles;

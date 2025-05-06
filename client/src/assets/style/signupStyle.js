@@ -175,6 +175,98 @@ signupButtonDisabled: {
     alignItems: 'center',
     zIndex: 1000,
 },
+
+//MODALS
+modalBackdrop: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+},
+modalContainer: {
+  backgroundColor: COLORS.white,
+  borderRadius: 16,
+  padding: 24,
+  width: '90%',
+
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.25,
+  shadowRadius: 4,
+  elevation: 5,
+},
+button: {
+  marginTop: 16,
+  backgroundColor: COLORS.primary,
+  paddingVertical: 12,
+  paddingHorizontal: 24,
+  borderRadius: 8,
+  width: '100%',
+  alignItems: 'center',
+},
+cancelButton: {
+  backgroundColor: COLORS.gray,
+},
+buttonText: {
+  color: COLORS.white,
+  fontWeight: 'bold',
+},
+
+// Add these styles for the verification modal
+verificationModalTitle: {
+  fontSize: FONT_SIZE.large,
+  fontFamily: FONTS.semibold,
+  color: COLORS.black,
+  marginBottom: 12,
+},
+verificationModalText: {
+  fontSize: FONT_SIZE.medium,
+  fontFamily: FONTS.regular,
+  color: COLORS.gray,
+  marginBottom: 20,
+  lineHeight: 22,
+},
+verificationErrorText: {
+  color: COLORS.error || 'red',
+  fontSize: FONT_SIZE.small,
+  fontFamily: FONTS.regular,
+  marginBottom: 16,
+  textAlign: 'center',
+},
+verificationButtonRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  width: '100%',
+  marginBottom: 16,
+},
+verificationButton: {
+  paddingVertical: 12,
+  borderRadius: 8,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+verifyButton: {
+  flex: 1,
+  marginRight: 8,
+  backgroundColor: COLORS.primary,
+},
+resendButton: {
+  flex: 1,
+  marginLeft: 8,
+  backgroundColor: COLORS.secondary,
+},
+cancelVerificationButton: {
+  width: '100%',
+  backgroundColor: 'rgba(0, 0, 0, 0.05)',
+},
+verificationButtonText: {
+  fontSize: FONT_SIZE.medium,
+  fontFamily: FONTS.medium,
+  color: COLORS.white,
+},
+disabledButton: {
+  opacity: 0.6,
+},
 });
 
 export default loginSignupStyles;

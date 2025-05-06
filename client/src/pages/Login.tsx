@@ -8,6 +8,7 @@ import {
     ScrollView,
     Dimensions,
     Image,
+    Modal,
 } from 'react-native';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -28,7 +29,6 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons'; // ✅ Correct
 import SpinningCubeLoader from '../components/SpinningCubeLoader';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { supabase } from '../../supabaseClient.ts';
-import Modal from 'react-native-modal';
 import { FONT_SIZE, FONTS } from '../assets/constants/constant';
 
 const { width, height } = Dimensions.get('window');
@@ -45,13 +45,19 @@ const LoginScreen: React.FC = () => {
     const { setUser, loginAsGuest } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+    const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string; verificationCode?: string }>({});
     const [containerSize, setContainerSize] = useState({ width: width, height: 200 });
     const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [loginTimeout, setLoginTimeout] = useState<NodeJS.Timeout | null>(null);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [showResendVerification, setShowResendVerification] = useState(false);
+    const [showVerificationModal, setShowVerificationModal] = useState(false);
+    const [verificationCode, setVerificationCode] = useState('');
+    const [verificationEmail, setVerificationEmail] = useState('');
+    const [verificationAttempts, setVerificationAttempts] = useState(0);
+    const [resendDisabled, setResendDisabled] = useState(false);
+    const [resendCountdown, setResendCountdown] = useState(0);
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -179,15 +185,41 @@ const LoginScreen: React.FC = () => {
             console.log("Token saved in AsyncStorage:", access_token);
             return access_token;
         } catch (error: any) {
+            console.log("Login error:", error.response?.status, error.response?.data);
+
+            // Check specifically for the 403 verification error
+            if (error.response && error.response.status === 403 &&
+                error.response.data?.detail?.includes("Email not verified")) {
+
+                console.log("Unverified account detected, showing verification modal");
+
+                // Set verification email for the modal
+                setVerificationEmail(email);
+
+                // Show verification modal
+                setShowVerificationModal(true);
+
+                setErrors(prev => ({
+                    ...prev,
+                    general: "Please verify your email before logging in. A new verification code has been sent to your email."
+                }));
+
+                // Throw a specific error to be caught by the calling function
+                throw new Error("EMAIL_NOT_VERIFIED");
+            }
+
+            // Handle other errors
             let errorMessage = 'Something went wrong. Please try again.';
 
             if (error.response) {
                 if (error.response.status === 401) {
                     errorMessage = 'Invalid email or password';
                 } else if (error.response.status === 400) {
-                    errorMessage = 'Invalid login details provided';
+                    errorMessage = error.response.data?.detail || 'Invalid login details provided';
                 } else if (error.response.status >= 500) {
                     errorMessage = 'Server error. Please try again later';
+                } else {
+                    errorMessage = error.response.data?.detail || errorMessage;
                 }
             } else if (error.request) {
                 errorMessage = 'Network error. Please check your internet connection';
@@ -197,7 +229,8 @@ const LoginScreen: React.FC = () => {
                 ...prev,
                 general: errorMessage
             }));
-            return null;
+
+            throw error;
         }
     };
 
@@ -257,38 +290,19 @@ const LoginScreen: React.FC = () => {
                 }
             }
         } catch (error: any) {
-            if (error.response) {
-                if (error.response.status === 403 && 
-                    error.response.data?.detail?.includes("Email not verified")) {
-                    setErrors(prev => ({
-                        ...prev,
-                        general: "Please verify your email before logging in. Check your inbox for the verification link."
-                    }));
-                    
-                    // Add a button to resend verification email
-                    setShowResendVerification(true);
-                } else {
-                    setErrors(prev => ({
-                        ...prev,
-                        general: error.response.data?.detail || "Invalid email or password"
-                    }));
-                }
-            } else if (error.request) {
-                setErrors(prev => ({
-                    ...prev,
-                    general: "Network Error. Please check your internet connection."
-                }));
-            } else {
-                setErrors(prev => ({
-                    ...prev,
-                    general: `Unexpected error: ${error.message}`
-                }));
+            console.log("Login error in handleLogin:", error);
+
+            // Special case for unverified email - already handled in loginUser
+            if (error.message === "EMAIL_NOT_VERIFIED") {
+                console.log("Unverified email error caught in handleLogin");
+                // The verification modal is already shown in loginUser
             }
+            // Other errors are already handled in loginUser
         } finally {
-            setIsLoading(false);
             if (loginTimeout) {
                 clearTimeout(loginTimeout);
             }
+            setIsLoading(false);
         }
     };
 
@@ -434,7 +448,7 @@ const LoginScreen: React.FC = () => {
                     <View style={styles.modalHeader}>
                         <Text style={styles.modalTitle}>Terms & Privacy</Text>
                     </View>
-                    
+
                     <Text style={styles.modalDescription}>
                         By continuing with Google Sign-In, you agree to our Terms and Conditions and Privacy Policy.
                     </Text>
@@ -483,16 +497,16 @@ const LoginScreen: React.FC = () => {
             }));
             return;
         }
-        
+
         setIsLoading(true);
         try {
             const { error } = await supabase.auth.resend({
                 type: 'signup',
                 email: email.trim().toLowerCase(),
             });
-            
+
             if (error) throw error;
-            
+
             // Show success message
             setErrors(prev => ({
                 ...prev,
@@ -503,6 +517,110 @@ const LoginScreen: React.FC = () => {
             setErrors(prev => ({
                 ...prev,
                 general: `Failed to resend: ${error.message}`
+            }));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleVerifyEmail = async () => {
+        if (!verificationCode.trim()) {
+            setErrors(prev => ({
+                ...prev,
+                verificationCode: "Please enter the verification code"
+            }));
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await axios.post(
+                `${BASE_URL}/auth/verify-email`,
+                {
+                    email: verificationEmail,
+                    code: verificationCode,
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                // Store the token from verification response
+                const { access_token } = response.data;
+                await AsyncStorage.setItem("token", access_token);
+
+                // Close modal and navigate to main app
+                setShowVerificationModal(false);
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Tabs' }],
+                });
+            } else {
+                throw new Error(
+                    response.data?.detail || "Unexpected error during verification."
+                );
+            }
+        } catch (error: any) {
+            setVerificationAttempts(prev => prev + 1);
+
+            if (error.response) {
+                const errorMessage = error.response?.data?.detail || "Invalid verification code";
+                setErrors((prev) => ({
+                    ...prev,
+                    verificationCode: errorMessage,
+                }));
+            } else {
+                setErrors((prev) => ({
+                    ...prev,
+                    verificationCode: "Network error. Please try again.",
+                }));
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResendCode = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.post(
+                `${BASE_URL}/auth/resend-verification`,
+                { email: verificationEmail },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                }
+            );
+
+            if (response.status === 200) {
+                setErrors({});
+                setVerificationCode("");
+                setVerificationAttempts(0);
+
+                // Disable resend button for 60 seconds
+                setResendDisabled(true);
+                setResendCountdown(60);
+
+                const countdownInterval = setInterval(() => {
+                    setResendCountdown(prev => {
+                        if (prev <= 1) {
+                            clearInterval(countdownInterval);
+                            setResendDisabled(false);
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+            }
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.detail || "Failed to resend verification code";
+            setErrors(prev => ({
+                ...prev,
+                general: error.response ? errorMessage : "Network error. Please try again."
             }));
         } finally {
             setIsLoading(false);
@@ -642,6 +760,74 @@ const LoginScreen: React.FC = () => {
                 </View>
             </KeyboardAvoidingView>
             <TermsAgreementModal />
+            {/* Verification Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={showVerificationModal}
+                onRequestClose={() => setShowVerificationModal(false)}
+            >
+                <View style={styles.verificationModalContainer}>
+                    <View style={styles.verificationModalContent}>
+                        <Text style={styles.verificationModalTitle}>Email Verification</Text>
+                        <Text style={styles.verificationModalText}>
+                            Please enter the verification code sent to your email.
+                        </Text>
+
+                        <InputText
+                            labelName="Verification Code"
+                            placeholder="Enter verification code..."
+                            placeholderTextColor={COLORS.gray}
+                            value={verificationCode}
+                            onChangeText={setVerificationCode}
+                            keyboardType="number-pad"
+                            maxLength={6}
+                        />
+
+
+                        {errors.verificationCode && (
+                            <Text style={styles.verificationErrorText}>{errors.verificationCode}</Text>
+                        )}
+
+                        <View style={styles.verificationButtonRow}>
+                            <TouchableOpacity
+                                style={[styles.verificationButton, styles.verifyButton]}
+                                onPress={handleVerifyEmail}
+                                disabled={isLoading}
+                            >
+                                <Text style={styles.verificationButtonText}>
+                                    {isLoading ? 'Verifying...' : 'Verify'}
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[
+                                    styles.verificationButton,
+                                    styles.resendButton,
+                                    resendDisabled && styles.disabledButton
+                                ]}
+                                onPress={handleResendCode}
+                                disabled={resendDisabled || isLoading}
+                            >
+                                <Text style={styles.verificationButtonText}>
+                                    {resendDisabled
+                                        ? `Resend (${resendCountdown}s)`
+                                        : 'Resend Code'}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <TouchableOpacity
+                            style={[styles.verificationButton, styles.cancelVerificationButton]}
+                            onPress={() => setShowVerificationModal(false)}
+                        >
+                            <Text style={[styles.verificationButtonText, { color: COLORS.gray }]}>
+                                Cancel
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </ScrollView>
     );
 };

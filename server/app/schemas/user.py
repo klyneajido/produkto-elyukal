@@ -18,3 +18,8 @@ class UserProfileUpdate(BaseModel):
 class PasswordUpdate(BaseModel):
     current_password: str
     new_password: str
+
+# Add this new schema
+class EmailVerification(BaseModel):
+    email: EmailStr
+    code: str

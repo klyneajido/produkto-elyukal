@@ -1,8 +1,8 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import httpx
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from core.cleanup import cleanup_unverified_users
 import logging
-from routes import auth, fetch_products, reviews, fetch_stores, fetch_events, fetch_highlights, fetch_municipalities
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -10,24 +10,28 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Enable CORS
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Adjust in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-    
-# root
-@app.get("/")
-def read_root():
-    return {"message":"running all goods boss!"}
-# routes
-app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(fetch_products.router, prefix="/products", tags=["Products"])
-app.include_router(reviews.router, prefix="/reviews", tags=["Reviews"])
-app.include_router(fetch_stores.router, prefix="/stores", tags=["Stores"])
-app.include_router(fetch_events.router, prefix="/events", tags=["Events"])
-app.include_router(fetch_highlights.router, prefix="/highlights", tags=["Highlights"])
-app.include_router(fetch_municipalities.router, prefix="/municipalities", tags=["Municipalities"])
+
+# Set up scheduler
+scheduler = AsyncIOScheduler()
+scheduler.add_job(cleanup_unverified_users, 'interval', hours=24)
+scheduler.start()
+
+# Import and include routers
+from routes import auth
+from routes import fetch_products as products
+from routes import fetch_stores as stores
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(products.router, prefix="/products", tags=["products"])
+app.include_router(stores.router, prefix="/stores", tags=["stores"])
+
+@app.on_event("shutdown")
+def shutdown_event():
+    scheduler.shutdown()
