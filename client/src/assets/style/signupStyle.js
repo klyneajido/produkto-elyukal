@@ -267,6 +267,50 @@ verificationButtonText: {
 disabledButton: {
   opacity: 0.6,
 },
+
+// Add these styles for the terms and conditions checkbox
+termsContainer: {
+  marginVertical: 16,
+},
+checkboxContainer: {
+  flexDirection: 'row',
+  alignItems: 'flex-start',
+},
+checkbox: {
+  width: 20,
+  height: 20,
+  borderRadius: 4,
+  borderWidth: 2,
+  borderColor: COLORS.primary,
+  marginRight: 10,
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginTop: 2,
+},
+checkboxChecked: {
+  backgroundColor: COLORS.primary,
+},
+termsTextContainer: {
+  flex: 1,
+},
+termsText: {
+  fontFamily: FONTS.regular,
+  fontSize: FONT_SIZE.small+1,
+  color: COLORS.gray,
+  lineHeight: 20,
+},
+termsLink: {
+  fontFamily: FONTS.medium,
+  color: COLORS.primary,
+  textDecorationLine: 'underline',
+},
+termsError: {
+  color: COLORS.error || 'red',
+  fontSize: FONT_SIZE.small,
+  fontFamily: FONTS.regular,
+  marginTop: 4,
+  marginLeft: 30,
+},
 });
 
 export default loginSignupStyles;

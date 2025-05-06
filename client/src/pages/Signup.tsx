@@ -16,7 +16,7 @@ import axios from "axios";
 import styles from '../assets/style/signupStyle';
 import { COLORS } from "../assets/constants/constant";
 import InputText from "../components/TextInput";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { BASE_URL } from "../config/config";
 import LinearGradient from "react-native-linear-gradient";
@@ -42,6 +42,7 @@ const SignupScreen: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [errors, setErrors] = useState<{
     firstName?: string;
     lastName?: string;
@@ -49,6 +50,7 @@ const SignupScreen: React.FC = () => {
     password?: string;
     confirmPassword?: string;
     verificationCode?: string;
+    terms?: string;
   }>({});
   const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
   const [containerSize, setContainerSize] = useState({ width: width, height: 200 });
@@ -73,6 +75,7 @@ const SignupScreen: React.FC = () => {
       email?: string;
       password?: string;
       confirmPassword?: string;
+      terms?: string;
     } = {};
 
     // Validate firstName
@@ -108,6 +111,11 @@ const SignupScreen: React.FC = () => {
       newErrors.confirmPassword = "Confirm Password is required";
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    // Validate terms acceptance
+    if (!termsAccepted) {
+      newErrors.terms = "You must accept the Terms and Conditions to continue";
     }
 
     setErrors(newErrors);
@@ -295,6 +303,14 @@ const SignupScreen: React.FC = () => {
     }
   };
 
+  const navigateToTerms = () => {
+    navigation.navigate("TermsAndConditions");
+  };
+
+  const navigateToPrivacy = () => {
+    navigation.navigate("PrivacyPolicy");
+  };
+
   useEffect(() => {
     if (containerSize.width > 0 && containerSize.height > 0) {
       const newElements: FloatingElement[] = [
@@ -414,10 +430,47 @@ const SignupScreen: React.FC = () => {
               errorText={errors.confirmPassword}
             />
 
+            <View style={styles.termsContainer}>
+              <TouchableOpacity 
+                style={styles.checkboxContainer} 
+                onPress={() => {
+                  setTermsAccepted(!termsAccepted);
+                  setErrors(prev => ({ ...prev, terms: undefined }));
+                }}
+              >
+                <View style={[
+                  styles.checkbox, 
+                  termsAccepted ? styles.checkboxChecked : {}
+                ]}>
+                  {termsAccepted && (
+                    <FontAwesomeIcon icon={faCheck} size={12} color={COLORS.white} />
+                  )}
+                </View>
+                <View style={styles.termsTextContainer}>
+                  <Text style={styles.termsText}>
+                    I agree to the{' '}
+                    <Text style={styles.termsLink} onPress={navigateToTerms}>
+                      Terms and Conditions
+                    </Text>
+                    {' '}and{' '}
+                    <Text style={styles.termsLink} onPress={navigateToPrivacy}>
+                      Privacy Policy
+                    </Text>
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              {errors.terms && (
+                <Text style={styles.termsError}>{errors.terms}</Text>
+              )}
+            </View>
+
             <TouchableOpacity
-              style={[styles.signupButton, isLoading && styles.signupButtonDisabled]}
+              style={[
+                styles.signupButton, 
+                (isLoading || !termsAccepted) && styles.signupButtonDisabled
+              ]}
               onPress={handleSignup}
-              disabled={isLoading}
+              disabled={isLoading || !termsAccepted}
             >
               <Text style={styles.signupButtonText}>
                 {isLoading ? "Signing Up..." : "Sign Up"}
