@@ -16,6 +16,8 @@ import { ActivityIndicator, View } from 'react-native';
 import ReviewScreen from './src/pages/Reviews';
 import MunicipalityDetail from './src/pages/MunicipalityDetail';
 import PriceComparison from './src/pages/PriceComparison';
+import TermsAndConditions from './src/pages/TermsAndConditions';
+import PrivacyPolicy from './src/pages/PrivacyPolicy';
 
 // Import the new settings screens
 import PersonalInformation from './src/pages/settings/PersonalInformation';
@@ -73,6 +75,16 @@ const AppNavigator = () => {
           headerShown: false
         }}
       />
+      <Stack.Screen
+  name="TermsAndConditions"
+  component={TermsAndConditions}
+  options={{ headerShown: false }}
+/>
+<Stack.Screen
+  name="PrivacyPolicy"
+  component={PrivacyPolicy}
+  options={{ headerShown: false }}
+/>
     </Stack.Navigator>
   );
 };

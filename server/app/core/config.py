@@ -11,5 +11,7 @@ class Settings:
     SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    SENDER_EMAIL = os.getenv("SENDER_EMAIL")
+    SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
     
 settings = Settings()

@@ -28,7 +28,8 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons'; // ✅ Correct
 import SpinningCubeLoader from '../components/SpinningCubeLoader';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { supabase } from '../../supabaseClient.ts';
-
+import Modal from 'react-native-modal';
+import { FONT_SIZE, FONTS } from '../assets/constants/constant';
 
 const { width, height } = Dimensions.get('window');
 type FloatingElement = {
@@ -49,6 +50,8 @@ const LoginScreen: React.FC = () => {
     const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [loginTimeout, setLoginTimeout] = useState<NodeJS.Timeout | null>(null);
+    const [showTermsModal, setShowTermsModal] = useState(false);
+    const [showResendVerification, setShowResendVerification] = useState(false);
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -82,10 +85,15 @@ const LoginScreen: React.FC = () => {
     }, []);
 
     const handleGoogleSignIn = async () => {
-        try {
-            setIsLoading(true);
-            setErrors({});
+        setShowTermsModal(true);
+    };
 
+    const proceedWithGoogleSignIn = async () => {
+        setShowTermsModal(false);
+        setIsLoading(true);
+        setErrors({});
+
+        try {
             // Check Play Services
             await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
@@ -248,6 +256,34 @@ const LoginScreen: React.FC = () => {
                     });
                 }
             }
+        } catch (error: any) {
+            if (error.response) {
+                if (error.response.status === 403 && 
+                    error.response.data?.detail?.includes("Email not verified")) {
+                    setErrors(prev => ({
+                        ...prev,
+                        general: "Please verify your email before logging in. Check your inbox for the verification link."
+                    }));
+                    
+                    // Add a button to resend verification email
+                    setShowResendVerification(true);
+                } else {
+                    setErrors(prev => ({
+                        ...prev,
+                        general: error.response.data?.detail || "Invalid email or password"
+                    }));
+                }
+            } else if (error.request) {
+                setErrors(prev => ({
+                    ...prev,
+                    general: "Network Error. Please check your internet connection."
+                }));
+            } else {
+                setErrors(prev => ({
+                    ...prev,
+                    general: `Unexpected error: ${error.message}`
+                }));
+            }
         } finally {
             setIsLoading(false);
             if (loginTimeout) {
@@ -374,6 +410,104 @@ const LoginScreen: React.FC = () => {
         }
     };
 
+    const navigateToTerms = () => {
+        // Close any open modals before navigating
+        setShowTermsModal(false);
+        navigation.navigate("TermsAndConditions" as never);
+    };
+
+    const navigateToPrivacy = () => {
+        // Close any open modals before navigating
+        setShowTermsModal(false);
+        navigation.navigate("PrivacyPolicy" as never);
+    };
+
+    const TermsAgreementModal = () => (
+        <Modal
+            transparent
+            visible={showTermsModal}
+            animationType="fade"
+            statusBarTranslucent
+        >
+            <View style={styles.modalBackground}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalHeader}>
+                        <Text style={styles.modalTitle}>Terms & Privacy</Text>
+                    </View>
+                    
+                    <Text style={styles.modalDescription}>
+                        By continuing with Google Sign-In, you agree to our Terms and Conditions and Privacy Policy.
+                    </Text>
+
+                    <View style={styles.modalLinks}>
+                        <TouchableOpacity onPress={navigateToTerms}>
+                            <Text style={styles.modalLink}>Terms and Conditions</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.modalDot}>•</Text>
+                        <TouchableOpacity onPress={navigateToPrivacy}>
+                            <Text style={styles.modalLink}>Privacy Policy</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.modalActions}>
+                        <TouchableOpacity
+                            style={styles.modalCancelButton}
+                            onPress={() => setShowTermsModal(false)}
+                        >
+                            <Text style={styles.modalCancelButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.modalAgreeButton}
+                            onPress={proceedWithGoogleSignIn}
+                        >
+                            <Text style={styles.modalAgreeButtonText}>Agree & Continue</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+    );
+
+    // Add this useEffect to ensure modals are closed when component unmounts
+    useEffect(() => {
+        return () => {
+            setShowTermsModal(false);
+        };
+    }, []);
+
+    const handleResendVerification = async () => {
+        if (!email.trim()) {
+            setErrors(prev => ({
+                ...prev,
+                email: "Please enter your email address"
+            }));
+            return;
+        }
+        
+        setIsLoading(true);
+        try {
+            const { error } = await supabase.auth.resend({
+                type: 'signup',
+                email: email.trim().toLowerCase(),
+            });
+            
+            if (error) throw error;
+            
+            // Show success message
+            setErrors(prev => ({
+                ...prev,
+                general: "Verification email resent! Please check your inbox."
+            }));
+            setShowResendVerification(false);
+        } catch (error: any) {
+            setErrors(prev => ({
+                ...prev,
+                general: `Failed to resend: ${error.message}`
+            }));
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <ScrollView style={styles.container}>
@@ -463,6 +597,14 @@ const LoginScreen: React.FC = () => {
                             {isLoading ? 'Signing in...' : 'Login'}
                         </Text>
                     </TouchableOpacity>
+                    {showResendVerification && (
+                        <TouchableOpacity
+                            style={styles.resendButton}
+                            onPress={handleResendVerification}
+                        >
+                            <Text style={styles.resendButtonText}>Resend Verification Email</Text>
+                        </TouchableOpacity>
+                    )}
                     <TouchableOpacity
                         style={[
                             styles.loginGoogleButton,
@@ -499,6 +641,7 @@ const LoginScreen: React.FC = () => {
                     </View>
                 </View>
             </KeyboardAvoidingView>
+            <TermsAgreementModal />
         </ScrollView>
     );
 };

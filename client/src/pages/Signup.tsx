@@ -10,11 +10,13 @@ import {
   ScrollView,
   Alert,
   Dimensions,
+  Modal,
+  TextInput,
 } from "react-native";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import axios from "axios";
-import styles from '../assets/style/signupStyle.js';
+import styles from '../assets/style/signupStyle';
 import { COLORS } from "../assets/constants/constant";
 import InputText from "../components/TextInput";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -49,11 +51,15 @@ const SignupScreen: React.FC = () => {
     email?: string;
     password?: string;
     confirmPassword?: string;
+    verificationCode?: string;
   }>({});
   const [floatingElements, setFloatingElements] = useState<FloatingElement[]>([]);
   const [containerSize, setContainerSize] = useState({ width: width, height: 200 });
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
 
   const apiURL = `${BASE_URL}/auth/register`;
+  const verifyURL = `${BASE_URL}/auth/verify-email`;
 
   // Validation regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email format
@@ -139,8 +145,8 @@ const SignupScreen: React.FC = () => {
       );
 
       if (response.status === 200) {
-        Alert.alert("Success", "Registration Successful!");
-        navigation.navigate("Login");
+        Alert.alert("Success", "Please check your email for verification code.");
+        setShowVerificationModal(true);
       } else {
         Alert.alert("Unsuccess", "Registration Unsuccessful!");
         throw new Error(
@@ -153,6 +159,62 @@ const SignupScreen: React.FC = () => {
         const errorMessage =
           error.response?.data?.detail || "Error during registration";
         Alert.alert("Error", errorMessage);
+      } else if (error.request) {
+        Alert.alert(
+          "Error",
+          "Network Error. Please check your internet connection."
+        );
+      } else {
+        Alert.alert("Error", `Unexpected error: ${error.message}`);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    if (!verificationCode.trim()) {
+      setErrors((prev) => ({
+        ...prev,
+        verificationCode: "Verification code is required",
+      }));
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        verifyURL,
+        {
+          email: email,
+          code: verificationCode,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        Alert.alert("Success", "Email verified successfully!");
+        setShowVerificationModal(false);
+        navigation.navigate("Login");
+      } else {
+        throw new Error(
+          response.data?.detail || "Unexpected error during verification."
+        );
+      }
+    } catch (error: any) {
+      console.log("Verification Error:", error);
+      if (error.response) {
+        const errorMessage =
+          error.response?.data?.detail || "Error during verification";
+        Alert.alert("Error", errorMessage);
+        setErrors((prev) => ({
+          ...prev,
+          verificationCode: errorMessage,
+        }));
       } else if (error.request) {
         Alert.alert(
           "Error",
@@ -180,6 +242,7 @@ const SignupScreen: React.FC = () => {
       setFloatingElements(newElements);
     }
   }, [containerSize]);
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -305,6 +368,93 @@ const SignupScreen: React.FC = () => {
             </View>
           </View>
         </ScrollView>
+
+        {/* Verification Modal */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showVerificationModal}
+          onRequestClose={() => setShowVerificationModal(false)}
+        >
+          <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          }}>
+            <View style={{
+              backgroundColor: COLORS.white,
+              padding: 20,
+              borderRadius: 10,
+              width: '80%',
+              alignItems: 'center',
+            }}>
+              <Text style={{
+                fontSize: 18,
+                fontWeight: 'bold',
+                marginBottom: 20,
+                color: COLORS.black,
+              }}>
+                Enter Verification Code
+              </Text>
+              <TextInput
+                style={{
+                  width: '100%',
+                  padding: 10,
+                  borderWidth: 1,
+                  borderColor: errors.verificationCode ? COLORS.red : COLORS.gray,
+                  borderRadius: 5,
+                  marginBottom: 10,
+                }}
+                placeholder="Enter code"
+                value={verificationCode}
+                onChangeText={(text) => {
+                  setVerificationCode(text);
+                  setErrors((prev) => ({ ...prev, verificationCode: undefined }));
+                }}
+                keyboardType="numeric"
+              />
+              {errors.verificationCode && (
+                <Text style={{
+                  color: COLORS.red,
+                  marginBottom: 10,
+                }}>
+                  {errors.verificationCode}
+                </Text>
+              )}
+              <TouchableOpacity
+                style={{
+                  backgroundColor: isLoading ? COLORS.gray : COLORS.primary,
+                  padding: 10,
+                  borderRadius: 5,
+                  width: '100%',
+                  alignItems: 'center',
+                }}
+                onPress={handleVerifyCode}
+                disabled={isLoading}
+              >
+                <Text style={{
+                  color: COLORS.white,
+                  fontWeight: 'bold',
+                }}>
+                  {isLoading ? "Verifying..." : "Verify"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  marginTop: 10,
+                }}
+                onPress={() => setShowVerificationModal(false)}
+              >
+                <Text style={{
+                  color: COLORS.primary,
+                }}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

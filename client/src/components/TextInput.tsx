@@ -111,9 +111,13 @@ import {COLORS, FONTS, FONT_SIZE} from '../assets/constants/constant'
             maxLength={maxLength}
             autoCapitalize={autoCapitalize}
           />
-          {(labelName?.toLowerCase() === "password" || labelName?.toLowerCase() === "repassword")&& isFocused && (
+          {(labelName?.toLowerCase() === "password" || 
+            labelName?.toLowerCase() === "repassword" || 
+            labelName?.toLowerCase() === "confirm password" || 
+            labelName?.toLowerCase() === "new password" || 
+            labelName?.toLowerCase() === "current password") && isFocused && (
             <TouchableOpacity style={styles.iconContainer} onPress={handleTogglePasswordVisibility}>
-  <FontAwesomeIcon icon={isPasswordVisible ? faEye  : faEyeSlash} size={20} color="#666" />
+              <FontAwesomeIcon icon={isPasswordVisible ? faEye : faEyeSlash} size={20} color="#666" />
             </TouchableOpacity>
           )}
         </View>
@@ -165,12 +169,12 @@ import {COLORS, FONTS, FONT_SIZE} from '../assets/constants/constant'
     },
     errorContainer: {
       height: 20,
-      marginTop: 5,
+      marginTop: 0, // Changed from 5 to 0
     },
     errorText: {
       fontSize: 12,
       color: 'red',
-      marginTop: 5,
+      marginTop: 0, // Changed from 5 to 0
       alignSelf: 'flex-start',
     },
   });
