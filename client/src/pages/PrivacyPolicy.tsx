@@ -69,7 +69,7 @@ const PrivacyPolicy = () => {
 
           <Text style={styles.sectionTitle}>8. Contact Us</Text>
           <Text style={styles.paragraph}>
-            If you have any questions about this Privacy Policy, please contact us.
+            If you have any questions about this Privacy Policy, please contact us at produktoeyukalph@gmail.com
           </Text>
         </View>
         <View style={styles.footerContainer}>
