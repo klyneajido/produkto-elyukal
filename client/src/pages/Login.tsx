@@ -145,7 +145,7 @@ const LoginScreen: React.FC = () => {
                 });
             }
         } catch (error: unknown) {
-            console.error("Google Sign In Error:", error);
+            console.log("Google Sign In Error:", error);
 
             // Type guard for Google Sign In errors
             if (error && typeof error === 'object' && 'code' in error) {
