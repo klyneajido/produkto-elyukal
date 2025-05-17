@@ -39,22 +39,39 @@ async def create_review(review: ReviewCreate, user=Depends(get_current_user)):
 
 @router.get("/{product_id}", response_model=List[ReviewResponse])
 async def get_reviews(product_id: int):
-    response = (
-        supabase_client.table("reviews")
-        .select("*, users(first_name, last_name)")
-        .eq("product_id", product_id)
-        .execute()
-    )
+    try:
+        # Log the incoming request
+        logger.debug(f"Fetching reviews for product_id: {product_id}")
+        
+        # Convert product_id to int if it's a string
+        try:
+            product_id = int(product_id)
+        except ValueError:
+            logger.error(f"Invalid product_id format: {product_id}")
+            return []
+            
+        response = (
+            supabase_client.table("reviews")
+            .select("*, users(first_name, last_name)")
+            .eq("product_id", product_id)
+            .execute()
+        )
+        
+        logger.debug(f"Response data: {response.data}")
 
-    if not response.data:
-        return []
+        if not response.data:
+            logger.info(f"No reviews found for product_id: {product_id}")
+            return []
 
-    # Combine first_name and last_name into full_name
-    flattened_reviews = [
-        {
-            **review,
-            "full_name": f"{review['users']['first_name']} {review['users']['last_name']}"
-        }
-        for review in response.data
-    ]
-    return flattened_reviews
+        # Combine first_name and last_name into full_name
+        flattened_reviews = [
+            {
+                **review,
+                "full_name": f"{review['users']['first_name']} {review['users']['last_name']}"
+            }
+            for review in response.data
+        ]
+        return flattened_reviews
+    except Exception as e:
+        logger.error(f"Error in get_reviews: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
