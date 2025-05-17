@@ -27,6 +27,20 @@ Before getting started, ensure you have completed the **React Native - Environme
      npx react-native run-ios
      ```
 
+### ⚠️ Known Issues and Fixes
+
+If you encounter build errors related to `react-native-intent-launcher`, you need to:
+
+1. Navigate to `node_modules/react-native-intent-launcher/android/build.gradle`
+2. Change `compile` to `implementation` in the dependencies section
+3. Rebuild the project
+
+This fixes a common compatibility issue with newer versions of React Native.
+
+## 📄 License
+
+This project is proprietary and confidential. Copyright (c) 2024 Produkto-Elyukal Team (Andriq Ajido, Maira Rosales, Xavier San Juan). All rights reserved. See the LICENSE file for details.
+
 ⚠️ **Note:** Due to limitations of the Apple Simulator and Android Emulator, you must run your project on a physical device.
 
 3. **Run your app**
